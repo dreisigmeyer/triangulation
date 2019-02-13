@@ -1,5 +1,11 @@
 database_name = 'prdn_db.db'
 
+# Table name
+pik_data = 'pik_data'
+ein_data = 'ein_data'
+assignee_info = 'assignee_info'
+prdn_metadata = 'prdn_metadata'
+
 # CSV files
 ein_data_csvfile = 'prdn_eins.csv'
 pik_data_csvfile = 'prdn_piks.csv'

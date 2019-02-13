@@ -1,19 +1,29 @@
-from sqlalchemy import Column, Integer, Text
+class DatabaseColumn():
+    '''Column to be used in a database.
+
+    name -- the name of the column
+    cmd -- definition of the column where the name is formatted in.  For example
+        \'{} INTEGER NOT NULL\'
+    '''
+
+    def __init__(self, name, cmd):
+        self.name = name
+        self.cmd = cmd.format(name)
 
 
-app_yr = Column('app_yr', Integer, nullable=False)
-assg_ctry = Column('assg_ctry', Text)
-assg_seq = Column('assg_seq', Integer, nullable=False)
-assg_st = Column('assg_st', Text)
-assg_type = Column('assg_type', Text)
-cw_yr = Column('cw_yr', Integer, nullable=False)
-ein = Column('ein', Text, nullable=False)
-emp_yr = Column('emp_yr', Integer, nullable=False)
-firmid = Column('firmid', Text, nullable=False)
-grant_yr = Column('grant_yr', Integer, nullable=False)
-inv_seq = Column('inv_seq', Integer, nullable=False)
-num_assg = Column('num_assg', Integer)
-pass_no = Column('pass_no', Integer, nullable=False)
-pik = Column('pik', Text, nullable=False)
-prdn = Column('prdn', Text, nullable=False)
-us_inventor_flag = Column('us_inventor_flag', Integer)
+app_yr = DatabaseColumn('app_yr', '{} INTEGER NOT NULL')
+assg_ctry = DatabaseColumn('assg_ctry', '{} TEXT')
+assg_seq = DatabaseColumn('assg_seq', '{} INTEGER NOT NULL')
+assg_st = DatabaseColumn('assg_st', '{} TEXT')
+assg_type = DatabaseColumn('assg_type', '{} TEXT')
+cw_yr = DatabaseColumn('crosswalk_yr', '{} INTEGER NOT NULL')
+ein = DatabaseColumn('ein', '{} TEXT NOT NULL')
+emp_yr = DatabaseColumn('emp_yr', '{} INTEGER NOT NULL')
+firmid = DatabaseColumn('firmid', '{} TEXT NOT NULL')
+grant_yr = DatabaseColumn('grant_yr', '{} INTEGER NOT NULL')
+inv_seq = DatabaseColumn('inv_seq', '{} INTEGER NOT NULL')
+num_assg = DatabaseColumn('num_assg', '{} INTEGER')
+pass_no = DatabaseColumn('pass_no', '{} INTEGER NOT NULL')
+pik = DatabaseColumn('pik', '{} TEXT NOT NULL')
+prdn = DatabaseColumn('prdn', '{} TEXT NOT NULL')
+us_inventor_flag = DatabaseColumn('us_inventor_flag', '{} INTEGER')
