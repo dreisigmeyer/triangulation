@@ -16,21 +16,19 @@ def closed_paths(cur, join_cols, model):
     cp_create = f'''
         CREATE TABLE closed_paths_TB AS
         SELECT
-            pik_data.prdn AS pik_prdn,
-            ein_data.prdn AS assg_prdn,
-            pik_data.app_yr AS app_yr,
-            ein_data.grant_yr AS grant_yr,
-            ein_data.assg_seq AS assg_seq,
-            pik_data.inv_seq AS inv_seq,
-            pik_data.pik AS pik,
-            ein_data.crosswalk_yr AS crosswalk_yr,
-            pik_data.emp_yr AS emp_yr,
+            ein_data.prdn,
+            pik_data.app_yr,
+            ein_data.grant_yr,
+            ein_data.assg_seq,
+            pik_data.inv_seq,
+            pik_data.pik,
+            ein_data.crosswalk_yr,
+            pik_data.emp_yr,
             pik_data.ein AS pik_ein,
             ein_data.ein AS assg_ein,
             pik_data.firmid AS pik_firmid,
             ein_data.firmid AS assg_firmid,
-            ein_data.pass_no AS pass_no,
-            pik_data.app_yr AS app_yr
+            ein_data.pass_no
         FROM pik_data
         INNER JOIN ein_data
         USING ({",".join([x.name in join_cols])})
@@ -43,7 +41,7 @@ def closed_paths(cur, join_cols, model):
         CREATE INDEX
             closed_paths_TB_idx
         ON
-            closed_paths_TB(assg_prdn, assg_seq);
+            closed_paths_TB(prdn, assg_seq);
     '''
     cur.execute(cp_indx)
 
@@ -61,7 +59,7 @@ def closed_paths(cur, join_cols, model):
                 SELECT assg_ctry
                 FROM assignee_info
                 WHERE
-                    assignee_info.prdn = closed_paths_TB.assg_prdn AND
+                    assignee_info.prdn = closed_paths_TB.prdn AND
                     assignee_info.assg_seq = closed_paths_TB.assg_seq
             );
         ALTER TABLE
@@ -76,7 +74,7 @@ def closed_paths(cur, join_cols, model):
                 SELECT assg_st
                 FROM assignee_info
                 WHERE
-                    assignee_info.prdn = closed_paths_TB.assg_prdn AND
+                    assignee_info.prdn = closed_paths_TB.prdn AND
                     assignee_info.assg_seq = closed_paths_TB.assg_seq
             );
         ALTER TABLE
@@ -91,7 +89,7 @@ def closed_paths(cur, join_cols, model):
                 SELECT assg_type
                 FROM assignee_info
                 WHERE
-                    assignee_info.prdn = closed_paths_TB.assg_prdn AND
+                    assignee_info.prdn = closed_paths_TB.prdn AND
                     assignee_info.assg_seq = closed_paths_TB.assg_seq
             );
         ALTER TABLE
@@ -106,7 +104,7 @@ def closed_paths(cur, join_cols, model):
                 SELECT us_inventor_flag
                 FROM prdn_metadata
                 WHERE
-                    prdn_metadata.prdn = closed_paths_TB.assg_prdn
+                    prdn_metadata.prdn = closed_paths_TB.prdn
             );
         ALTER TABLE
             closed_paths_TB
@@ -120,7 +118,7 @@ def closed_paths(cur, join_cols, model):
                 SELECT num_assg
                 FROM prdn_metadata
                 WHERE
-                    prdn_metadata.prdn = closed_paths_TB.assg_prdn
+                    prdn_metadata.prdn = closed_paths_TB.prdn
             );
     '''
     cur.executescript(cp_new_columns)
@@ -131,7 +129,7 @@ def closed_paths(cur, join_cols, model):
     # portprocess the database
     postprocess_query = f'''
         CREATE TABLE prdn_as_Amodel AS
-        SELECT DISTINCT assg_prdn AS prdn, assg_seq
+        SELECT DISTINCT prdn, assg_seq
         FROM closed_paths_TB;
 
         CREATE INDEX
