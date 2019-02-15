@@ -5,6 +5,8 @@ pik_data = 'pik_data'
 ein_data = 'ein_data'
 assignee_info = 'assignee_info'
 prdn_metadata = 'prdn_metadata'
+closed_paths = 'closed_paths_'
+closed_paths_TB = 'closed_paths_TB'
 
 # CSV files
 ein_data_csvfile = 'prdn_eins.csv'
