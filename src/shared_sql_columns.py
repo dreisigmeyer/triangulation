@@ -11,6 +11,8 @@ class DatabaseColumn():
         self.cmd = cmd.format(name)
 
 
+abs_cw_yr = DatabaseColumn('abs_cw_yr', '{} INTEGER')
+abs_emp_yr = DatabaseColumn('abs_emp_yr', '{} INTEGER')
 app_yr = DatabaseColumn('app_yr', '{} INTEGER NOT NULL')
 assg_ctry = DatabaseColumn('assg_ctry', '{} TEXT')
 assg_ein = DatabaseColumn('assg_ein', '')
@@ -26,6 +28,7 @@ grant_yr = DatabaseColumn('grant_yr', '{} INTEGER NOT NULL')
 inv_seq = DatabaseColumn('inv_seq', '{} INTEGER NOT NULL')
 mult_assg_flag = DatabaseColumn('multiple_assignee_flag', '')
 num_assg = DatabaseColumn('num_assg', '{} INTEGER')
+num_inv = DatabaseColumn('num_inv', '{} INTEGER')
 pass_no = DatabaseColumn('pass_no', '{} INTEGER NOT NULL')
 pik = DatabaseColumn('pik', '{} TEXT NOT NULL')
 pik_ein = DatabaseColumn('pik_ein', '')

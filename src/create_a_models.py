@@ -126,24 +126,72 @@ def closed_paths(cur, join_cols, model):
     # extract the final closed loops
     # this uses a window function and requires SQLite >=v3.25.0
     cp_closed_loops = f'''
-        CREATE TABLE closed_loops AS
-        SELECT * FROM (
+        CREATE TABLE inv_counts AS
+        SELECT
+            COUNT(DISTINCT {columns.inv_seq.name}) AS {columns.num_inv.name},
+            {columns.prdn.name},
+            {columns.assg_seq.name},
+            ABS({columns.cw_yr.name} - {columns.grant_yr.name}) AS {columns.abs_cw_yr.name},
+            {columns.cw_yr.name},
+            ABS({columns.emp_yr.name} - {columns.app_yr.name})  AS {columns.abs_emp_yr.name},
+            {columns.emp_yr.name},
+            {columns.firmid.name},
+            {columns.grant_yr.name},
+            {columns.app_yr.name},
+            {columns.assg_ctry.name},
+            {columns.assg_st.name},
+            {columns.assg_type.name},
+            {columns.us_inv_flag.name},
+            {columns.mult_assg_flag.name}
+        FROM {names.closed_paths_TB}
+        -- grouping to find the number of inventors at the firmid for a
+        -- given |cw_yr - grant_yr|, cw_yr, |emp_yr - app_yr| and emp_yr
+        -- for each prdn+assg_seq pair.
+        GROUP BY
+            {columns.prdn.name},
+            {columns.assg_seq.name},
+            ABS({columns.cw_yr.name} - {columns.grant_yr.name}),
+            {columns.cw_yr.name},
+            ABS({columns.emp_yr.name} - {columns.app_yr.name}),
+            {columns.emp_yr.name},
+            {columns.firmid.name};
+
+        CREATE TABLE {names.closed_loops_TB} AS
+        SELECT
+            {columns.num_inv.name},
+            {columns.prdn.name},
+            {columns.assg_seq.name},
+            {columns.abs_cw_yr.name},
+            {columns.cw_yr.name},
+            {columns.abs_emp_yr.name},
+            {columns.emp_yr.name},
+            {columns.firmid.name},
+            {columns.grant_yr.name},
+            {columns.app_yr.name},
+            {columns.assg_ctry.name},
+            {columns.assg_st.name},
+            {columns.assg_type.name},
+            {columns.us_inv_flag.name},
+            {columns.mult_assg_flag.name},
+            {model}
+        FROM (
             SELECT
+                {columns.num_inv.name},
                 {columns.prdn.name},
                 {columns.assg_seq.name},
-                ABS({columns.cw_yr.name} - {columns.grant_yr.name}),
+                {columns.abs_cw_yr.name},
                 {columns.cw_yr.name},
-                ABS({columns.emp_yr.name} - {columns.app_yr.name}),
+                {columns.abs_emp_yr.name},
                 {columns.emp_yr.name},
+                {columns.firmid.name},
                 {columns.grant_yr.name},
                 {columns.app_yr.name},
-                {columns.firmid.name},
                 {columns.assg_ctry.name},
                 {columns.assg_st.name},
                 {columns.assg_type.name},
                 {columns.us_inv_flag.name},
                 {columns.mult_assg_flag.name},
-                COUNT(DISTINCT {columns.inv_seq.name}) AS num_inv,
+                {model},
                 -- for each prdn+assg_seq pair sort by |cw_yr - grant_yr|,
                 -- cw_yr, |emp_yr - app_yr|, emp_yr and num_inv and take the
                 -- first row(s)
@@ -152,34 +200,26 @@ def closed_paths(cur, join_cols, model):
                         {columns.prdn.name},
                         {columns.assg_seq.name}
                     ORDER BY
-                        ABS({columns.cw_yr.name} - {columns.grant_yr.name}),
+                        {columns.abs_cw_yr.name},
                         {columns.cw_yr.name},
-                        ABS({columns.emp_yr.name} - {columns.app_yr.name}),
+                        {columns.abs_emp_yr.name},
                         {columns.emp_yr.name},
-                        COUNT(DISTINCT {columns.inv_seq.name}) DESC
+                        {columns.num_inv.name} DESC
                 ) AS rnk
-            FROM {names.closed_paths_TB}
-            -- grouping to find the number of inventors at the firmid for a
-            -- given |cw_yr - grant_yr|, cw_yr, |emp_yr - app_yr| and emp_yr
-            -- for each prdn+assg_seq pair.
-            GROUP BY
-                {columns.prdn.name},
-                {columns.assg_seq.name},
-                ABS({columns.cw_yr.name} - {columns.grant_yr.name}),
-                {columns.cw_yr.name},
-                ABS({columns.emp_yr.name} - {columns.app_yr.name}),
-                {columns.emp_yr.name},
-                {columns.firmid.name}
+            FROM inv_counts
         )
         WHERE rnk = 1;
+
+        DROP TABLE inv_counts;
     '''
     cur.executescript(cp_closed_loops)
 
     # write the results to a CSV file
-    output_data(names.database_name, f'{names.closed_paths_TB}', f'{names.closed_paths}{model}')
+    output_data(names.database_name, f'{names.CHANGE_ME}', f'{model}{names.models}')
 
     # postprocess the database: prdn_as_Amodel is dropped so we don't have it in shared_sql_names
     postprocess_query = f'''
+        DROP TABLE {names.closed_loops_TB};
         CREATE TABLE prdn_as_Amodel AS
         SELECT DISTINCT {columns.prdn.name}, {columns.assg_seq.name}
         FROM {names.closed_paths_TB};
