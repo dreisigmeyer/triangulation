@@ -123,6 +123,58 @@ def closed_paths(cur, join_cols, model):
     '''
     cur.executescript(cp_new_columns)
 
+    # extract the final closed loops
+    # this uses a window function and requires SQLite >=v3.25.0
+    cp_closed_loops = f'''
+        CREATE TABLE closed_loops AS
+        SELECT * FROM (
+            SELECT
+                {columns.prdn.name},
+                {columns.assg_seq.name},
+                ABS({columns.cw_yr.name} - {columns.grant_yr.name}),
+                {columns.cw_yr.name},
+                ABS({columns.emp_yr.name} - {columns.app_yr.name}),
+                {columns.emp_yr.name},
+                {columns.grant_yr.name},
+                {columns.app_yr.name},
+                {columns.firmid.name},
+                {columns.assg_ctry.name},
+                {columns.assg_st.name},
+                {columns.assg_type.name},
+                {columns.us_inv_flag.name},
+                {columns.mult_assg_flag.name},
+                COUNT(DISTINCT {columns.inv_seq.name}) AS num_inv,
+                -- for each prdn+assg_seq pair sort by |cw_yr - grant_yr|,
+                -- cw_yr, |emp_yr - app_yr|, emp_yr and num_inv and take the
+                -- first row(s)
+                RANK() OVER (
+                    PARTITION BY
+                        {columns.prdn.name},
+                        {columns.assg_seq.name}
+                    ORDER BY
+                        ABS({columns.cw_yr.name} - {columns.grant_yr.name}),
+                        {columns.cw_yr.name},
+                        ABS({columns.emp_yr.name} - {columns.app_yr.name}),
+                        {columns.emp_yr.name},
+                        COUNT(DISTINCT {columns.inv_seq.name}) DESC
+                ) AS rnk
+            FROM {names.closed_paths_TB}
+            -- grouping to find the number of inventors at the firmid for a
+            -- given |cw_yr - grant_yr|, cw_yr, |emp_yr - app_yr| and emp_yr
+            -- for each prdn+assg_seq pair.
+            GROUP BY
+                {columns.prdn.name},
+                {columns.assg_seq.name},
+                ABS({columns.cw_yr.name} - {columns.grant_yr.name}),
+                {columns.cw_yr.name},
+                ABS({columns.emp_yr.name} - {columns.app_yr.name}),
+                {columns.emp_yr.name},
+                {columns.firmid.name}
+        )
+        WHERE rnk = 1;
+    '''
+    cur.executescript(cp_closed_loops)
+
     # write the results to a CSV file
     output_data(names.database_name, f'{names.closed_paths_TB}', f'{names.closed_paths}{model}')
 
