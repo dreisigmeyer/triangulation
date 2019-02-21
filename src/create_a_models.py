@@ -191,7 +191,7 @@ def closed_paths(cur, join_cols, model):
                 {columns.assg_type.name},
                 {columns.us_inv_flag.name},
                 {columns.mult_assg_flag.name},
-                {model},
+                {model}
                 -- for each prdn+assg_seq pair sort by |cw_yr - grant_yr|,
                 -- cw_yr, |emp_yr - app_yr|, emp_yr and num_inv and take the
                 -- first row(s)
@@ -211,6 +211,19 @@ def closed_paths(cur, join_cols, model):
         WHERE rnk = 1;
 
         DROP TABLE inv_counts;
+
+        ALTER TABLE
+            {names.closed_loops_TB}
+        ADD COLUMN
+            {columns.uniq_firmid.name};
+        UPDATE {names.closed_loops_TB} AS outer_tbl
+        SET {columns.uniq_firmid.name} = (
+            SELECT COUNT(*)
+            FROM {names.closed_loops_TB} AS inner_tbl
+            WHERE
+                outer_tbl.{columns.prdn.name} = inner_tbl.{columns.prdn.name} AND
+                outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
+        );
     '''
     cur.executescript(cp_closed_loops)
 
