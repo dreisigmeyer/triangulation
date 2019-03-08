@@ -15,13 +15,13 @@ sed -i 's/"//g' prdn_eins.csv
 #cd ../sql
 
 
-# A models
-sqlite3 prdn_db.db < create_Amodels.sql
-sed -i 's/"//g' closed_paths_A1.csv
-sed -i 's/"//g' closed_paths_A2.csv
-sed -i 's/"//g' closed_paths_A3.csv
-./extract_A_paths.sh
-./extract_A_paths.pl
+# # A models
+# sqlite3 prdn_db.db < create_Amodels.sql
+# sed -i 's/"//g' closed_paths_A1.csv
+# sed -i 's/"//g' closed_paths_A2.csv
+# sed -i 's/"//g' closed_paths_A3.csv
+# ./extract_A_paths.sh
+# ./extract_A_paths.pl
 # ---- this is information for the B models
 awk -F',' -v OFS=',' '{ if ($5~/^[0-9]*$/) {print $8,$5 }}' a*_final.csv | sort -T ./ -u > Amodel_firmid_year.csv
 # ---- this is information for the C models
@@ -30,78 +30,61 @@ awk -F',' -v OFS=',' '{print $2,$3,$5,$7,$8}' a*_final.csv | sort -T ./ -u > A_i
 sort -T ./ -u -o Amodel_pik_year_firmid.csv Amodel_pik_year_firmid.csv
 awk -F',' '{print $2}' a*_final.csv | sort -T ./ -u > Amodels_prdns
 rm A_info_hold.csv
-# ---- clean things up
-#cut -d',' -f1,2,3,5,7,8,9,10,11,12,13,14,15,16,17 a1_final.csv > ../outData/a1_models.csv
-awk -F',' -v OFS=',' '{print $2,$1,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17}' a1_final.csv > ../outData/a1_models.csv
-#cut -d',' -f1,2,3,5,7,8,9,10,11,12,13,14,15,16,17 a2_final.csv > ../outData/a2_models.csv
-awk -F',' -v OFS=',' '{print $2,$1,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17}' a2_final.csv > ../outData/a2_models.csv
-#cut -d',' -f1,2,3,5,7,8,9,10,11,12,13,14,15,16,17 a3_final.csv > ../outData/a3_models.csv
-awk -F',' -v OFS=',' '{print $2,$1,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17}' a3_final.csv > ../outData/a3_models.csv
-rm a*_final.csv
-rm a*_hold.csv
-rm a*_sorted_grouped_counted.csv
-rm closed_paths_A*.csv
-cd ../outData
-awk -F',' -v OFS=',' '{ 
-    if ($10 != "") { 
-        print $0,1,0
-    } 
-    else if ($9 != "") { 
-        print $0,0,1
-    } 
-    else { 
-        print $0,0,0 
-    } }' a1_models.csv > trash.csv
-awk -F',' -v OFS=',' '{ print $1,$3,$6,$8,$7,$11,$10,$9,$16,$17,$12,$13,$4,$5,$14,$15,$2 }' trash.csv > holder_a1.csv
-sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' holder_a1.csv
-mv holder_a1.csv a1_models.csv
-rm trash.csv
-
-awk -F',' -v OFS=',' '{ 
-    if ($10 != "") { 
-        print $0,1,0
-    } 
-    else if ($9 != "") { 
-        print $0,0,1
-    } 
-    else { 
-        print $0,0,0 
-    } }' a2_models.csv > trash.csv
-awk -F',' -v OFS=',' '{ print $1,$3,$6,$8,$7,$11,$10,$9,$16,$17,$12,$13,$4,$5,$14,$15,$2 }' trash.csv > holder_a2.csv
-sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' holder_a2.csv
-mv holder_a2.csv a2_models.csv
-rm trash.csv
-
-awk -F',' -v OFS=',' '{ 
-    if ($10 != "") { 
-        print $0,1,0
-    } 
-    else if ($9 != "") { 
-        print $0,0,1
-    } 
-    else { 
-        print $0,0,0 
-    } }' a3_models.csv > trash.csv
-awk -F',' -v OFS=',' '{ print $1,$3,$6,$8,$7,$11,$10,$9,$16,$17,$12,$13,$4,$5,$14,$15,$2 }' trash.csv > holder_a3.csv
-sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' holder_a3.csv
-mv holder_a3.csv a3_models.csv
-rm trash.csv
-#cut -d',' -f2,6 a*_models.csv | sort -T ./ -u | cut -d',' -f1 | uniq -c | awk 'BEGIN {OFS=","} { if ($1 > 1) { print $2,0 } else { print $2,1 } }' > unique_firm_id.csv
-#join -t , -1 2 -2 1 <(sort -T ./ -t',' -k2,2 a1_models.csv) unique_firm_id.csv > holder_a1.csv
-#cp a1_models.csv holder_a1.csv
-#join -t , -1 2 -2 1 <(sort -T ./ -t',' -k2,2 a2_models.csv) unique_firm_id.csv > holder_a2.csv
-#cp a2_models.csv holder_a2.csv
-#join -t , -1 2 -2 1 <(sort -T ./ -t',' -k2,2 a3_models.csv) unique_firm_id.csv > holder_a3.csv
-#cp a3_models.csv holder_a3.csv
-#rm unique_firm_id.csv
-#sed -i '1s/^/prdn,count,ass_seq,crosswalk_yr,emp_yr,firmid,grant_yr,app_yr,ass_ctry,ass_st,ass_type,us_inventor_flag,multiple_assignee_flag,model,unique_firm_id\n/' holder_a1.csv
-#sed -i '1s/^/prdn,count,ass_seq,crosswalk_yr,emp_yr,firmid,grant_yr,app_yr,ass_ctry,ass_st,ass_type,us_inventor_flag,multiple_assignee_flag,model,unique_firm_id\n/' holder_a2.csv
-#sed -i '1s/^/prdn,count,ass_seq,crosswalk_yr,emp_yr,firmid,grant_yr,app_yr,ass_ctry,ass_st,ass_type,us_inventor_flag,multiple_assignee_flag,model,unique_firm_id\n/' holder_a3.csv
-#mv holder_a1.csv a1_models.csv
-#mv holder_a2.csv a2_models.csv
-#mv holder_a3.csv a3_models.csv
-cd ../sql
-#rm prdn_db.db
+# # ---- clean things up
+# #cut -d',' -f1,2,3,5,7,8,9,10,11,12,13,14,15,16,17 a1_final.csv > ../outData/a1_models.csv
+# awk -F',' -v OFS=',' '{print $2,$1,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17}' a1_final.csv > ../outData/a1_models.csv
+# #cut -d',' -f1,2,3,5,7,8,9,10,11,12,13,14,15,16,17 a2_final.csv > ../outData/a2_models.csv
+# awk -F',' -v OFS=',' '{print $2,$1,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17}' a2_final.csv > ../outData/a2_models.csv
+# #cut -d',' -f1,2,3,5,7,8,9,10,11,12,13,14,15,16,17 a3_final.csv > ../outData/a3_models.csv
+# awk -F',' -v OFS=',' '{print $2,$1,$3,$5,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17}' a3_final.csv > ../outData/a3_models.csv
+# rm a*_final.csv
+# rm a*_hold.csv
+# rm a*_sorted_grouped_counted.csv
+# rm closed_paths_A*.csv
+# cd ../outData
+# awk -F',' -v OFS=',' '{ 
+#     if ($10 != "") { 
+#         print $0,1,0
+#     } 
+#     else if ($9 != "") { 
+#         print $0,0,1
+#     } 
+#     else { 
+#         print $0,0,0 
+#     } }' a1_models.csv > trash.csv
+# awk -F',' -v OFS=',' '{ print $1,$3,$6,$8,$7,$11,$10,$9,$16,$17,$12,$13,$4,$5,$14,$15,$2 }' trash.csv > holder_a1.csv
+# sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' holder_a1.csv
+# mv holder_a1.csv a1_models.csv
+# rm trash.csv
+# awk -F',' -v OFS=',' '{ 
+#     if ($10 != "") { 
+#         print $0,1,0
+#     } 
+#     else if ($9 != "") { 
+#         print $0,0,1
+#     } 
+#     else { 
+#         print $0,0,0 
+#     } }' a2_models.csv > trash.csv
+# awk -F',' -v OFS=',' '{ print $1,$3,$6,$8,$7,$11,$10,$9,$16,$17,$12,$13,$4,$5,$14,$15,$2 }' trash.csv > holder_a2.csv
+# sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' holder_a2.csv
+# mv holder_a2.csv a2_models.csv
+# rm trash.csv
+# awk -F',' -v OFS=',' '{ 
+#     if ($10 != "") { 
+#         print $0,1,0
+#     } 
+#     else if ($9 != "") { 
+#         print $0,0,1
+#     } 
+#     else { 
+#         print $0,0,0 
+#     } }' a3_models.csv > trash.csv
+# awk -F',' -v OFS=',' '{ print $1,$3,$6,$8,$7,$11,$10,$9,$16,$17,$12,$13,$4,$5,$14,$15,$2 }' trash.csv > holder_a3.csv
+# sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' holder_a3.csv
+# mv holder_a3.csv a3_models.csv
+# rm trash.csv
+# cd ../sql
 
 
 # B models

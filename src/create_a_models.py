@@ -158,22 +158,23 @@ def closed_paths(cur, join_cols, model):
 
         CREATE TABLE {names.closed_loops_TB} AS
         SELECT
-            {columns.num_inv.name},
             {columns.prdn.name},
             {columns.assg_seq.name},
-            {columns.abs_cw_yr.name},
-            {columns.cw_yr.name},
-            {columns.abs_emp_yr.name},
-            {columns.emp_yr.name},
             {columns.firmid.name},
-            {columns.grant_yr.name},
             {columns.app_yr.name},
-            {columns.assg_ctry.name},
-            {columns.assg_st.name},
+            {columns.grant_yr.name},
             {columns.assg_type.name},
+            {columns.assg_st.name},
+            {columns.assg_ctry.name},
+            0 AS {columns.us_assg_flag.name},
+            0 AS {columns.foreign_assg_flag.name},
             {columns.us_inv_flag.name},
             {columns.mult_assg_flag.name},
-            {model}
+            {columns.cw_yr.name},
+            {columns.emp_yr.name},
+            {model},
+            0 AS {columns.uniq_firmid.name},
+            {columns.num_inv.name}
         FROM (
             SELECT
                 {columns.num_inv.name},
@@ -212,23 +213,32 @@ def closed_paths(cur, join_cols, model):
 
         DROP TABLE inv_counts;
 
-        ALTER TABLE
-            {names.closed_loops_TB}
-        ADD COLUMN
-            {columns.uniq_firmid.name};
+        -- a state => US assignee
+        UPDATE {names.closed_loops_TB}
+        SET {columns.us_assg_flag.name} = 1
+        WHERE {columns.assg_st.name} != "";
+        -- no state + country => foreign assignee
+        UPDATE {names.closed_loops_TB}
+        SET {columns.foreign_assg_flag.name} = 1
+        WHERE
+            {columns.us_assg_flag.name} != 1 AND
+            {columns.assg_ctry.name} != "";
+
         UPDATE {names.closed_loops_TB} AS outer_tbl
-        SET {columns.uniq_firmid.name} = (
-            SELECT COUNT(*)
-            FROM {names.closed_loops_TB} AS inner_tbl
-            WHERE
-                outer_tbl.{columns.prdn.name} = inner_tbl.{columns.prdn.name} AND
-                outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
-        );
+        SET {columns.uniq_firmid.name} = 1
+        WHERE
+            (
+                SELECT COUNT(*)
+                FROM {names.closed_loops_TB} AS inner_tbl
+                WHERE
+                    outer_tbl.{columns.prdn.name} = inner_tbl.{columns.prdn.name} AND
+                    outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
+            ) = 1;
     '''
     cur.executescript(cp_closed_loops)
 
     # write the results to a CSV file
-    output_data(names.database_name, f'{names.CHANGE_ME}', f'{model}{names.models}')
+    output_data(names.database_name, names.closed_loops_TB, f'{model}{names.models}')
 
     # postprocess the database: prdn_as_Amodel is dropped so we don't have it in shared_sql_names
     postprocess_query = f'''
