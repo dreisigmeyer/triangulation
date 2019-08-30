@@ -1,15 +1,11 @@
 #!/bin/bash
 
 # initial work
-#<<'COMMENT'
 cd ./inData
 sort -T ./ -u prdn_metadata.csv > holder
 mv holder prdn_metadata.csv
 awk -F'|' -v OFS=',' '{print $1,$4}' iops.csv | sort -T ./ -u > iops_prdn_assg_seq.csv
-cd ../sql
-sqlite3 eins_db.db < create_loops.sql
-rm eins_db.db
-sed -i 's/"//g' prdn_eins.csv
+
 
 
 

@@ -2,7 +2,7 @@ database_name = 'prdn_db.db'
 
 # Table name
 assignee_info = 'assignee_info'
-closed_loops_TB = 'closed_loops'
+closed_loops_TB = 'closed_loops_TB'
 closed_paths_TB = 'closed_paths_TB'
 ein_data = 'ein_data'
 name_match = 'name_match'
