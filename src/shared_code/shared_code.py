@@ -1,6 +1,21 @@
+import csv
 import itertools
 import shutil
 import uuid
+
+
+def read_csv_columns(in_filename, cols, out_file=None):
+    """
+
+    """
+    holder = list()
+    with open(in_filename, 'r') as f:
+        reader = csv.reader(f, delimiter=' ')
+        for row in reader:
+            holder.append(list(row[i] for i in cols))
+
+    holder = unique_everseen(holder)
+    
 
 
 def unique_sort_with_replacement(in_filename):
