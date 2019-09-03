@@ -1,21 +1,18 @@
-import csv
 import itertools
+import pandas as pd
 import shutil
 import uuid
 
 
-def read_csv_columns(in_filename, cols, out_file=None):
+def read_unique_csv_columns(in_filename, cols, out_file=None):
     """
 
     """
-    holder = list()
-    with open(in_filename, 'r') as f:
-        reader = csv.reader(f, delimiter=' ')
-        for row in reader:
-            holder.append(list(row[i] for i in cols))
-
-    holder = unique_everseen(holder)
-    
+    df = pd.read_csv(in_filename, usecols=cols)
+    if out_file:
+        df.to_csv(out_file, sep=',', encoding='utf-8')
+    else:
+        return df.drop_duplicates()
 
 
 def unique_sort_with_replacement(in_filename):
