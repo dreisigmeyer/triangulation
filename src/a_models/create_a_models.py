@@ -5,6 +5,127 @@ import triangulation.src.shared_code.table_names as table_names
 import sqlite3
 
 
+def alter_closed_loop_table(cur, tbl_name):
+    """
+
+    """
+    cp_new_columns = f'''
+        ALTER TABLE
+            {tbl_name}
+        ADD COLUMN
+            {columns.assg_ctry.name};
+        UPDATE
+            {tbl_name}
+        SET
+            {columns.assg_ctry.name} =
+            (
+                SELECT {columns.assg_ctry.name}
+                FROM {table_names.assignee_info}
+                WHERE
+                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name} AND
+                    {table_names.assignee_info}.{columns.assg_seq.name} = {tbl_name}.{columns.assg_seq.name}
+            );
+        ALTER TABLE
+            {tbl_name}
+        ADD COLUMN
+            {columns.assg_st.name};
+        UPDATE
+            {tbl_name}
+        SET
+            {columns.assg_st.name} =
+            (
+                SELECT {columns.assg_st.name}
+                FROM {table_names.assignee_info}
+                WHERE
+                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name} AND
+                    {table_names.assignee_info}.{columns.assg_seq.name} = {tbl_name}.{columns.assg_seq.name}
+            );
+        ALTER TABLE
+            {tbl_name}
+        ADD COLUMN
+            {columns.assg_type.name};
+        UPDATE
+            {tbl_name}
+        SET
+            {columns.assg_type.name} =
+            (
+                SELECT {columns.assg_type.name}
+                FROM {table_names.assignee_info}
+                WHERE
+                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name} AND
+                    {table_names.assignee_info}.{columns.assg_seq.name} = {tbl_name}.{columns.assg_seq.name}
+            );
+        ALTER TABLE
+            {tbl_name}
+        ADD COLUMN
+            {columns.us_inv_flag.name};
+        UPDATE
+            {tbl_name}
+        SET
+            {columns.us_inv_flag.name} =
+            (
+                SELECT {columns.us_inv_flag.name}
+                FROM {table_names.prdn_metadata}
+                WHERE
+                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name}
+            );
+        ALTER TABLE
+            {tbl_name}
+        ADD COLUMN
+            {columns.mult_assg_flag};
+        UPDATE
+            {tbl_name}
+        SET
+            {columns.mult_assg_flag} =
+            (
+                SELECT {columns.num_assg.name}
+                FROM {table_names.prdn_metadata}
+                WHERE
+                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name}
+            );
+    '''
+    cur.executescript(cp_new_columns)
+
+
+def create_closed_loop_table(cur, tbl_name, join_cols):
+    """
+
+    """
+
+    # Create the table
+    cp_create = f'''
+        CREATE TABLE {tbl_name} AS
+        SELECT
+            {table_names.ein_data}.{columns.prdn.name},
+            {table_names.pik_data}.{columns.app_yr.name},
+            {table_names.ein_data}.{columns.grant_yr.name},
+            {table_names.ein_data}.{columns.assg_seq.name},
+            {table_names.pik_data}.{columns.inv_seq.name},
+            {table_names.pik_data}.{columns.pik.name},
+            {table_names.ein_data}.{columns.cw_yr.name},
+            {table_names.pik_data}.{columns.emp_yr.name},
+            {table_names.pik_data}.{columns.ein.name} AS {columns.pik_ein.name},
+            {table_names.ein_data}.{columns.ein.name} AS {columns.assg_ein.name},
+            {table_names.pik_data}.{columns.firmid.name} AS {columns.pik_firmid.name},
+            {table_names.ein_data}.{columns.firmid.name} AS {columns.assg_firmid.name},
+            {table_names.ein_data}.{columns.pass_no.name}
+        FROM {table_names.pik_data}
+        INNER JOIN {table_names.ein_data}
+        USING ({",".join([x.name for x in join_cols])})
+        WHERE {table_names.ein_data}.{columns.firmid.name} != \'\';
+    '''
+    cur.execute(cp_create)
+
+    # Put an index on it
+    cp_indx = f'''
+        CREATE INDEX
+            {tbl_name}_idx
+        ON
+            {tbl_name}({columns.prdn.name}, {columns.assg_seq.name});
+    '''
+    cur.execute(cp_indx)
+
+
 def in_data_tables(cur, database_name):
     """
 
