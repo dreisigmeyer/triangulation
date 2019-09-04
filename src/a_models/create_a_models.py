@@ -22,7 +22,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.assg_ctry.name}
                 FROM {table_names.assignee_info}
                 WHERE
-                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name} AND
+                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name} AND
                     {table_names.assignee_info}.{columns.assg_seq.name} = {tbl_name}.{columns.assg_seq.name}
             );
         ALTER TABLE
@@ -37,7 +37,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.assg_st.name}
                 FROM {table_names.assignee_info}
                 WHERE
-                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name} AND
+                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name} AND
                     {table_names.assignee_info}.{columns.assg_seq.name} = {tbl_name}.{columns.assg_seq.name}
             );
         ALTER TABLE
@@ -52,7 +52,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.assg_type.name}
                 FROM {table_names.assignee_info}
                 WHERE
-                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name} AND
+                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name} AND
                     {table_names.assignee_info}.{columns.assg_seq.name} = {tbl_name}.{columns.assg_seq.name}
             );
         ALTER TABLE
@@ -67,7 +67,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.us_inv_flag.name}
                 FROM {table_names.prdn_metadata}
                 WHERE
-                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name}
+                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name}
             );
         ALTER TABLE
             {tbl_name}
@@ -81,7 +81,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.num_assg.name}
                 FROM {table_names.prdn_metadata}
                 WHERE
-                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.prdn.name}
+                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name}
             );
     '''
     cur.executescript(cp_new_columns)
@@ -96,7 +96,8 @@ def create_closed_loop_table(cur, tbl_name, join_cols):
     cp_create = f'''
         CREATE TABLE {tbl_name} AS
         SELECT
-            {table_names.ein_data}.{columns.prdn.name},
+            {table_names.pik_data}.{columns.prdn.name} AS {columns.pik_prdn.name},
+            {table_names.ein_data}.{columns.prdn.name} AS {columns.ein_prdn.name},
             {table_names.pik_data}.{columns.app_yr.name},
             {table_names.ein_data}.{columns.grant_yr.name},
             {table_names.ein_data}.{columns.assg_seq.name},
@@ -121,7 +122,7 @@ def create_closed_loop_table(cur, tbl_name, join_cols):
         CREATE INDEX
             {tbl_name}_idx
         ON
-            {tbl_name}({columns.prdn.name}, {columns.assg_seq.name});
+            {tbl_name}({columns.ein_prdn.name}, {columns.assg_seq.name});
     '''
     cur.execute(cp_indx)
 
@@ -207,3 +208,61 @@ def make_a_models(database_name):
     cur = conn.cursor()
     cur.execute('pragma temp_store = MEMORY;')  # /tmp was filling up - the PRAGMA seems to take care of that
     in_data_tables(cur, database_name)
+
+    # A1 models
+    tbl_name = 'closed_paths'
+    join_cols = [columns.prdn, columns.ein, columns.firmid]
+    create_closed_loop_table(cur, tbl_name, join_cols)
+    alter_closed_loop_table(cur, tbl_name)
+    update_ein_data(cur, tbl_name)
+
+    # A2 models
+    join_cols = [columns.prdn, columns.ein, columns.firmid]
+    create_closed_loop_table(cur, tbl_name, join_cols)
+    alter_closed_loop_table(cur, tbl_name)
+    update_ein_data(cur, tbl_name)
+
+    # A3 models
+    join_cols = [columns.prdn, columns.ein, columns.firmid]
+    create_closed_loop_table(cur, tbl_name, join_cols)
+    alter_closed_loop_table(cur, tbl_name)
+    update_ein_data(cur, tbl_name)
+
+    # Final post-processing
+    cur.execute('DROP INDEX ein_idx_prdn_as;')
+
+
+def output_a_models(database_name, tbl_name, csv_file):
+    """
+
+    """
+    shared_code.output_data(database_name, tbl_name, csv_file)
+
+
+def update_ein_data(cur, tbl_name):
+    """
+
+    """
+    postprocess_query = f'''
+        CREATE TABLE prdn_as_Amodel AS
+        SELECT DISTINCT {columns.pik_prdn.name}, {columns.assg_seq.name}
+        FROM {tbl_name};
+
+        CREATE INDEX
+            indx_2
+        ON
+            prdn_as_Amodel({columns.pik_prdn.name}, {columns.assg_seq.name});
+
+        DELETE FROM {table_names.ein_data}
+        WHERE EXISTS (
+            SELECT *
+            FROM prdn_as_Amodel
+            WHERE prdn_as_Amodel.{columns.pik_prdn.name} = {table_names.ein_data}.{columns.prdn.name}
+            AND prdn_as_Amodel.{columns.assg_seq.name} = {table_names.ein_data}.{columns.assg_seq.name}
+        );
+
+        DROP TABLE prdn_as_Amodel;
+        DROP TABLE {tbl_name};
+        VACUUM;
+    '''
+    cur.executescript(postprocess_query)
