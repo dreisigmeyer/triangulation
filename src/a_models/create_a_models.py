@@ -235,8 +235,6 @@ def make_a_models(database_name):
     cur.execute('DROP INDEX ein_idx_prdn_as;')
 
 
-#-------------------------------------------------------------------------------------------------------------
-# !!! Need to update names here
 def output_a_models(cur, database_name, tbl_name, csv_file, model):
     """
     Extract the final closed loops.
@@ -261,7 +259,7 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
             {columns.assg_type.name},
             {columns.us_inv_flag.name},
             {columns.mult_assg_flag.name}
-        FROM {file_names}
+        FROM {tbl_name}
         -- grouping to find the number of inventors at the firmid for a
         -- given |cw_yr - grant_yr|, cw_yr, |emp_yr - app_yr| and emp_yr
         -- for each prdn+assg_seq pair.
@@ -274,7 +272,7 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
             {columns.emp_yr.name},
             {columns.firmid.name};
 
-        CREATE TABLE {names.closed_loops_TB} AS
+        CREATE TABLE closed_loops AS
         SELECT
             {columns.prdn.name},
             {columns.assg_seq.name},
@@ -332,30 +330,30 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
         DROP TABLE inv_counts;
 
         -- a state => US assignee
-        UPDATE {names.closed_loops_TB}
+        UPDATE closed_loops
         SET {columns.us_assg_flag.name} = 1
         WHERE {columns.assg_st.name} != "";
         -- no state + country => foreign assignee
-        UPDATE {names.closed_loops_TB}
+        UPDATE closed_loops
         SET {columns.foreign_assg_flag.name} = 1
         WHERE
             {columns.us_assg_flag.name} != 1 AND
             {columns.assg_ctry.name} != "";
 
-        UPDATE {names.closed_loops_TB} AS outer_tbl
+        UPDATE closed_loops AS outer_tbl
         SET {columns.uniq_firmid.name} = 1
         WHERE
             (
                 SELECT COUNT(*)
-                FROM {names.closed_loops_TB} AS inner_tbl
+                FROM closed_loops AS inner_tbl
                 WHERE
                     outer_tbl.{columns.prdn.name} = inner_tbl.{columns.prdn.name} AND
                     outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
             ) = 1;
     '''
     cur.executescript(cp_closed_loops)
-    shared_code.output_data(database_name, tbl_name, csv_file)
-#-------------------------------------------------------------------------------------------------------------
+    shared_code.output_data(database_name, 'closed_loops', csv_file)
+    cur.execute('DROP TABLE closed_loops;')
 
 
 def postprocess_database(cur, tbl_name):
