@@ -214,32 +214,151 @@ def make_a_models(database_name):
     join_cols = [columns.prdn, columns.ein, columns.firmid]
     create_closed_loop_table(cur, tbl_name, join_cols)
     alter_closed_loop_table(cur, tbl_name)
-    update_ein_data(cur, tbl_name)
+    output_a_models(cur, database_name, tbl_name, file_names.a1_models, 'A1')
+    postprocess_database(cur, tbl_name)
 
     # A2 models
     join_cols = [columns.prdn, columns.ein, columns.firmid]
     create_closed_loop_table(cur, tbl_name, join_cols)
     alter_closed_loop_table(cur, tbl_name)
-    update_ein_data(cur, tbl_name)
+    output_a_models(cur, database_name, tbl_name, file_names.a2_models, 'A2')
+    postprocess_database(cur, tbl_name)
 
     # A3 models
     join_cols = [columns.prdn, columns.ein, columns.firmid]
     create_closed_loop_table(cur, tbl_name, join_cols)
     alter_closed_loop_table(cur, tbl_name)
-    update_ein_data(cur, tbl_name)
+    output_a_models(cur, database_name, tbl_name, file_names.a3_models, 'A3')
+    postprocess_database(cur, tbl_name)
 
     # Final post-processing
     cur.execute('DROP INDEX ein_idx_prdn_as;')
 
 
-def output_a_models(database_name, tbl_name, csv_file):
+#-------------------------------------------------------------------------------------------------------------
+# !!! Need to update names here
+def output_a_models(cur, database_name, tbl_name, csv_file, model):
     """
+    Extract the final closed loops.
+    This replaces the extract_A_paths.pl and extract_A_paths.sh scripts.
+    Uses a window function and requires SQLite >=v3.25.0
+    """
+    cp_closed_loops = f'''
+        CREATE TABLE inv_counts AS
+        SELECT
+            COUNT(DISTINCT {columns.inv_seq.name}) AS {columns.num_inv.name},
+            {columns.prdn.name},
+            {columns.assg_seq.name},
+            ABS({columns.cw_yr.name} - {columns.grant_yr.name}) AS {columns.abs_cw_yr.name},
+            {columns.cw_yr.name},
+            ABS({columns.emp_yr.name} - {columns.app_yr.name})  AS {columns.abs_emp_yr.name},
+            {columns.emp_yr.name},
+            {columns.firmid.name},
+            {columns.grant_yr.name},
+            {columns.app_yr.name},
+            {columns.assg_ctry.name},
+            {columns.assg_st.name},
+            {columns.assg_type.name},
+            {columns.us_inv_flag.name},
+            {columns.mult_assg_flag.name}
+        FROM {file_names}
+        -- grouping to find the number of inventors at the firmid for a
+        -- given |cw_yr - grant_yr|, cw_yr, |emp_yr - app_yr| and emp_yr
+        -- for each prdn+assg_seq pair.
+        GROUP BY
+            {columns.prdn.name},
+            {columns.assg_seq.name},
+            ABS({columns.cw_yr.name} - {columns.grant_yr.name}),
+            {columns.cw_yr.name},
+            ABS({columns.emp_yr.name} - {columns.app_yr.name}),
+            {columns.emp_yr.name},
+            {columns.firmid.name};
 
-    """
+        CREATE TABLE {names.closed_loops_TB} AS
+        SELECT
+            {columns.prdn.name},
+            {columns.assg_seq.name},
+            {columns.firmid.name},
+            {columns.app_yr.name},
+            {columns.grant_yr.name},
+            {columns.assg_type.name},
+            {columns.assg_st.name},
+            {columns.assg_ctry.name},
+            0 AS {columns.us_assg_flag.name},
+            0 AS {columns.foreign_assg_flag.name},
+            {columns.us_inv_flag.name},
+            {columns.mult_assg_flag.name},
+            {columns.cw_yr.name},
+            {columns.emp_yr.name},
+            {model},
+            0 AS {columns.uniq_firmid.name},
+            {columns.num_inv.name}
+        FROM (
+            SELECT
+                {columns.num_inv.name},
+                {columns.prdn.name},
+                {columns.assg_seq.name},
+                {columns.abs_cw_yr.name},
+                {columns.cw_yr.name},
+                {columns.abs_emp_yr.name},
+                {columns.emp_yr.name},
+                {columns.firmid.name},
+                {columns.grant_yr.name},
+                {columns.app_yr.name},
+                {columns.assg_ctry.name},
+                {columns.assg_st.name},
+                {columns.assg_type.name},
+                {columns.us_inv_flag.name},
+                {columns.mult_assg_flag.name},
+                {model}
+                -- for each prdn+assg_seq pair sort by |cw_yr - grant_yr|,
+                -- cw_yr, |emp_yr - app_yr|, emp_yr and num_inv and take the
+                -- first row(s)
+                RANK() OVER (
+                    PARTITION BY
+                        {columns.prdn.name},
+                        {columns.assg_seq.name}
+                    ORDER BY
+                        {columns.abs_cw_yr.name},
+                        {columns.cw_yr.name},
+                        {columns.abs_emp_yr.name},
+                        {columns.emp_yr.name},
+                        {columns.num_inv.name} DESC
+                ) AS rnk
+            FROM inv_counts
+        )
+        WHERE rnk = 1;
+
+        DROP TABLE inv_counts;
+
+        -- a state => US assignee
+        UPDATE {names.closed_loops_TB}
+        SET {columns.us_assg_flag.name} = 1
+        WHERE {columns.assg_st.name} != "";
+        -- no state + country => foreign assignee
+        UPDATE {names.closed_loops_TB}
+        SET {columns.foreign_assg_flag.name} = 1
+        WHERE
+            {columns.us_assg_flag.name} != 1 AND
+            {columns.assg_ctry.name} != "";
+
+        UPDATE {names.closed_loops_TB} AS outer_tbl
+        SET {columns.uniq_firmid.name} = 1
+        WHERE
+            (
+                SELECT COUNT(*)
+                FROM {names.closed_loops_TB} AS inner_tbl
+                WHERE
+                    outer_tbl.{columns.prdn.name} = inner_tbl.{columns.prdn.name} AND
+                    outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
+            ) = 1;
+    '''
+    cur.executescript(cp_closed_loops)
     shared_code.output_data(database_name, tbl_name, csv_file)
+#-------------------------------------------------------------------------------------------------------------
 
 
-def update_ein_data(cur, tbl_name):
+def postprocess_database(cur, tbl_name):
     """
 
     """
