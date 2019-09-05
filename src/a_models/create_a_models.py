@@ -22,7 +22,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.assg_ctry.name}
                 FROM {table_names.assignee_info}
                 WHERE
-                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name} AND
+                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.assg_prdn.name} AND
                     {table_names.assignee_info}.{columns.assg_seq.name} = {tbl_name}.{columns.assg_seq.name}
             );
         ALTER TABLE
@@ -37,7 +37,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.assg_st.name}
                 FROM {table_names.assignee_info}
                 WHERE
-                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name} AND
+                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.assg_prdn.name} AND
                     {table_names.assignee_info}.{columns.assg_seq.name} = {tbl_name}.{columns.assg_seq.name}
             );
         ALTER TABLE
@@ -52,7 +52,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.assg_type.name}
                 FROM {table_names.assignee_info}
                 WHERE
-                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name} AND
+                    {table_names.assignee_info}.{columns.prdn.name} = {tbl_name}.{columns.assg_prdn.name} AND
                     {table_names.assignee_info}.{columns.assg_seq.name} = {tbl_name}.{columns.assg_seq.name}
             );
         ALTER TABLE
@@ -67,7 +67,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.us_inv_flag.name}
                 FROM {table_names.prdn_metadata}
                 WHERE
-                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name}
+                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.assg_prdn.name}
             );
         ALTER TABLE
             {tbl_name}
@@ -81,7 +81,7 @@ def alter_closed_loop_table(cur, tbl_name):
                 SELECT {columns.num_assg.name}
                 FROM {table_names.prdn_metadata}
                 WHERE
-                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.ein_prdn.name}
+                    {table_names.prdn_metadata}.{columns.prdn.name} = {tbl_name}.{columns.assg_prdn.name}
             );
     '''
     cur.executescript(cp_new_columns)
@@ -97,7 +97,7 @@ def create_closed_loop_table(cur, tbl_name, join_cols):
         CREATE TABLE {tbl_name} AS
         SELECT
             {table_names.pik_data}.{columns.prdn.name} AS {columns.pik_prdn.name},
-            {table_names.ein_data}.{columns.prdn.name} AS {columns.ein_prdn.name},
+            {table_names.ein_data}.{columns.prdn.name} AS {columns.assg_prdn.name},
             {table_names.pik_data}.{columns.app_yr.name},
             {table_names.ein_data}.{columns.grant_yr.name},
             {table_names.ein_data}.{columns.assg_seq.name},
@@ -109,7 +109,7 @@ def create_closed_loop_table(cur, tbl_name, join_cols):
             {table_names.ein_data}.{columns.ein.name} AS {columns.assg_ein.name},
             {table_names.pik_data}.{columns.firmid.name} AS {columns.pik_firmid.name},
             {table_names.ein_data}.{columns.firmid.name} AS {columns.assg_firmid.name},
-            {table_names.ein_data}.{columns.pass_no.name}
+            {table_names.ein_data}.{columns.pass_num.name}
         FROM {table_names.pik_data}
         INNER JOIN {table_names.ein_data}
         USING ({",".join([x.name for x in join_cols])})
@@ -122,7 +122,7 @@ def create_closed_loop_table(cur, tbl_name, join_cols):
         CREATE INDEX
             {tbl_name}_idx
         ON
-            {tbl_name}({columns.ein_prdn.name}, {columns.assg_seq.name});
+            {tbl_name}({columns.assg_prdn.name}, {columns.assg_seq.name});
     '''
     cur.execute(cp_indx)
 
@@ -151,7 +151,7 @@ def in_data_tables(cur, database_name):
             {columns.ein.cmd},
             {columns.firmid.cmd},
             {columns.cw_yr.cmd},
-            {columns.pass_no.cmd}
+            {columns.pass_num.cmd}
         );
         CREATE TABLE {table_names.assignee_info} (
             {columns.prdn.cmd},
@@ -245,13 +245,13 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
         CREATE TABLE inv_counts AS
         SELECT
             COUNT(DISTINCT {columns.inv_seq.name}) AS {columns.num_inv.name},
-            {columns.prdn.name},
+            {columns.assg_prdn.name},
             {columns.assg_seq.name},
             ABS({columns.cw_yr.name} - {columns.grant_yr.name}) AS {columns.abs_cw_yr.name},
             {columns.cw_yr.name},
             ABS({columns.emp_yr.name} - {columns.app_yr.name})  AS {columns.abs_emp_yr.name},
             {columns.emp_yr.name},
-            {columns.firmid.name},
+            {columns.assg_firmid.name},
             {columns.grant_yr.name},
             {columns.app_yr.name},
             {columns.assg_ctry.name},
@@ -264,19 +264,19 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
         -- given |cw_yr - grant_yr|, cw_yr, |emp_yr - app_yr| and emp_yr
         -- for each prdn+assg_seq pair.
         GROUP BY
-            {columns.prdn.name},
+            {columns.assg_prdn.name},
             {columns.assg_seq.name},
             ABS({columns.cw_yr.name} - {columns.grant_yr.name}),
             {columns.cw_yr.name},
             ABS({columns.emp_yr.name} - {columns.app_yr.name}),
             {columns.emp_yr.name},
-            {columns.firmid.name};
+            {columns.assg_firmid.name};
 
         CREATE TABLE closed_loops AS
         SELECT
-            {columns.prdn.name},
+            {columns.assg_prdn.name},
             {columns.assg_seq.name},
-            {columns.firmid.name},
+            {columns.assg_firmid.name},
             {columns.app_yr.name},
             {columns.grant_yr.name},
             {columns.assg_type.name},
@@ -294,13 +294,13 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
         FROM (
             SELECT
                 {columns.num_inv.name},
-                {columns.prdn.name},
+                {columns.assg_prdn.name},
                 {columns.assg_seq.name},
                 {columns.abs_cw_yr.name},
                 {columns.cw_yr.name},
                 {columns.abs_emp_yr.name},
                 {columns.emp_yr.name},
-                {columns.firmid.name},
+                {columns.assg_firmid.name},
                 {columns.grant_yr.name},
                 {columns.app_yr.name},
                 {columns.assg_ctry.name},
@@ -314,7 +314,7 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
                 -- first row(s)
                 RANK() OVER (
                     PARTITION BY
-                        {columns.prdn.name},
+                        {columns.assg_prdn.name},
                         {columns.assg_seq.name}
                     ORDER BY
                         {columns.abs_cw_yr.name},
@@ -347,7 +347,7 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
                 SELECT COUNT(*)
                 FROM closed_loops AS inner_tbl
                 WHERE
-                    outer_tbl.{columns.prdn.name} = inner_tbl.{columns.prdn.name} AND
+                    outer_tbl.{columns.assg_prdn.name} = inner_tbl.{columns.assg_prdn.name} AND
                     outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
             ) = 1;
     '''
