@@ -288,7 +288,7 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
             {columns.mult_assg_flag.name},
             {columns.cw_yr.name},
             {columns.emp_yr.name},
-            {model},
+            {model} AS {columns.model.name},
             0 AS {columns.uniq_firmid.name},
             {columns.num_inv.name}
         FROM (
@@ -307,8 +307,7 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
                 {columns.assg_st.name},
                 {columns.assg_type.name},
                 {columns.us_inv_flag.name},
-                {columns.mult_assg_flag.name},
-                {model}
+                {columns.mult_assg_flag.name}
                 -- for each prdn+assg_seq pair sort by |cw_yr - grant_yr|,
                 -- cw_yr, |emp_yr - app_yr|, emp_yr and num_inv and take the
                 -- first row(s)
@@ -349,7 +348,7 @@ def output_a_models(cur, database_name, tbl_name, csv_file, model):
                 WHERE
                     outer_tbl.{columns.assg_prdn.name} = inner_tbl.{columns.assg_prdn.name} AND
                     outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
-            ) = 1;
+            ) > 1;
     '''
     cur.executescript(cp_closed_loops)
     shared_code.output_data(database_name, 'closed_loops', csv_file)
