@@ -87,6 +87,20 @@ def alter_closed_loop_table(cur, tbl_name):
     cur.executescript(cp_new_columns)
 
 
+def create_aux_table(cur, database_name):
+    """
+
+    """
+    cp_create = f'''
+        CREATE TABLE {table_names.firmid_year} AS
+            {table_names.ein_data}.{columns.firmid.name}
+            {table_names.ein_data}.{columns.cw_yr.name};
+        CREATE TABLE {table_names.amodel_prdns} AS
+            {table_names.ein_data}.{columns.prdn.name};
+    '''
+    cur.execute(cp_create)
+
+
 def create_closed_loop_table(cur, tbl_name, join_cols):
     """
 
