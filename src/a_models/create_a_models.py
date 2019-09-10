@@ -93,17 +93,35 @@ def create_aux_table(cur, database_name):
     """
     cp_create = f'''
         -- For B models
-        CREATE TABLE {table_names.firmid_year} AS
-            {table_names.ein_data}.{columns.firmid.name}
-            {table_names.ein_data}.{columns.cw_yr.name};
-        -- For C models
-        CREATE TABLE {table_names.c_model_info} AS
+        CREATE TABLE {table_names.b_model_info}
+        (
+            {table_names.ein_data}.{columns.firmid.name},
+            {table_names.ein_data}.{columns.cw_yr.name},
+            CONSTRAINT firmid_cwyr_unique UNIQUE (
+                {columns.firmid.name},
+                {columns.cw_yr.name}
+            )
+        );
+        -- For C models: replaces Amodel_pik_year_firmid.pl
+        CREATE TABLE {table_names.c_model_info}
+        (
             {table_names.pik_data}.{columns.pik.name},
             {table_names.pik_data}.{columns.emp_yr.name},
-            {table_names.pik_data}.{columns.firmid.name};
+            {table_names.pik_data}.{columns.firmid.name},
+            CONSTRAINT pik_empyr_firmid_unique UNIQUE (
+                {columns.pik.name},
+                {columns.emp_yr.name},
+                {columns.firmid.name}
+            )
+        );
         -- For E models
-        CREATE TABLE {table_names.amodel_prdns} AS
-            {table_names.ein_data}.{columns.prdn.name};
+        CREATE TABLE {table_names.e_model_info}
+        (
+            {table_names.ein_data}.{columns.prdn.name},
+            CONSTRAINT prdn_unique UNIQUE (
+                {columns.prdn.name}
+            )
+        );
     '''
     cur.execute(cp_create)
 
