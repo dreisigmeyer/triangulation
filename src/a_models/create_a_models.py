@@ -92,9 +92,16 @@ def create_aux_table(cur, database_name):
 
     """
     cp_create = f'''
+        -- For B models
         CREATE TABLE {table_names.firmid_year} AS
             {table_names.ein_data}.{columns.firmid.name}
             {table_names.ein_data}.{columns.cw_yr.name};
+        -- For C models
+        CREATE TABLE {table_names.c_model_info} AS
+            {table_names.pik_data}.{columns.pik.name},
+            {table_names.pik_data}.{columns.emp_yr.name},
+            {table_names.pik_data}.{columns.firmid.name};
+        -- For E models
         CREATE TABLE {table_names.amodel_prdns} AS
             {table_names.ein_data}.{columns.prdn.name};
     '''
