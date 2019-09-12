@@ -57,45 +57,44 @@ Code for working with SQLite3 databases
 """
 
 
-def import_data(filename, tbl_name, csv_file):
+def import_data(fh, tbl_name, csv_file):
     '''Helper function to import data from a CSV file into a SQLite3 database.
 
-    db_name -- database name
+    fh -- file handle
     tbl_name -- table in database to load data into
     csv_file -- CSV file
     '''
-    filename.write(f'.import {csv_file} {tbl_name}')
+    fh.write(
+        f'''
+.import {csv_file} {tbl_name}
+    ''')
 
 
-def output_data(db_name, tbl_name, csv_file):
+def output_data(fh, tbl_name, csv_file):
     '''Helper function to outport data to a CSV file from a SQLite3 database.
 
-    db_name -- database name
+    fh -- file handle
     tbl_name -- table in database to load data into
     csv_file -- CSV file
     '''
-    subprocess.run([
-        'sqlite3',
-        '--echo',
-        '--csv',
-        db_name,
-        f'.output {csv_file}',
-        f'SELECT * FROM {tbl_name};'
-    ])
+    fh.write(
+        f'''
+.output {csv_file}
+SELECT * FROM {tbl_name};
+.output stdout
+    ''')
 
 
-def output_distinct_data(db_name, tbl_name, csv_file):
+def output_distinct_data(fh, tbl_name, csv_file):
     '''Helper function to outport data to a CSV file from a SQLite3 database.
 
-    db_name -- database name
+    fh -- file handle
     tbl_name -- table in database to load data into
     csv_file -- CSV file
     '''
-    subprocess.run([
-        'sqlite3',
-        '--echo',
-        '--csv',
-        db_name,
-        f'.output {csv_file}',
-        f'SELECT DISTINCT * FROM {tbl_name};'
-    ])
+    fh.write(
+        f'''
+.output {csv_file}
+SELECT DISTINCT * FROM {tbl_name};
+.output stdout
+    ''')
