@@ -45,15 +45,15 @@ CREATE TABLE prdn_metadata (
 .import ./triangulation/in_data/prdn_metadata.csv prdn_metadata
     
 CREATE INDEX
-    ein_idx_prdn_ein_firmid_idx
+    ein_prdn_ein_firmid_idx
 ON
     ein_data(prdn, ein, firmid);
 CREATE INDEX
-    pik_idx_prdn_ein_firmid_idx
+    pik_prdn_ein_firmid_idx
 ON
     pik_data(prdn, ein, firmid);
 CREATE INDEX
-    ein_idx_prdn_as_idx
+    ein_prdn_as_idx
 ON
     ein_data(prdn, assg_seq);
 CREATE INDEX
@@ -770,5 +770,4 @@ DROP TABLE prdn_as_Amodel;
 DROP TABLE closed_paths;
 VACUUM;
     
-DROP INDEX ein_idx_prdn_as;
         

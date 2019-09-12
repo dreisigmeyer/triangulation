@@ -102,7 +102,6 @@ def a_model_postprocess(fh):
     '''
     fh.write(
         f'''
-DROP INDEX ein_idx_prdn_as;
         ''')
 
 
@@ -234,15 +233,15 @@ CREATE TABLE {table_names.prdn_metadata} (
     fh.write(
         f'''
 CREATE INDEX
-    ein_idx_prdn_ein_firmid_idx
+    ein_prdn_ein_firmid_idx
 ON
     {table_names.ein_data}({columns.prdn.name}, {columns.ein.name}, {columns.firmid.name});
 CREATE INDEX
-    pik_idx_prdn_ein_firmid_idx
+    pik_prdn_ein_firmid_idx
 ON
     {table_names.pik_data}({columns.prdn.name}, {columns.ein.name}, {columns.firmid.name});
 CREATE INDEX
-    ein_idx_prdn_as_idx
+    ein_prdn_as_idx
 ON
     {table_names.ein_data}({columns.prdn.name}, {columns.assg_seq.name});
 CREATE INDEX
