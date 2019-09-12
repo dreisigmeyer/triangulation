@@ -6,7 +6,7 @@ import triangulation.src.shared_code.shared_code as shared_code
 
 db_name = 'prdn.db'
 
-shared_code.unique_sort_with_replacement(file_names.prdn_metadata)
-shared_code.read_unique_csv_columns(file_names.iops, [0, 3], file_names.iops_unique)
-conn, cur = a_models.make_a_models(db_name)
-b_models.make_a_models(db_name, cur)
+# shared_code.unique_sort_with_replacement(file_names.prdn_metadata)
+# shared_code.read_unique_csv_columns(file_names.iops, [0, 3], file_names.iops_unique)
+a_models.generate_a_model_sql_script(file_names.a_models_sql_script)
+# b_models.generate_b_model_sql_script(file_names.b_models_sql_script)

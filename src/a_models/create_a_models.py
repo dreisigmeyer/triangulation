@@ -2,7 +2,6 @@ import triangulation.src.shared_code.file_names as file_names
 import triangulation.src.shared_code.column_names as columns
 import triangulation.src.shared_code.shared_code as shared_code
 import triangulation.src.shared_code.table_names as table_names
-import sqlite3
 
 
 def alter_closed_loop_table(cur, tbl_name):
@@ -87,6 +86,14 @@ def alter_closed_loop_table(cur, tbl_name):
     cur.executescript(cp_new_columns)
 
 
+def a_model_header(filename):
+    """
+
+    """
+    filename.write('.mode csv')
+    filename.write('pragma temp_store = MEMORY;')
+
+
 def create_aux_table(cur, database_name):
     """
 
@@ -123,7 +130,7 @@ def create_aux_table(cur, database_name):
             )
         );
     '''
-    cur.execute(cp_create)
+    cur.executescript(cp_create)
 
 
 def create_closed_loop_table(cur, tbl_name, join_cols):
@@ -166,13 +173,14 @@ def create_closed_loop_table(cur, tbl_name, join_cols):
     cur.execute(cp_indx)
 
 
-def in_data_tables(cur, database_name):
+def in_data_tables(filename):
     """
 
     """
 
     # Create all of the tables
-    cur.execute(f'''
+    filename.write(
+        f'''
         CREATE TABLE {table_names.pik_data} (
             {columns.prdn.cmd},
             {columns.grant_yr.cmd},
@@ -209,13 +217,13 @@ def in_data_tables(cur, database_name):
     ''')
 
     # Load the data in
-    shared_code.import_data(database_name, table_names.pik_data, file_names.pik_data_csvfile)
-    shared_code.import_data(database_name, table_names.ein_data, file_names.ein_data_csvfile)
-    shared_code.import_data(database_name, table_names.assignee_info, file_names.assignee_info_csvfile)
-    shared_code.import_data(database_name, table_names.prdn_metadata, file_names.prdn_metadata_csvfile)
+    shared_code.import_data(filename, table_names.pik_data, file_names.pik_data_csvfile)
+    shared_code.import_data(filename, table_names.ein_data, file_names.ein_data_csvfile)
+    shared_code.import_data(filename, table_names.assignee_info, file_names.assignee_info_csvfile)
+    shared_code.import_data(filename, table_names.prdn_metadata, file_names.prdn_metadata_csvfile)
 
     # Make the indexes
-    cur.execute(f'''
+    filename.write(f'''
         CREATE INDEX
             ein_idx_prdn_ein_firmid_idx
         ON
@@ -239,41 +247,38 @@ def in_data_tables(cur, database_name):
     ''')
 
 
-def make_a_models(database_name):
+def generate_a_model_sql_script(sql_script_fn):
     """
 
     """
-    conn = sqlite3.connect(database_name)
-    cur = conn.cursor()
-    cur.execute('pragma temp_store = MEMORY;')  # /tmp was filling up - the PRAGMA seems to take care of that
-    in_data_tables(cur, database_name)
+    with open(sql_script_fn, 'w') as f:
+        a_model_header(f)
+        in_data_tables()
 
-    # A1 models
-    tbl_name = 'closed_paths'
-    join_cols = [columns.prdn, columns.ein, columns.firmid]
-    create_closed_loop_table(cur, tbl_name, join_cols)
-    alter_closed_loop_table(cur, tbl_name)
-    output_a_models(cur, database_name, tbl_name, file_names.a1_models, 'A1')
-    postprocess_database(cur, tbl_name)
+        # # A1 models
+        # tbl_name = 'closed_paths'
+        # join_cols = [columns.prdn, columns.ein, columns.firmid]
+        # create_closed_loop_table(cur, tbl_name, join_cols)
+        # alter_closed_loop_table(cur, tbl_name)
+        # output_a_models(cur, database_name, tbl_name, file_names.a1_models, 'A1')
+        # postprocess_database(cur, tbl_name)
 
-    # A2 models
-    join_cols = [columns.prdn, columns.ein, columns.firmid]
-    create_closed_loop_table(cur, tbl_name, join_cols)
-    alter_closed_loop_table(cur, tbl_name)
-    output_a_models(cur, database_name, tbl_name, file_names.a2_models, 'A2')
-    postprocess_database(cur, tbl_name)
+        # # A2 models
+        # join_cols = [columns.prdn, columns.ein, columns.firmid]
+        # create_closed_loop_table(cur, tbl_name, join_cols)
+        # alter_closed_loop_table(cur, tbl_name)
+        # output_a_models(cur, database_name, tbl_name, file_names.a2_models, 'A2')
+        # postprocess_database(cur, tbl_name)
 
-    # A3 models
-    join_cols = [columns.prdn, columns.ein, columns.firmid]
-    create_closed_loop_table(cur, tbl_name, join_cols)
-    alter_closed_loop_table(cur, tbl_name)
-    output_a_models(cur, database_name, tbl_name, file_names.a3_models, 'A3')
-    postprocess_database(cur, tbl_name)
+        # # A3 models
+        # join_cols = [columns.prdn, columns.ein, columns.firmid]
+        # create_closed_loop_table(cur, tbl_name, join_cols)
+        # alter_closed_loop_table(cur, tbl_name)
+        # output_a_models(cur, database_name, tbl_name, file_names.a3_models, 'A3')
+        # postprocess_database(cur, tbl_name)
 
-    # Final post-processing
-    cur.execute('DROP INDEX ein_idx_prdn_as;')
-
-    return conn, cur
+        # # Final post-processing
+        # cur.execute('DROP INDEX ein_idx_prdn_as;')
 
 
 def output_a_models(cur, database_name, tbl_name, csv_file, model):
