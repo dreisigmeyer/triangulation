@@ -1,7 +1,6 @@
 import itertools
 import pandas as pd
 import shutil
-import subprocess
 import uuid
 
 
