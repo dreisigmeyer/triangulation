@@ -273,6 +273,8 @@ def make_a_models(database_name):
     # Final post-processing
     cur.execute('DROP INDEX ein_idx_prdn_as;')
 
+    return conn, cur
+
 
 def output_a_models(cur, database_name, tbl_name, csv_file, model):
     """
