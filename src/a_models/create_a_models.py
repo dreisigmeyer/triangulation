@@ -105,7 +105,7 @@ def a_model_postprocess(fh):
         ''')
 
 
-def create_aux_table(fh, database_name):
+def create_aux_table(fh):
     """
 
     """
@@ -262,6 +262,7 @@ def generate_a_model_sql_script(sql_script_fn):
     with open(sql_script_fn, 'w') as f:
         a_model_header(f)
         in_data_tables(f)
+        create_aux_table(f)
 
         # A1 models
         tbl_name = 'closed_paths'
@@ -269,6 +270,7 @@ def generate_a_model_sql_script(sql_script_fn):
         create_closed_loop_table(f, tbl_name, join_cols)
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a1_models, 'A1')
+        update_b_model_info(f)
         postprocess_database(f, tbl_name)
 
         # A2 models
@@ -276,6 +278,7 @@ def generate_a_model_sql_script(sql_script_fn):
         create_closed_loop_table(f, tbl_name, join_cols)
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a2_models, 'A2')
+        update_b_model_info(f)
         postprocess_database(f, tbl_name)
 
         # A3 models
@@ -283,6 +286,7 @@ def generate_a_model_sql_script(sql_script_fn):
         create_closed_loop_table(f, tbl_name, join_cols)
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a3_models, 'A3')
+        update_b_model_info(f)
         postprocess_database(f, tbl_name)
 
         # Final post-processing
@@ -327,7 +331,7 @@ GROUP BY
     {columns.emp_yr.name},
     {columns.assg_firmid.name};
 
-CREATE TABLE closed_loops AS
+CREATE TABLE {table_names.closed_loops} AS
 SELECT
     {columns.assg_prdn.name},
     {columns.assg_seq.name},
@@ -384,32 +388,28 @@ WHERE rnk = 1;
 DROP TABLE inv_counts;
 
 -- a state => US assignee
-UPDATE closed_loops
+UPDATE {table_names.closed_loops}
 SET {columns.us_assg_flag.name} = 1
 WHERE {columns.assg_st.name} != "";
 -- no state + country => foreign assignee
-UPDATE closed_loops
+UPDATE {table_names.closed_loops}
 SET {columns.foreign_assg_flag.name} = 1
 WHERE
     {columns.us_assg_flag.name} != 1 AND
     {columns.assg_ctry.name} != "";
 
-UPDATE closed_loops AS outer_tbl
+UPDATE {table_names.closed_loops} AS outer_tbl
 SET {columns.uniq_firmid.name} = 1
 WHERE
     (
         SELECT COUNT(*)
-        FROM closed_loops AS inner_tbl
+        FROM {table_names.closed_loops} AS inner_tbl
         WHERE
             outer_tbl.{columns.assg_prdn.name} = inner_tbl.{columns.assg_prdn.name} AND
             outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
     ) > 1;
     ''')
-    shared_code.output_data(fh, 'closed_loops', csv_file)
-    fh.write(
-        f'''
-DROP TABLE closed_loops;
-    ''')
+    shared_code.output_data(fh, '{table_names.closed_loops}', csv_file)
 
 
 def postprocess_database(fh, tbl_name):
@@ -418,6 +418,7 @@ def postprocess_database(fh, tbl_name):
     """
     fh.write(
         f'''
+DROP TABLE {table_names.closed_loops};
 CREATE TABLE prdn_as_Amodel AS
 SELECT DISTINCT {columns.pik_prdn.name}, {columns.assg_seq.name}
 FROM {tbl_name};
@@ -438,4 +439,19 @@ WHERE EXISTS (
 DROP TABLE prdn_as_Amodel;
 DROP TABLE {tbl_name};
 VACUUM;
+    ''')
+
+
+def update_b_model_info(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+INSERT OR IGNORE INTO {table_names.b_model_info}
+SELECT DISTINCT
+    {columns.firmid.name},
+    {columns.cw_yr.name}
+FROM
+    '{table_names.closed_loops}';
     ''')

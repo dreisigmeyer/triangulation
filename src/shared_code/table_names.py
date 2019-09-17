@@ -2,6 +2,7 @@
 assignee_info = 'assignee_info'
 b_model_info = 'a_models_info_for_b_models'
 c_model_info = 'a_models_info_for_c_models'
+closed_loops = 'closed_loops'
 e_model_info = 'a_models_info_for_e_models'
 ein_data = 'ein_data'
 name_match = 'name_match'

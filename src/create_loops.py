@@ -4,7 +4,7 @@ import triangulation.src.shared_code.shared_code as shared_code
 import triangulation.src.shared_code.table_names as table_names
 
 
-def find_closed_loops(sql_script_fn):
+def generate_closed_loops_sql_script(sql_script_fn):
     '''Finds the closed paths for potential A models.
     '''
 

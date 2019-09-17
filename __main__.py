@@ -9,6 +9,6 @@ db_name = 'prdn.db'
 
 # shared_code.unique_sort_with_replacement(file_names.prdn_metadata)
 # shared_code.read_unique_csv_columns(file_names.iops, [0, 3], file_names.iops_unique)
-create_loops.find_closed_loops(file_names.create_loops_sql_script)
+create_loops.generate_closed_loops_sql_script(file_names.create_loops_sql_script)
 a_models.generate_a_model_sql_script(file_names.a_models_sql_script)
 # b_models.generate_b_model_sql_script(file_names.b_models_sql_script)
