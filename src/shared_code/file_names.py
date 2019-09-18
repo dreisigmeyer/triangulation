@@ -13,6 +13,7 @@ a1_models = './triangulation/out_data/a1_models.csv'
 a2_models = './triangulation/out_data/a2_models.csv'
 a3_models = './triangulation/out_data/a3_models.csv'
 b1_models = './triangulation/out_data/b1_models.csv'
+b2_models = './triangulation/out_data/b2_models.csv'
 
 # SQL script file names
 create_loops_sql_script = './triangulation/src/tmp/create_loops.sql'

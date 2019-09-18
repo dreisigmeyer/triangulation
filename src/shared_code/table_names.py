@@ -2,6 +2,7 @@
 assignee_info = 'assignee_info'
 b_models = 'b_models'
 b1_models = 'b1_models'
+b2_models = 'b2_models'
 b_model_info = 'a_models_info_for_b_models'
 c_model_info = 'a_models_info_for_c_models'
 closed_loops = 'closed_loops'

@@ -15,6 +15,34 @@ pragma temp_store = MEMORY;
     ''')
 
 
+def clean_b_models_table(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+WITH subquery AS (
+    SELECT
+        {table_names.b_models}.{columns.prdn.name},
+        {table_names.b_models}.{columns.assg_seq.name}
+    FROM
+        {table_names.b_models},
+        {table_names.b_model_info}
+    WHERE
+        {table_names.b_models}.{columns.firmid.name} = {table_names.b_model_info}.{columns.firmid.name} AND
+        {table_names.b_models}.{columns.cw_yr.name} = {table_names.b_model_info}.{columns.cw_yr.name}
+)
+DELETE FROM {table_names.b_models}
+WHERE EXISTS (
+    SELECT *
+    FROM subquery
+    WHERE
+        {table_names.b_models}.{columns.prdn.name} = subquery.{columns.prdn.name} AND
+        {table_names.b_models}.{columns.assg_seq.name} = subquery.{columns.assg_seq.name}
+)
+    ''')
+
+
 def create_b_models_table(fh):
     """
     """
@@ -142,3 +170,5 @@ def generate_b_model_sql_script(sql_script_fn):
         create_b_models_table(f)
         create_b1_models_table(f)
         shared_code.output_data(f, f'{table_names.b1_models}', f'{file_names.b1_models}')
+        clean_b_models_table(f)
+        shared_code.output_data(f, f'{table_names.b2_models}', f'{file_names.b2_models}')
