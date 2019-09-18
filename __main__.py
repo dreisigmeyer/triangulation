@@ -2,7 +2,7 @@ import triangulation.src.create_loops as create_loops
 import triangulation.src.a_models.create_a_models as a_models
 import triangulation.src.b_models.create_b_models as b_models
 import triangulation.src.shared_code.file_names as file_names
-import triangulation.src.shared_code.shared_code as shared_code
+# import triangulation.src.shared_code.shared_code as shared_code
 
 
 db_name = 'prdn.db'

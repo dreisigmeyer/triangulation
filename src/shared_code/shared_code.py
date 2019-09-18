@@ -78,9 +78,11 @@ def output_data(fh, tbl_name, csv_file):
     '''
     fh.write(
         f'''
+.headers ON
 .output {csv_file}
 SELECT * FROM {tbl_name};
 .output stdout
+.headers OFF
     ''')
 
 
@@ -93,7 +95,9 @@ def output_distinct_data(fh, tbl_name, csv_file):
     '''
     fh.write(
         f'''
+.headers ON
 .output {csv_file}
 SELECT DISTINCT * FROM {tbl_name};
 .output stdout
+.headers OFF
     ''')

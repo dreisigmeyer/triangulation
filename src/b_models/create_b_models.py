@@ -82,10 +82,16 @@ WHERE {columns.prdn.name} IN (
     ''')
 
 
-def create_b1_models_table(fh):
+def create_bK_models_table(fh, model):
     """
+    model is 'B1' or 'B2'
     Uses a window function and requires SQLite >=v3.25.0
     """
+    if model == 'B1':
+        tbl_name = table_names.b1_models
+    else:
+        tbl_name = table_names.b2_models
+
     fh.write(
         f'''
 -- CTE tables
@@ -107,11 +113,17 @@ WITH subquery1 AS
                 ({table_names.b_models}.{columns.cw_yr.name} - {table_names.b_models}.{columns.grant_yr.name})
         ) AS rnk
     FROM
-        {table_names.b_models},
+        {table_names.b_models}''')
+    if model == 'B1':
+        fh.write(
+            f''',
         {table_names.b_model_info}
     WHERE
         {table_names.b_models}.{columns.firmid.name} = {table_names.b_model_info}.{columns.firmid.name} AND
         {table_names.b_models}.{columns.cw_yr.name} = {table_names.b_model_info}.{columns.cw_yr.name}
+    ''')
+    fh.write(
+        f'''
 ),
 firmid_count AS
 -- only want prdn+assg_seq with a unique firmid
@@ -131,24 +143,26 @@ firmid_count AS
         {columns.prdn.name},
         {columns.assg_seq.name}
 )
--- The actual B1 models
-CREATE TABLE {table_names.b1_models} AS
+-- The actual models
+CREATE TABLE {tbl_name} AS
 SELECT
     firmid_count.{columns.prdn.name},
-    "" AS count,
     firmid_count.{columns.assg_seq.name},
-    firmid_count.{columns.cw_yr.name},
-    "" AS emp_yr,
     firmid_count.{columns.firmid.name},
-    firmid_count.{columns.grant_yr.name},
     {table_names.prdn_metadata}.{columns.app_yr.name},
-    {table_names.assignee_info}.{columns.assg_ctry.name},
-    {table_names.assignee_info}.{columns.assg_st.name},
+    firmid_count.{columns.grant_yr.name},
     {table_names.assignee_info}.{columns.assg_type.name},
+    {table_names.assignee_info}.{columns.assg_st.name},
+    {table_names.assignee_info}.{columns.assg_ctry.name},
+    0 AS {columns.us_assg_flag.name},
+    0 AS {columns.foreign_assg_flag.name},
     {table_names.prdn_metadata}.{columns.us_inv_flag.name},
     {table_names.prdn_metadata}.{columns.num_assg.name},
-    "B1" AS model,
-    "" AS uniq_firmid,
+    firmid_count.{columns.cw_yr.name},
+    "" AS {columns.emp_yr.name},
+    "{model}" AS {columns.model.name},
+    "" AS {columns.uniq_firmid.name},
+    "" AS {columns.num_inv.name}
 FROM
     {table_names.assignee_info},
     {table_names.prdn_metadata},
@@ -158,6 +172,17 @@ WHERE
     firmid_count.{columns.prdn.name} = {table_names.assignee_info}.{columns.prdn.name} AND
     firmid_count.{columns.assg_seq.name} = {table_names.assignee_info}.{columns.assg_seq.name} AND
     firmid_count.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name}
+
+-- a state => US assignee
+UPDATE {tbl_name}
+SET {columns.us_assg_flag.name} = 1
+WHERE {columns.assg_st.name} != "";
+-- no state + country => foreign assignee
+UPDATE {tbl_name}
+SET {columns.foreign_assg_flag.name} = 1
+WHERE
+    {columns.us_assg_flag.name} != 1 AND
+    {columns.assg_ctry.name} != "";
     ''')
 
 
@@ -168,7 +193,8 @@ def generate_b_model_sql_script(sql_script_fn):
     with open(sql_script_fn, 'w') as f:
         b_model_header(f)
         create_b_models_table(f)
-        create_b1_models_table(f)
+        create_bK_models_table(f, 'B1')
         shared_code.output_data(f, f'{table_names.b1_models}', f'{file_names.b1_models}')
         clean_b_models_table(f)
+        create_bK_models_table(f, 'B2')
         shared_code.output_data(f, f'{table_names.b2_models}', f'{file_names.b2_models}')
