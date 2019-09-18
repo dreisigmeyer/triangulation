@@ -409,7 +409,7 @@ WHERE
             outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
     ) > 1;
     ''')
-    shared_code.output_data(fh, '{table_names.closed_loops}', csv_file)
+    shared_code.output_data(fh, f'{table_names.closed_loops}', csv_file)
 
 
 def postprocess_database(fh, tbl_name):
