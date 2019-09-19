@@ -1,5 +1,5 @@
 # **** DO NOT SEND TITLED DATA TO GIT! ****
-*TITLED*
+*_TITLED*
 /cfg_files/TITLED/*
 !/cfg_files/TITLED/.gitignore
 !/cfg_files/TITLED/__init__.py
