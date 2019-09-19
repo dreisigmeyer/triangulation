@@ -1,8 +1,4 @@
 .mode csv
---.headers off
-
----- We need to redo this fresh so as not to have PRDNs filtered
----- out of ein_data
 CREATE TABLE pik_data (                                                                                                                                                  
     prdn TEXT NOT NULL,                                                                                                                                                          
     grant_yr INTEGER NOT NULL,                                                                                                                                                     
@@ -36,13 +32,13 @@ CREATE TABLE prdn_metadata (
     num_assg INTEGER,
     us_inventor_flag INTEGER
 );
--- /tmp was filling up - the PRAGMA seems to take care of that
 pragma temp_store = MEMORY;
--- Bring the data in
 .import prdn_eins.csv ein_data
 .import prdn_piks.csv pik_data
 .import ../inData/assignee_info.csv assignee_info
 .import ../inData/prdn_metadata.csv prdn_metadata
+
+
 
 -- make our indexes
 CREATE INDEX

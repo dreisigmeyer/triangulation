@@ -3,6 +3,10 @@ import pandas as pd
 import shutil
 import uuid
 
+import triangulation.src.shared_code.column_names as columns
+import triangulation.src.shared_code.file_names as file_names
+import triangulation.src.shared_code.table_names as table_names
+
 
 """
 Code for working with CSV files
@@ -66,6 +70,81 @@ def import_data(fh, tbl_name, csv_file):
     fh.write(
         f'''
 .import {csv_file} {tbl_name}
+    ''')
+
+
+def in_data_tables(fh):
+    """
+
+    """
+
+    # Create all of the tables
+    fh.write(
+        f'''
+CREATE TABLE {table_names.pik_data} (
+    {columns.prdn.cmd},
+    {columns.grant_yr.cmd},
+    {columns.app_yr.cmd},
+    {columns.inv_seq.cmd},
+    {columns.pik.cmd},
+    {columns.ein.cmd},
+    {columns.firmid.cmd},
+    {columns.emp_yr.cmd}
+);
+CREATE TABLE {table_names.ein_data} (
+    {columns.prdn.cmd},
+    {columns.grant_yr.cmd},
+    {columns.assg_seq.cmd},
+    {columns.ein.cmd},
+    {columns.firmid.cmd},
+    {columns.cw_yr.cmd},
+    {columns.pass_num.cmd}
+);
+CREATE TABLE {table_names.assignee_info} (
+    {columns.prdn.cmd},
+    {columns.assg_seq.cmd},
+    {columns.assg_type.cmd},
+    {columns.assg_st.cmd},
+    {columns.assg_ctry.cmd}
+);
+CREATE TABLE {table_names.prdn_metadata} (
+    {columns.prdn.cmd},
+    {columns.grant_yr.cmd},
+    {columns.app_yr.cmd},
+    {columns.num_assg.cmd},
+    {columns.us_inv_flag.cmd}
+);
+    ''')
+
+    # Load the data in
+    import_data(fh, table_names.pik_data, file_names.pik_data_csvfile)
+    import_data(fh, table_names.ein_data, file_names.ein_data_csvfile)
+    import_data(fh, table_names.assignee_info, file_names.assignee_info_csvfile)
+    import_data(fh, table_names.prdn_metadata, file_names.prdn_metadata_csvfile)
+
+    # Make the indexes
+    fh.write(
+        f'''
+CREATE INDEX
+    ein_prdn_ein_firmid_idx
+ON
+    {table_names.ein_data}({columns.prdn.name}, {columns.ein.name}, {columns.firmid.name});
+CREATE INDEX
+    pik_prdn_ein_firmid_idx
+ON
+    {table_names.pik_data}({columns.prdn.name}, {columns.ein.name}, {columns.firmid.name});
+CREATE INDEX
+    ein_prdn_as_idx
+ON
+    {table_names.ein_data}({columns.prdn.name}, {columns.assg_seq.name});
+CREATE INDEX
+    assg_info_prdn_as_idx
+ON
+    {table_names.assignee_info}({columns.prdn.name}, {columns.assg_seq.name});
+CREATE INDEX
+    prdn_metadata_main_idx
+ON
+    {table_names.prdn_metadata}({columns.prdn.name});
     ''')
 
 
