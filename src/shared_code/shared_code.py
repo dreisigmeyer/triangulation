@@ -60,6 +60,94 @@ Code for working with SQLite3 databases
 """
 
 
+def idx_a_model(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+CREATE INDEX
+    ein_prdn_ein_firmid_idx
+ON
+    {table_names.ein_data}(
+        {columns.prdn.name},
+        {columns.ein.name},
+        {columns.firmid.name});
+
+CREATE INDEX
+    pik_prdn_ein_firmid_idx
+ON
+    {table_names.pik_data}(
+        {columns.prdn.name},
+        {columns.ein.name},
+        {columns.firmid.name});
+
+CREATE INDEX
+    ein_prdn_as_idx
+ON
+    {table_names.ein_data}(
+        {columns.prdn.name},
+        {columns.assg_seq.name});
+
+CREATE INDEX
+    assg_info_prdn_as_idx
+ON
+    {table_names.assignee_info}(
+        {columns.prdn.name},
+        {columns.assg_seq.name});
+
+CREATE INDEX
+    prdn_metadata_main_idx
+ON
+    {table_names.prdn_metadata}({columns.prdn.name});
+    ''')
+
+
+def idx_c_model(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+CREATE INDEX
+    ein_data_main_idx
+ON
+    {table_names.ein_data}({columns.prdn.name});
+
+CREATE INDEX
+    pik_prdn_ein_firmid_idx
+ON
+    {table_names.pik_data}(
+        {columns.prdn.name},
+        {columns.app_yr.name},
+        {columns.inv_seq.name},
+        {columns.pik.name},
+        {columns.firmid.name},
+        {columns.emp_yr.name});
+
+CREATE INDEX
+    assg_info_prdn_idx
+ON
+    {table_names.assignee_info}({columns.prdn.name});
+
+CREATE INDEX
+    prdn_metadata_main_idx
+ON
+    {table_names.prdn_metadata}({columns.prdn.name});
+    ''')
+
+
+def model_header(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+.mode csv
+pragma temp_store = MEMORY;
+    ''')
+
+
 def import_data(fh, tbl_name, csv_file):
     """
     Helper function to import data from a CSV file into a SQLite3 database.
@@ -74,7 +162,7 @@ def import_data(fh, tbl_name, csv_file):
     ''')
 
 
-def in_data_tables(fh):
+def in_data_tables(fh, model):
     """
 
     """
@@ -123,29 +211,10 @@ CREATE TABLE {table_names.prdn_metadata} (
     import_data(fh, table_names.prdn_metadata, file_names.prdn_metadata_csvfile)
 
     # Make the indexes
-    fh.write(
-        f'''
-CREATE INDEX
-    ein_prdn_ein_firmid_idx
-ON
-    {table_names.ein_data}({columns.prdn.name}, {columns.ein.name}, {columns.firmid.name});
-CREATE INDEX
-    pik_prdn_ein_firmid_idx
-ON
-    {table_names.pik_data}({columns.prdn.name}, {columns.ein.name}, {columns.firmid.name});
-CREATE INDEX
-    ein_prdn_as_idx
-ON
-    {table_names.ein_data}({columns.prdn.name}, {columns.assg_seq.name});
-CREATE INDEX
-    assg_info_prdn_as_idx
-ON
-    {table_names.assignee_info}({columns.prdn.name}, {columns.assg_seq.name});
-CREATE INDEX
-    prdn_metadata_main_idx
-ON
-    {table_names.prdn_metadata}({columns.prdn.name});
-    ''')
+    if model == 'A':
+        idx_a_model(fh)
+    if model == 'C':
+        idx_c_model(fh)
 
 
 def output_data(fh, tbl_name, csv_file):

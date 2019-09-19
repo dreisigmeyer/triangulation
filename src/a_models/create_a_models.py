@@ -86,17 +86,6 @@ SET
     ''')
 
 
-def a_model_header(fh):
-    """
-
-    """
-    fh.write(
-        f'''
-.mode csv
-pragma temp_store = MEMORY;
-    ''')
-
-
 def a_model_postprocess(fh):
     '''
     '''
@@ -185,8 +174,8 @@ def generate_a_model_sql_script(sql_script_fn):
 
     """
     with open(sql_script_fn, 'w') as f:
-        a_model_header(f)
-        shared_code.in_data_tables(f)
+        shared_code.model_header(f)
+        shared_code.in_data_tables(f, 'A')
         create_aux_table(f)
 
         # A1 models

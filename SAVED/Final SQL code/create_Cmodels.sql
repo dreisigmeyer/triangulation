@@ -37,9 +37,6 @@ pragma temp_store = MEMORY;
 .import prdn_piks.csv pik_data
 .import ../inData/assignee_info.csv assignee_info
 .import ../inData/prdn_metadata.csv prdn_metadata
-
-
-
 -- make our indexes
 CREATE INDEX
     ein_data_main_idx
@@ -60,6 +57,8 @@ CREATE INDEX
     prdn_metadata_main_idx
 ON
     prdn_metadata(prdn);
+
+
     
 ---- information about A models
 CREATE TABLE a_models_info_for_c_models (

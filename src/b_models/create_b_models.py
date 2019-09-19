@@ -4,17 +4,6 @@ import triangulation.src.shared_code.shared_code as shared_code
 import triangulation.src.shared_code.table_names as table_names
 
 
-def b_model_header(fh):
-    """
-
-    """
-    fh.write(
-        f'''
-.mode csv
-pragma temp_store = MEMORY;
-    ''')
-
-
 def clean_b_models_table(fh):
     """
 
@@ -191,7 +180,7 @@ def generate_b_model_sql_script(sql_script_fn):
 
     """
     with open(sql_script_fn, 'w') as f:
-        b_model_header(f)
+        shared_code.model_header(f)
         create_b_models_table(f)
         create_bK_models_table(f, 'B1')
         shared_code.output_data(f, f'{table_names.b1_models}', f'{file_names.b1_models}')
