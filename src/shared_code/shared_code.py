@@ -61,12 +61,13 @@ Code for working with SQLite3 databases
 
 
 def import_data(fh, tbl_name, csv_file):
-    '''Helper function to import data from a CSV file into a SQLite3 database.
+    """
+    Helper function to import data from a CSV file into a SQLite3 database.
 
     fh -- file handle
     tbl_name -- table in database to load data into
     csv_file -- CSV file
-    '''
+    """
     fh.write(
         f'''
 .import {csv_file} {tbl_name}
@@ -77,7 +78,6 @@ def in_data_tables(fh):
     """
 
     """
-
     # Create all of the tables
     fh.write(
         f'''
@@ -149,12 +149,13 @@ ON
 
 
 def output_data(fh, tbl_name, csv_file):
-    '''Helper function to outport data to a CSV file from a SQLite3 database.
+    """
+    Helper function to outport data to a CSV file from a SQLite3 database.
 
     fh -- file handle
     tbl_name -- table in database to load data into
     csv_file -- CSV file
-    '''
+    """
     fh.write(
         f'''
 .headers ON
@@ -166,12 +167,13 @@ SELECT * FROM {tbl_name};
 
 
 def output_distinct_data(fh, tbl_name, csv_file):
-    '''Helper function to outport data to a CSV file from a SQLite3 database.
+    """
+    Helper function to outport data to a CSV file from a SQLite3 database.
 
     fh -- file handle
     tbl_name -- table in database to load data into
     csv_file -- CSV file
-    '''
+    """
     fh.write(
         f'''
 .headers ON
