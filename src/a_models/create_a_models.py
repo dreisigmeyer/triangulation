@@ -283,7 +283,7 @@ FROM (
         {columns.assg_st.name},
         {columns.assg_type.name},
         {columns.us_inv_flag.name},
-        {columns.mult_assg_flag.name}
+        {columns.mult_assg_flag.name},
         -- for each prdn+assg_seq pair sort by |cw_yr - grant_yr|,
         -- cw_yr, |emp_yr - app_yr|, emp_yr and num_inv and take the
         -- first row(s)
