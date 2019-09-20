@@ -137,17 +137,6 @@ ON
     ''')
 
 
-def model_header(fh):
-    """
-
-    """
-    fh.write(
-        f'''
-.mode csv
-pragma temp_store = MEMORY;
-    ''')
-
-
 def import_data(fh, tbl_name, csv_file):
     """
     Helper function to import data from a CSV file into a SQLite3 database.
@@ -166,10 +155,13 @@ def in_data_tables(fh, model):
     """
 
     """
+    if model == 'C':
+        preprocess_for_c_model(fh)
+
     # Create all of the tables
     fh.write(
         f'''
-CREATE TABLE {table_names.pik_data} (
+CREATE TABLE IF NOT EXISTS {table_names.pik_data} (
     {columns.prdn.cmd},
     {columns.grant_yr.cmd},
     {columns.app_yr.cmd},
@@ -179,7 +171,7 @@ CREATE TABLE {table_names.pik_data} (
     {columns.firmid.cmd},
     {columns.emp_yr.cmd}
 );
-CREATE TABLE {table_names.ein_data} (
+CREATE TABLE IF NOT EXISTS {table_names.ein_data} (
     {columns.prdn.cmd},
     {columns.grant_yr.cmd},
     {columns.assg_seq.cmd},
@@ -188,14 +180,14 @@ CREATE TABLE {table_names.ein_data} (
     {columns.cw_yr.cmd},
     {columns.pass_num.cmd}
 );
-CREATE TABLE {table_names.assignee_info} (
+CREATE TABLE IF NOT EXISTS {table_names.assignee_info} (
     {columns.prdn.cmd},
     {columns.assg_seq.cmd},
     {columns.assg_type.cmd},
     {columns.assg_st.cmd},
     {columns.assg_ctry.cmd}
 );
-CREATE TABLE {table_names.prdn_metadata} (
+CREATE TABLE IF NOT EXISTS {table_names.prdn_metadata} (
     {columns.prdn.cmd},
     {columns.grant_yr.cmd},
     {columns.app_yr.cmd},
@@ -215,6 +207,17 @@ CREATE TABLE {table_names.prdn_metadata} (
         idx_a_model(fh)
     if model == 'C':
         idx_c_model(fh)
+
+
+def model_header(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+.mode csv
+pragma temp_store = MEMORY;
+    ''')
 
 
 def output_data(fh, tbl_name, csv_file):
@@ -250,4 +253,14 @@ def output_distinct_data(fh, tbl_name, csv_file):
 SELECT DISTINCT * FROM {tbl_name};
 .output stdout
 .headers OFF
+    ''')
+
+
+def preprocess_for_c_model(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+DROP TABLE {table_names.ein_data};
     ''')

@@ -103,8 +103,8 @@ def create_aux_table(fh):
 -- For B models
 CREATE TABLE {table_names.b_model_info}
 (
-    {table_names.ein_data}.{columns.firmid.name},
-    {table_names.ein_data}.{columns.cw_yr.name},
+    {columns.firmid.name},
+    {columns.cw_yr.name},
     CONSTRAINT firmid_cwyr_unique UNIQUE (
         {columns.firmid.name},
         {columns.cw_yr.name}
@@ -113,9 +113,9 @@ CREATE TABLE {table_names.b_model_info}
 -- For C models: replaces Amodel_pik_year_firmid.pl
 CREATE TABLE {table_names.c_model_info}
 (
-    {table_names.pik_data}.{columns.pik.name},
-    {table_names.pik_data}.{columns.emp_yr.name},
-    {table_names.pik_data}.{columns.firmid.name},
+    {columns.pik.name},
+    {columns.emp_yr.name},
+    {columns.firmid.name},
     CONSTRAINT pik_empyr_firmid_unique UNIQUE (
         {columns.pik.name},
         {columns.emp_yr.name},
@@ -125,7 +125,7 @@ CREATE TABLE {table_names.c_model_info}
 -- For E models
 CREATE TABLE {table_names.e_model_info}
 (
-    {table_names.ein_data}.{columns.prdn.name},
+    {columns.prdn.name},
     CONSTRAINT prdn_unique UNIQUE (
         {columns.prdn.name}
     )
@@ -185,6 +185,7 @@ def generate_a_model_sql_script(sql_script_fn):
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a1_models, 'A1')
         update_b_model_info(f)
+        update_c_model_info(f)
         postprocess_database(f, tbl_name)
 
         # A2 models
@@ -193,6 +194,7 @@ def generate_a_model_sql_script(sql_script_fn):
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a2_models, 'A2')
         update_b_model_info(f)
+        update_c_model_info(f)
         postprocess_database(f, tbl_name)
 
         # A3 models
@@ -201,6 +203,7 @@ def generate_a_model_sql_script(sql_script_fn):
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a3_models, 'A3')
         update_b_model_info(f)
+        update_c_model_info(f)
         postprocess_database(f, tbl_name)
 
         # Final post-processing
@@ -261,7 +264,7 @@ SELECT
     {columns.mult_assg_flag.name},
     {columns.cw_yr.name},
     {columns.emp_yr.name},
-    {model} AS {columns.model.name},
+    "{model}" AS {columns.model.name},
     0 AS {columns.uniq_firmid.name},
     {columns.num_inv.name}
 FROM (
@@ -366,6 +369,22 @@ INSERT OR IGNORE INTO {table_names.b_model_info}
 SELECT DISTINCT
     {columns.firmid.name},
     {columns.cw_yr.name}
+FROM
+    '{table_names.closed_loops}';
+    ''')
+
+
+def update_c_model_info(fh):
+    """
+    This replaces Amodel_pik_year_firmid.pl
+    """
+    fh.write(
+        f'''
+INSERT OR IGNORE INTO {table_names.c_model_info}
+SELECT DISTINCT
+    {columns.pik.name},
+    {columns.emp_yr.name},
+    {columns.firmid.name}
 FROM
     '{table_names.closed_loops}';
     ''')
