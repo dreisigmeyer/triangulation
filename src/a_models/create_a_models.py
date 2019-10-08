@@ -370,7 +370,7 @@ SELECT DISTINCT
     {columns.firmid.name},
     {columns.cw_yr.name}
 FROM
-    '{table_names.closed_loops}';
+    {table_names.closed_loops};
     ''')
 
 
@@ -386,5 +386,5 @@ SELECT DISTINCT
     {columns.emp_yr.name},
     {columns.firmid.name}
 FROM
-    '{table_names.closed_loops}';
+    {table_names.closed_loops};
     ''')
