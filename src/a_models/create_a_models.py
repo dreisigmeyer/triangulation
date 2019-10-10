@@ -185,7 +185,7 @@ def generate_a_model_sql_script(sql_script_fn):
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a1_models, 'A1')
         update_b_model_info(f)
-        update_c_model_info(f)
+        # update_c_model_info(f)
         postprocess_database(f, tbl_name)
 
         # A2 models
@@ -194,7 +194,7 @@ def generate_a_model_sql_script(sql_script_fn):
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a2_models, 'A2')
         update_b_model_info(f)
-        update_c_model_info(f)
+        # update_c_model_info(f)
         postprocess_database(f, tbl_name)
 
         # A3 models
@@ -203,7 +203,7 @@ def generate_a_model_sql_script(sql_script_fn):
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a3_models, 'A3')
         update_b_model_info(f)
-        update_c_model_info(f)
+        # update_c_model_info(f)
         postprocess_database(f, tbl_name)
 
         # Final post-processing
@@ -247,6 +247,19 @@ GROUP BY
     ABS({columns.emp_yr.name} - {columns.app_yr.name}),
     {columns.emp_yr.name},
     {columns.assg_firmid.name};
+
+CREATE INDEX
+    inv_counts_idx
+ON
+    inv_counts(
+        {columns.assg_prdn.name},
+        {columns.assg_seq.name},
+        {columns.abs_cw_yr.name},
+        {columns.cw_yr.name},
+        {columns.abs_emp_yr.name},
+        {columns.emp_yr.name},
+        {columns.num_inv.name}
+    );
 
 CREATE TABLE {table_names.closed_loops} AS
 SELECT
@@ -302,6 +315,14 @@ FROM (
 )
 WHERE rnk = 1;
 
+CREATE INDEX
+    closed_loops_idx
+ON
+    {table_names.closed_loops}(
+        {columns.assg_prdn.name},
+        {columns.assg_seq.name}
+    );
+
 DROP TABLE inv_counts;
 
 -- a state => US assignee
@@ -355,7 +376,6 @@ WHERE EXISTS (
 
 DROP TABLE prdn_as_Amodel;
 DROP TABLE {tbl_name};
-VACUUM;
     ''')
 
 
@@ -367,7 +387,7 @@ def update_b_model_info(fh):
         f'''
 INSERT OR IGNORE INTO {table_names.b_model_info}
 SELECT DISTINCT
-    {columns.firmid.name},
+    {columns.assg_prdn.name},
     {columns.cw_yr.name}
 FROM
     {table_names.closed_loops};
