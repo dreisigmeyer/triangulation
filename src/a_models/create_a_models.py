@@ -189,7 +189,7 @@ def generate_a_model_sql_script(sql_script_fn):
         postprocess_database(f, tbl_name)
 
         # A2 models
-        join_cols = [columns.prdn, columns.ein, columns.firmid]
+        join_cols = [columns.prdn, columns.firmid]
         create_closed_loop_table(f, tbl_name, join_cols)
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a2_models, 'A2')
@@ -198,7 +198,7 @@ def generate_a_model_sql_script(sql_script_fn):
         postprocess_database(f, tbl_name)
 
         # A3 models
-        join_cols = [columns.prdn, columns.ein, columns.firmid]
+        join_cols = [columns.prdn, columns.ein]
         create_closed_loop_table(f, tbl_name, join_cols)
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a3_models, 'A3')
