@@ -13,6 +13,7 @@ class DatabaseColumn():
 
 abs_cw_yr = DatabaseColumn('abs_cw_yr', '{} INTEGER')
 abs_emp_yr = DatabaseColumn('abs_emp_yr', '{} INTEGER')
+abs_yr_diff = DatabaseColumn('abs_yr_diff', '')
 app_yr = DatabaseColumn('app_yr', '{} INTEGER NOT NULL')
 assg_ctry = DatabaseColumn('assg_ctry', '{} TEXT')
 assg_ein = DatabaseColumn('assg_ein', '')
@@ -45,4 +46,5 @@ us_assg_flag = DatabaseColumn('us_assg_flag', '{} INTEGER')
 us_inv_flag = DatabaseColumn('us_inv_flag', '{} INTEGER')
 uspto_pat_num = DatabaseColumn('uspto_pat_num', '{} TEXT NOT NULL')
 xml_pat_num = DatabaseColumn('xml_pat_num', '{} TEXT NOT NULL')
+yr_diff = DatabaseColumn('yr_diff', '')
 zip3_flag = DatabaseColumn('zip3_flag', '{} INTEGER')

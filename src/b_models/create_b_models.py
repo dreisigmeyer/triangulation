@@ -43,7 +43,9 @@ SELECT DISTINCT
     {table_names.ein_data}.{columns.assg_seq.name},
     {table_names.ein_data}.{columns.firmid.name},
     {table_names.ein_data}.{columns.cw_yr.name},
-    {table_names.ein_data}.{columns.grant_yr.name}
+    {table_names.ein_data}.{columns.grant_yr.name},
+    abs({table_names.ein_data}.{columns.cw_yr.name} - {table_names.ein_data}.{columns.grant_yr.name}) AS {columns.abs_yr_diff.name},
+    ({table_names.ein_data}.{columns.cw_yr.name} - {table_names.ein_data}.{columns.grant_yr.name}) AS {columns.yr_diff.name}
 FROM
     {table_names.ein_data},
     (
@@ -98,9 +100,9 @@ WITH subquery1 AS
                 {table_names.b_models}.{columns.prdn.name},
                 {table_names.b_models}.{columns.assg_seq.name}
             ORDER BY
-                abs({table_names.b_models}.{columns.cw_yr.name} - {table_names.b_models}.{columns.grant_yr.name}),
-                ({table_names.b_models}.{columns.cw_yr.name} - {table_names.b_models}.{columns.grant_yr.name})
-        ) AS rnk
+                {table_names.b_models}.{columns.abs_yr_diff.name},
+                {table_names.b_models}.{columns.yr_diff.name}
+) AS rnk
     FROM
         {table_names.b_models}''')
     if model == 'B1':
@@ -112,8 +114,7 @@ WITH subquery1 AS
         {table_names.b_models}.{columns.cw_yr.name} = {table_names.b_model_info}.{columns.cw_yr.name}
     ''')
     fh.write(
-        f'''
-),
+        f'''),
 firmid_count AS
 -- only want prdn+assg_seq with a unique firmid
 (
