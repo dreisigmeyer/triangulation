@@ -28,7 +28,7 @@ WHERE EXISTS (
     WHERE
         {table_names.b_models}.{columns.prdn.name} = subquery.{columns.prdn.name} AND
         {table_names.b_models}.{columns.assg_seq.name} = subquery.{columns.assg_seq.name}
-)
+);
     ''')
 
 
@@ -50,7 +50,7 @@ FROM
         SELECT
             {columns.prdn.name},
             {columns.assg_seq.name},
-            min({columns.pass_num.name})
+            min({columns.pass_num.name}) AS min_pass_num
         FROM {table_names.ein_data}
         GROUP BY {columns.prdn.name}, {columns.assg_seq.name}
     ) AS subquery1
@@ -58,7 +58,7 @@ WHERE
     {table_names.ein_data}.{columns.firmid.name} != '' AND
     {table_names.ein_data}.{columns.prdn.name} = subquery1.{columns.prdn.name} AND
     {table_names.ein_data}.{columns.assg_seq.name} = subquery1.{columns.assg_seq.name} AND
-    {table_names.ein_data}.{columns.pass_num.name} = subquery1.{columns.pass_num.name};
+    {table_names.ein_data}.{columns.pass_num.name} = subquery1.min_pass_num;
 
 
 -- Only want PRDNs without any inventor information: These are the ones that never
@@ -160,7 +160,7 @@ WHERE
     firmid_count.firmid_count = 1 AND
     firmid_count.{columns.prdn.name} = {table_names.assignee_info}.{columns.prdn.name} AND
     firmid_count.{columns.assg_seq.name} = {table_names.assignee_info}.{columns.assg_seq.name} AND
-    firmid_count.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name}
+    firmid_count.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name};
 
 -- a state => US assignee
 UPDATE {tbl_name}
