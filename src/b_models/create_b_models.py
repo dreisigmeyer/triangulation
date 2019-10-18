@@ -10,7 +10,11 @@ def clean_b_models_table(fh):
     """
     fh.write(
         f'''
-WITH subquery AS (
+WITH subquery (
+    {columns.prdn.name},
+    {columns.assg_seq.name}
+) AS
+(
     SELECT
         {table_names.b_models}.{columns.prdn.name},
         {table_names.b_models}.{columns.assg_seq.name}
@@ -86,7 +90,14 @@ def create_bK_models_table(fh, model):
     fh.write(
         f'''
 -- CTE tables
-WITH subquery1 AS
+WITH subquery1 (
+    {columns.prdn.name},
+    {columns.assg_seq.name},
+    {columns.firmid.name},
+    {columns.grant_yr.name},
+    {columns.cw_yr.name},
+    rnk
+) AS
 -- uses a window function to order by closest to grant year in window ( 0 , -1, 1, -2, 2)
 (
     SELECT
@@ -102,7 +113,7 @@ WITH subquery1 AS
             ORDER BY
                 {table_names.b_models}.{columns.abs_yr_diff.name},
                 {table_names.b_models}.{columns.yr_diff.name}
-) AS rnk
+        )
     FROM
         {table_names.b_models}''')
     if model == 'B1':
@@ -112,10 +123,16 @@ WITH subquery1 AS
     WHERE
         {table_names.b_models}.{columns.firmid.name} = {table_names.b_model_info}.{columns.firmid.name} AND
         {table_names.b_models}.{columns.cw_yr.name} = {table_names.b_model_info}.{columns.cw_yr.name}
-    ''')
-    fh.write(
-        f'''),
-firmid_count AS
+''')
+    fh.write(f'''),
+firmid_count (
+    {columns.prdn.name},
+    {columns.assg_seq.name},
+    {columns.firmid.name},
+    {columns.grant_yr.name},
+    {columns.cw_yr.name},
+    firmid_count
+) AS
 -- only want prdn+assg_seq with a unique firmid
 (
     SELECT
@@ -124,7 +141,7 @@ firmid_count AS
         {columns.firmid.name},
         {columns.grant_yr.name},
         {columns.cw_yr.name},
-        COUNT(DISTINCT {columns.firmid.name}) AS firmid_count
+        COUNT(DISTINCT {columns.firmid.name})
     FROM
         subquery1
     WHERE

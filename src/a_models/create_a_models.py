@@ -387,7 +387,7 @@ def update_b_model_info(fh):
         f'''
 INSERT OR IGNORE INTO {table_names.b_model_info}
 SELECT DISTINCT
-    {columns.assg_prdn.name},
+    {columns.firmid.name},
     {columns.cw_yr.name}
 FROM
     {table_names.closed_loops};
