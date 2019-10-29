@@ -13,4 +13,4 @@ db_name = 'prdn.db'
 # create_loops.generate_closed_loops_sql_script(file_names.create_loops_sql_script)
 a_models.generate_a_model_sql_script(file_names.a_models_sql_script)
 b_models.generate_b_model_sql_script(file_names.b_models_sql_script)
-# c_models.generate_c_model_sql_script(file_names.c_models_sql_script)
+c_models.generate_c_model_sql_script(file_names.c_models_sql_script)

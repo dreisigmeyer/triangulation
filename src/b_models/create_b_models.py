@@ -90,66 +90,59 @@ def create_bK_models_table(fh, model):
     fh.write(
         f'''
 -- CTE tables
-WITH subquery1 (
-    {columns.prdn.name},
-    {columns.assg_seq.name},
-    {columns.firmid.name},
-    {columns.grant_yr.name},
-    {columns.cw_yr.name},
-    rnk
-) AS
+DROP TABLE IF EXISTS subquery1;
+CREATE TABLE subquery1
+AS
 -- uses a window function to order by closest to grant year in window ( 0 , -1, 1, -2, 2)
-(
-    SELECT
-        {table_names.b_models}.{columns.prdn.name},
-        {table_names.b_models}.{columns.assg_seq.name},
-        {table_names.b_models}.{columns.firmid.name},
-        {table_names.b_models}.{columns.grant_yr.name},
-        {table_names.b_models}.{columns.cw_yr.name},
-        RANK() OVER (
-            PARTITION BY
-                {table_names.b_models}.{columns.prdn.name},
-                {table_names.b_models}.{columns.assg_seq.name}
-            ORDER BY
-                {table_names.b_models}.{columns.abs_yr_diff.name},
-                {table_names.b_models}.{columns.yr_diff.name}
-        )
-    FROM
-        {table_names.b_models}''')
+SELECT
+    {table_names.b_models}.{columns.prdn.name},
+    {table_names.b_models}.{columns.assg_seq.name},
+    {table_names.b_models}.{columns.firmid.name},
+    {table_names.b_models}.{columns.grant_yr.name},
+    {table_names.b_models}.{columns.cw_yr.name},
+    RANK() OVER (
+        PARTITION BY
+            {table_names.b_models}.{columns.prdn.name},
+            {table_names.b_models}.{columns.assg_seq.name}
+        ORDER BY
+            {table_names.b_models}.{columns.abs_yr_diff.name},
+            {table_names.b_models}.{columns.yr_diff.name}
+    ) AS rnk
+FROM
+    {table_names.b_models}''')
     if model == 'B1':
         fh.write(
             f''',
-        {table_names.b_model_info}
-    WHERE
-        {table_names.b_models}.{columns.firmid.name} = {table_names.b_model_info}.{columns.firmid.name} AND
-        {table_names.b_models}.{columns.cw_yr.name} = {table_names.b_model_info}.{columns.cw_yr.name}
+    {table_names.b_model_info}
+WHERE
+    {table_names.b_models}.{columns.firmid.name} = {table_names.b_model_info}.{columns.firmid.name} AND
+    {table_names.b_models}.{columns.cw_yr.name} = {table_names.b_model_info}.{columns.cw_yr.name};
+CREATE INDEX subquery1_r_p_as
+ON subquery1 (rnk, {columns.prdn.name}, {columns.assg_seq.name});
 ''')
-    fh.write(f'''),
-firmid_count (
+    fh.write(
+        f'''
+DROP TABLE IF EXISTS firmid_count;
+CREATE TABLE firmid_count
+AS
+-- only want prdn+assg_seq with a unique firmid
+SELECT
     {columns.prdn.name},
     {columns.assg_seq.name},
     {columns.firmid.name},
     {columns.grant_yr.name},
     {columns.cw_yr.name},
-    firmid_count
-) AS
--- only want prdn+assg_seq with a unique firmid
-(
-    SELECT
-        {columns.prdn.name},
-        {columns.assg_seq.name},
-        {columns.firmid.name},
-        {columns.grant_yr.name},
-        {columns.cw_yr.name},
-        COUNT(DISTINCT {columns.firmid.name})
-    FROM
-        subquery1
-    WHERE
-        rnk = 1
-    GROUP BY
-        {columns.prdn.name},
-        {columns.assg_seq.name}
-)
+    COUNT(DISTINCT {columns.firmid.name}) AS firmid_count
+FROM
+    subquery1
+WHERE
+    rnk = 1
+GROUP BY
+    {columns.prdn.name},
+    {columns.assg_seq.name};
+CREATE INDEX firmid_count_fc_p_as
+ON firmid_count (firmid_count, {columns.prdn.name}, {columns.assg_seq.name});
+
 -- The actual models
 CREATE TABLE {tbl_name} AS
 SELECT
@@ -201,7 +194,7 @@ def generate_b_model_sql_script(sql_script_fn):
         shared_code.model_header(f)
         create_b_models_table(f)
         create_bK_models_table(f, 'B1')
-        shared_code.output_data(f, f'{table_names.b1_models}', f'{file_names.b1_models}')
+        shared_code.output_distinct_data(f, f'{table_names.b1_models}', f'{file_names.b1_models}')
         clean_b_models_table(f)
         create_bK_models_table(f, 'B2')
-        shared_code.output_data(f, f'{table_names.b2_models}', f'{file_names.b2_models}')
+        shared_code.output_distinct_data(f, f'{table_names.b2_models}', f'{file_names.b2_models}')
