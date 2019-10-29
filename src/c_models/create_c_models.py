@@ -12,8 +12,8 @@ def create_c_models_table(fh):
 CREATE TABLE {table_names.c_models} AS
 SELECT DISTINCT
     {table_names.pik_data}.{columns.prdn.name},
-    {table_names.pik_data}.{columns.grant_yr.name}
-    {table_names.pik_data}.{columns.app_yr.name}
+    {table_names.pik_data}.{columns.grant_yr.name},
+    {table_names.pik_data}.{columns.app_yr.name},
     {table_names.pik_data}.{columns.inv_seq.name},
     {table_names.pik_data}.{columns.pik.name},
     {table_names.pik_data}.{columns.firmid.name},
