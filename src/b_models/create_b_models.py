@@ -65,7 +65,18 @@ WHERE
     {table_names.ein_data}.{columns.prdn.name} = subquery1.{columns.prdn.name} AND
     {table_names.ein_data}.{columns.assg_seq.name} = subquery1.{columns.assg_seq.name} AND
     {table_names.ein_data}.{columns.pass_num.name} = subquery1.min_pass_num;
-
+CREATE INDEX b_model_p_as_ayd_yd
+ON {table_names.b_models} (
+    {columns.prdn.name},
+    {columns.assg_seq.name},
+    {columns.abs_yr_diff.name},
+    {columns.yr_diff.name}
+);
+CREATE INDEX b_model_f_cy
+ON {table_names.b_models} (
+    {columns.firmid.name},
+    {columns.cw_yr.name}
+);
 
 -- Only want PRDNs without any inventor information: These are the ones that never
 -- had a chance to be A models when they grew up.
