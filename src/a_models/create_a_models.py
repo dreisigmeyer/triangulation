@@ -404,7 +404,7 @@ INSERT OR IGNORE INTO {table_names.c_model_info}
 SELECT DISTINCT
     {columns.pik.name},
     {columns.emp_yr.name},
-    {columns.assg_prdn.name}
+    {columns.pik_firmid.name}
 FROM
     {tbl_name};
     ''')
