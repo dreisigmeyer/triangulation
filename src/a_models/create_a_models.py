@@ -322,14 +322,6 @@ FROM (
 WHERE rnk = 1;
 
 CREATE INDEX
-    closed_loops_idx
-ON
-    {table_names.closed_loops}(
-        {columns.assg_prdn.name},
-        {columns.assg_seq.name}
-    );
-
-CREATE INDEX
     {table_names.closed_loops}_idx
 ON
     {table_names.closed_loops}(
