@@ -402,9 +402,16 @@ def update_c_model_info(fh, tbl_name):
         f'''
 INSERT OR IGNORE INTO {table_names.c_model_info}
 SELECT DISTINCT
-    {columns.pik.name},
-    {columns.emp_yr.name},
-    {columns.pik_firmid.name}
+    {tbl_name}.{columns.pik.name},
+    {tbl_name}.{columns.emp_yr.name},
+    {tbl_name}.{columns.pik_firmid.name}
 FROM
-    {tbl_name};
+    {tbl_name},
+    {table_names.closed_loops}
+WHERE
+    {tbl_name}.{columns.assg_prdn.name} = {table_names.closed_loops}.{columns.assg_prdn.name} AND
+    {tbl_name}.{columns.assg_seq.name} = {table_names.closed_loops}.{columns.assg_seq.name} AND
+    {tbl_name}.{columns.cw_yr.name} = {table_names.closed_loops}.{columns.cw_yr.name} AND
+    {tbl_name}.{columns.emp_yr.name} = {table_names.closed_loops}.{columns.emp_yr.name} AND
+    {tbl_name}.{columns.assg_firmid.name} = {table_names.closed_loops}.{columns.assg_firmid.name};
     ''')
