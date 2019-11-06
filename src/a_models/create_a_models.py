@@ -165,7 +165,13 @@ WHERE {table_names.ein_data}.{columns.firmid.name} != \'\';
 CREATE INDEX
     {tbl_name}_idx
 ON
-    {tbl_name}({columns.assg_prdn.name}, {columns.assg_seq.name});
+    {tbl_name}(
+        {columns.assg_prdn.name},
+        {columns.assg_seq.name},
+        {columns.cw_yr.name},
+        {columns.emp_yr.name},
+        {columns.assg_firmid.name}
+    );
     ''')
 
 
@@ -321,6 +327,17 @@ ON
     {table_names.closed_loops}(
         {columns.assg_prdn.name},
         {columns.assg_seq.name}
+    );
+
+CREATE INDEX
+    {table_names.closed_loops}_idx
+ON
+    {table_names.closed_loops}(
+        {columns.assg_prdn.name},
+        {columns.assg_seq.name},
+        {columns.cw_yr.name},
+        {columns.emp_yr.name},
+        {columns.assg_firmid.name}
     );
 
 DROP TABLE inv_counts;
