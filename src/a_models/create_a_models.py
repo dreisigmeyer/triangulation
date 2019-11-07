@@ -162,6 +162,7 @@ INNER JOIN {table_names.ein_data}
 USING ({",".join([x.name for x in join_cols])})
 WHERE {table_names.ein_data}.{columns.firmid.name} != \'\';
 
+DROP INDEX IF EXISTS {tbl_name}_idx;
 CREATE INDEX
     {tbl_name}_idx
 ON
@@ -254,6 +255,7 @@ GROUP BY
     {columns.emp_yr.name},
     {columns.assg_firmid.name};
 
+DROP INDEX IF EXISTS inv_counts_idx;
 CREATE INDEX
     inv_counts_idx
 ON
@@ -321,6 +323,7 @@ FROM (
 )
 WHERE rnk = 1;
 
+DROP INDEX IF EXISTS {table_names.closed_loops}_idx;
 CREATE INDEX
     {table_names.closed_loops}_idx
 ON
@@ -370,6 +373,7 @@ CREATE TABLE prdn_as_Amodel AS
 SELECT DISTINCT {columns.pik_prdn.name}, {columns.assg_seq.name}
 FROM {tbl_name};
 
+DROP INDEX IF EXISTS indx_2;
 CREATE INDEX
     indx_2
 ON
