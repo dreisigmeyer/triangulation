@@ -67,7 +67,7 @@ def idx_a_model(fh):
     fh.write(
         f'''
 CREATE INDEX
-    ein_prdn_ein_firmid_idx
+    {table_names.a_model_ein_big_idx}
 ON
     {table_names.ein_data}(
         {columns.prdn.name},
@@ -75,7 +75,7 @@ ON
         {columns.firmid.name});
 
 CREATE INDEX
-    pik_prdn_ein_firmid_idx
+    {table_names.a_model_pik_idx}
 ON
     {table_names.pik_data}(
         {columns.prdn.name},
@@ -83,7 +83,7 @@ ON
         {columns.firmid.name});
 
 CREATE INDEX
-    ein_prdn_as_idx
+    {table_names.a_model_ein_small_idx}
 ON
     {table_names.ein_data}(
         {columns.prdn.name},
@@ -124,16 +124,6 @@ ON
         {columns.pik.name},
         {columns.firmid.name},
         {columns.emp_yr.name});
-
-CREATE INDEX
-    assg_info_prdn_idx
-ON
-    {table_names.assignee_info}({columns.prdn.name});
-
-CREATE INDEX
-    prdn_metadata_main_idx
-ON
-    {table_names.prdn_metadata}({columns.prdn.name});
     ''')
 
 
@@ -161,6 +151,21 @@ def in_data_tables(fh, model):
     # Create all of the tables
     fh.write(
         f'''
+CREATE TABLE IF NOT EXISTS {table_names.ein_data} (
+    {columns.prdn.cmd},
+    {columns.grant_yr.cmd},
+    {columns.assg_seq.cmd},
+    {columns.ein.cmd},
+    {columns.firmid.cmd},
+    {columns.cw_yr.cmd},
+    {columns.pass_num.cmd}
+);
+    ''')
+    import_data(fh, table_names.ein_data, file_names.ein_data_csvfile)
+
+    if model == 'A':
+        fh.write(
+            f'''
 CREATE TABLE IF NOT EXISTS {table_names.pik_data} (
     {columns.prdn.cmd},
     {columns.grant_yr.cmd},
@@ -170,15 +175,6 @@ CREATE TABLE IF NOT EXISTS {table_names.pik_data} (
     {columns.ein.cmd},
     {columns.firmid.cmd},
     {columns.emp_yr.cmd}
-);
-CREATE TABLE IF NOT EXISTS {table_names.ein_data} (
-    {columns.prdn.cmd},
-    {columns.grant_yr.cmd},
-    {columns.assg_seq.cmd},
-    {columns.ein.cmd},
-    {columns.firmid.cmd},
-    {columns.cw_yr.cmd},
-    {columns.pass_num.cmd}
 );
 CREATE TABLE IF NOT EXISTS {table_names.assignee_info} (
     {columns.prdn.cmd},
@@ -194,13 +190,12 @@ CREATE TABLE IF NOT EXISTS {table_names.prdn_metadata} (
     {columns.num_assg.cmd},
     {columns.us_inv_flag.cmd}
 );
-    ''')
+        ''')
 
-    # Load the data in
-    import_data(fh, table_names.pik_data, file_names.pik_data_csvfile)
-    import_data(fh, table_names.ein_data, file_names.ein_data_csvfile)
-    import_data(fh, table_names.assignee_info, file_names.assignee_info_csvfile)
-    import_data(fh, table_names.prdn_metadata, file_names.prdn_metadata_csvfile)
+        # Load the data in
+        import_data(fh, table_names.pik_data, file_names.pik_data_csvfile)
+        import_data(fh, table_names.assignee_info, file_names.assignee_info_csvfile)
+        import_data(fh, table_names.prdn_metadata, file_names.prdn_metadata_csvfile)
 
     # Make the indexes
     if model == 'A':
@@ -263,4 +258,7 @@ def preprocess_for_c_model(fh):
     fh.write(
         f'''
 DROP TABLE {table_names.ein_data};
+DROP INDEX {table_names.a_model_pik_idx};
+DROP INDEX {table_names.a_model_ein_big_idx};
+DROP INDEX {table_names.a_model_ein_small_idx};
     ''')

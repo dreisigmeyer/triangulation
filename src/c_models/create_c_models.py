@@ -4,6 +4,36 @@ import triangulation.src.shared_code.shared_code as shared_code
 import triangulation.src.shared_code.table_names as table_names
 
 
+def clean_c_models_table(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+WITH subquery (
+    {columns.prdn.name}
+) AS
+(
+    SELECT DISTINCT
+        c_models.prdn
+    FROM 
+        c_models, 
+        a_models_info_for_c_models
+    WHERE
+        c_models.pik = a_models_info_for_c_models.pik AND
+        c_models.emp_yr = a_models_info_for_c_models.employment_yr AND
+        c_models.firmid = a_models_info_for_c_models.firmid
+)
+DELETE FROM {table_names.c_models}
+WHERE EXISTS (
+    SELECT *
+    FROM subquery
+    WHERE
+        {table_names.c_models}.{columns.prdn.name} = subquery.{columns.prdn.name}
+);
+    ''')
+
+
 def create_c_models_table(fh):
     """
     """
@@ -17,12 +47,31 @@ SELECT DISTINCT
     {table_names.pik_data}.{columns.inv_seq.name},
     {table_names.pik_data}.{columns.pik.name},
     {table_names.pik_data}.{columns.firmid.name},
-    {table_names.pik_data}.{columns.emp_yr.name}
+    {table_names.pik_data}.{columns.emp_yr.name},
+    abs({table_names.pik_data}.{columns.emp_yr.name} - {table_names.pik_data}.{columns.app_yr.name}) AS {columns.abs_yr_diff.name},
+    ({table_names.pik_data}.{columns.emp_yr.name} - {table_names.pik_data}.{columns.app_yr.name}) AS {columns.yr_diff.name}
 FROM
     {table_names.pik_data}
 WHERE
     {table_names.pik_data}.{columns.firmid.name} != '';
 
+CREATE INDEX c_model_p_is_ayd_yd
+ON {table_names.b_models} (
+    {columns.prdn.name},
+    {columns.inv_seq.name},
+    {columns.abs_yr_diff.name},
+    {columns.yr_diff.name}
+);
+
+CREATE INDEX
+    idx_c_models
+ON
+    {table_names.c_models}(
+        {columns.prdn.name},
+        {columns.pik.name},
+        {columns.firmid.name},
+        {columns.emp_yr.name}
+    );
 
 -- Only want PRDNs without any inventor information: These are the ones that never
 -- had a chance to be A models when they grew up.
@@ -34,74 +83,65 @@ WHERE {columns.prdn.name} IN (
     ''')
 
 
-def create_cK_models_table(fh, model):
+def create_c1_model_table(fh):
     """
-    model is 'C1', 'C2' or 'C3'
+    model is 'C1'
     Uses a window function and requires SQLite >=v3.25.0
     """
-    if model == 'C1':
-        tbl_name = table_names.c1_models
-    elif model == 'C2':
-        tbl_name = table_names.c2_models
-    else:
-        tbl_name = table_names.c3_models
-
+    tbl_name = table_names.c1_models
     fh.write(
         f'''
 -- CTE tables
-WITH subquery1 AS
+DROP TABLE IF EXISTS subquery1;
+CREATE TABLE subquery1
+AS
 -- uses a window function to order by closest to grant year in window ( 0 , -1, 1, -2, 2)
-(
-    SELECT
-        {table_names.c_models}.{columns.prdn.name},
-        {table_names.c_models}.{columns.assg_seq.name},
-        {table_names.c_models}.{columns.firmid.name},
-        {table_names.c_models}.{columns.grant_yr.name},
-        {table_names.c_models}.{columns.cw_yr.name},
-        RANK() OVER (
-            PARTITION BY
-                {table_names.c_models}.{columns.prdn.name},
-                {table_names.c_models}.{columns.assg_seq.name}
-            ORDER BY
-                abs({table_names.c_models}.{columns.cw_yr.name} - {table_names.c_models}.{columns.grant_yr.name}),
-                ({table_names.c_models}.{columns.cw_yr.name} - {table_names.c_models}.{columns.grant_yr.name})
-        ) AS rnk
-    FROM
-        {table_names.c_models}''')
-    if model == 'B1':
-        fh.write(
-            f''',
-        {table_names.c_model_info}
-    WHERE
-        {table_names.c_models}.{columns.firmid.name} = {table_names.c_model_info}.{columns.firmid.name} AND
-        {table_names.c_models}.{columns.cw_yr.name} = {table_names.c_model_info}.{columns.cw_yr.name}
-    ''')
-    fh.write(
-        f'''
-),
-firmid_count AS
+SELECT
+    {table_names.c_models}.{columns.prdn.name},
+    {table_names.c_models}.{columns.firmid.name},
+    {table_names.c_models}.{columns.emp_yr.name},
+    RANK() OVER (
+        PARTITION BY
+            {table_names.c_models}.{columns.prdn.name}
+        ORDER BY
+            {table_names.c_models}.{columns.abs_yr_diff.name},
+            {table_names.c_models}.{columns.yr_diff.name}
+    ) AS rnk
+FROM
+    {table_names.c_models},
+    {table_names.c_model_info}
+WHERE
+    {table_names.c_models}.{columns.pik.name} = {table_names.c_model_info}.{columns.pik.name} AND
+    {table_names.c_models}.{columns.emp_yr.name} = {table_names.c_model_info}.{columns.emp_yr.name} AND
+    {table_names.c_models}.{columns.firmid.name} = {table_names.c_model_info}.{columns.firmid.name};
+
+CREATE INDEX subquery1_r_p_as
+ON subquery1 (rnk, {columns.prdn.name});
+
+DROP TABLE IF EXISTS firmid_count;
+CREATE TABLE firmid_count
+AS
 -- only want prdn+assg_seq with a unique firmid
-(
-    SELECT
-        {columns.prdn.name},
-        {columns.assg_seq.name},
-        {columns.firmid.name},
-        {columns.grant_yr.name},
-        {columns.cw_yr.name},
-        COUNT(DISTINCT {columns.firmid.name}) AS firmid_count
-    FROM
-        subquery1
-    WHERE
-        rnk = 1
-    GROUP BY
-        {columns.prdn.name},
-        {columns.assg_seq.name}
-)
+SELECT
+    {columns.prdn.name},
+    {columns.firmid.name},
+    {columns.emp_yr.name},
+    {columns.grant_yr.name},
+    COUNT(DISTINCT {columns.firmid.name}) AS firmid_count
+FROM
+    subquery1
+WHERE
+    rnk = 1
+GROUP BY
+    {columns.prdn.name};
+CREATE INDEX firmid_count_fc_p
+ON firmid_count (firmid_count, {columns.prdn.name});
+
 -- The actual models
 CREATE TABLE {tbl_name} AS
 SELECT
     firmid_count.{columns.prdn.name},
-    firmid_count.{columns.assg_seq.name},
+    "" AS  {columns.assg_seq.name},
     firmid_count.{columns.firmid.name},
     {table_names.prdn_metadata}.{columns.app_yr.name},
     firmid_count.{columns.grant_yr.name},
@@ -112,9 +152,9 @@ SELECT
     0 AS {columns.foreign_assg_flag.name},
     {table_names.prdn_metadata}.{columns.us_inv_flag.name},
     {table_names.prdn_metadata}.{columns.num_assg.name},
-    firmid_count.{columns.cw_yr.name},
-    "" AS {columns.emp_yr.name},
-    "{model}" AS {columns.model.name},
+    "" AS {columns.cw_yr.name},
+    firmid_count.{columns.emp_yr.name},
+    "C1" AS {columns.model.name},
     "" AS {columns.uniq_firmid.name},
     "" AS {columns.num_inv.name}
 FROM
@@ -124,8 +164,7 @@ FROM
 WHERE
     firmid_count.firmid_count = 1 AND
     firmid_count.{columns.prdn.name} = {table_names.assignee_info}.{columns.prdn.name} AND
-    firmid_count.{columns.assg_seq.name} = {table_names.assignee_info}.{columns.assg_seq.name} AND
-    firmid_count.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name}
+    firmid_count.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name};
 
 -- a state => US assignee
 UPDATE {tbl_name}
@@ -148,3 +187,6 @@ def generate_c_model_sql_script(sql_script_fn):
         shared_code.model_header(f)
         shared_code.in_data_tables(f, 'C')
         create_c_models_table(f)
+        create_c1_model_table(f)
+        shared_code.output_distinct_data(f, f'{table_names.c1_models}', f'{file_names.c1_models}')
+        clean_c_models_table(f)
