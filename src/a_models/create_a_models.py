@@ -192,7 +192,7 @@ def generate_a_model_sql_script(sql_script_fn):
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a1_models, 'A1')
         update_b_model_info(f)
-        update_c_model_info(f, tbl_name, 'A1')
+        update_c_model_info(f, tbl_name)
         postprocess_database(f, tbl_name)
 
         # A2 models
@@ -201,7 +201,7 @@ def generate_a_model_sql_script(sql_script_fn):
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a2_models, 'A2')
         update_b_model_info(f)
-        update_c_model_info(f, tbl_name, 'A2')
+        update_c_model_info(f, tbl_name)
         postprocess_database(f, tbl_name)
 
         # A3 models
@@ -210,7 +210,7 @@ def generate_a_model_sql_script(sql_script_fn):
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a3_models, 'A3')
         update_b_model_info(f)
-        update_c_model_info(f, tbl_name, 'A3')
+        update_c_model_info(f, tbl_name)
         postprocess_database(f, tbl_name)
 
         # Final post-processing
@@ -407,7 +407,7 @@ FROM
     ''')
 
 
-def update_c_model_info(fh, tbl_name, model):
+def update_c_model_info(fh, tbl_name):
     """
     This replaces Amodel_pik_year_firmid.pl
     """
@@ -417,7 +417,7 @@ INSERT OR IGNORE INTO {table_names.c_model_info}
 SELECT DISTINCT
     {tbl_name}.{columns.pik.name},
     {tbl_name}.{columns.emp_yr.name},
-    {tbl_name}.{columns.pik_firmid.name}
+    {tbl_name}.{columns.assg_firmid.name}
 FROM
     {tbl_name},
     {table_names.closed_loops}
