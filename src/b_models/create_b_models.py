@@ -128,10 +128,10 @@ FROM
 WHERE
     {table_names.b_models}.{columns.firmid.name} = {table_names.b_model_info}.{columns.firmid.name} AND
     {table_names.b_models}.{columns.cw_yr.name} = {table_names.b_model_info}.{columns.cw_yr.name}''')
-    fh.write(''';
+    fh.write(f''';
 CREATE INDEX subquery1_r_p_as
 ON subquery1 (rnk, {columns.prdn.name}, {columns.assg_seq.name});
-''')
+        ''')
     fh.write(
         f'''
 DROP TABLE IF EXISTS firmid_count;
