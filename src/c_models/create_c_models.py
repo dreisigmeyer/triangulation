@@ -56,7 +56,7 @@ WHERE
     {table_names.pik_data}.{columns.firmid.name} != '';
 
 CREATE INDEX c_model_p_is_ayd_yd
-ON {table_names.b_models} (
+ON {table_names.c_models} (
     {columns.prdn.name},
     {columns.inv_seq.name},
     {columns.abs_yr_diff.name},
@@ -73,7 +73,7 @@ ON
         {columns.emp_yr.name}
     );
 
--- Only want PRDNs without any inventor information: These are the ones that never
+-- Only want PRDNs without any assignee information: These are the ones that never
 -- had a chance to be A models when they grew up.
 DELETE FROM {table_names.c_models}
 WHERE {columns.prdn.name} IN (
@@ -115,7 +115,7 @@ WHERE
     {table_names.c_models}.{columns.emp_yr.name} = {table_names.c_model_info}.{columns.emp_yr.name} AND
     {table_names.c_models}.{columns.firmid.name} = {table_names.c_model_info}.{columns.firmid.name};
 
-CREATE INDEX subquery1_r_p_as
+CREATE INDEX subquery1_r_p
 ON subquery1 (rnk, {columns.prdn.name});
 
 DROP TABLE IF EXISTS firmid_count;

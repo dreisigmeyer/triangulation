@@ -258,7 +258,7 @@ def preprocess_for_c_model(fh):
     fh.write(
         f'''
 DROP TABLE {table_names.ein_data};
-DROP INDEX {table_names.a_model_pik_idx};
-DROP INDEX {table_names.a_model_ein_big_idx};
-DROP INDEX {table_names.a_model_ein_small_idx};
+DROP INDEX IF EXISTS {table_names.a_model_pik_idx};
+DROP INDEX IF EXISTS {table_names.a_model_ein_big_idx};
+DROP INDEX IF EXISTS {table_names.a_model_ein_small_idx};
     ''')
