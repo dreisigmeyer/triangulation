@@ -91,7 +91,6 @@ def create_c1_model_table(fh):
     tbl_name = table_names.c1_models
     fh.write(
         f'''
--- CTE tables
 DROP TABLE IF EXISTS subquery1;
 CREATE TABLE subquery1
 AS
@@ -180,6 +179,58 @@ WHERE
     ''')
 
 
+def create_c2_model_table(fh):
+    """
+
+    """
+    tbl_name = table_names.c1_models
+    fh.write(
+        f'''
+CREATE TABLE {table_names.pik_emp_and_app_yr} AS
+SELECT *
+FROM {table_names.assignee_info}
+WHERE
+    {table_names.assignee_info}.{columns.emp_yr.name} = {table_names.assignee_info}.{columns.app_yr.name};
+    
+CREATE INDEX pik_emp_and_app_yr_idx
+ON {table_names.pik_emp_and_app_yr} (
+    {columns.prdn.name},
+    {columns.pik.name},
+    {columns.firmid.name}
+);
+
+CREATE TABLE c2_models_holder AS
+SELECT DISTINCT
+    {table_names.c_models}.{columns.prdn.name},
+    {table_names.c_models}.{columns.firmid.name}
+FROM 
+    {table_names.c_models}, 
+    {table_names.c_model_info}
+WHERE
+    {table_names.c_models}.{columns.emp_yr.name} = {table_names.c_model_info}.{columns.emp_yr.name} AND
+    {table_names.c_models}.{columns.firmid.name} = {table_names.c_model_info}.{columns.firmid.name};
+
+CREATE INDEX
+    temp_idx_c2_models_holder
+ON
+    c2_models_holder(
+        {columns.prdn.name},
+        {columns.firmid.name}
+    );
+    
+DELETE FROM c2_models_holder
+WHERE c2_models_holder.{columns.prdn.name} IN (
+    SELECT subquery_1.{columns.prdn.name}
+    FROM (
+        SELECT {columns.prdn.name}, count(*) AS counter
+        FROM c2_models_holder
+        GROUP BY {columns.prdn.name}
+    ) subquery_1 
+    WHERE subquery_1.counter > 1
+);
+    ''')
+
+
 def generate_c_model_sql_script(sql_script_fn):
     """
 
@@ -191,3 +242,4 @@ def generate_c_model_sql_script(sql_script_fn):
         create_c1_model_table(f)
         shared_code.output_distinct_data(f, f'{table_names.c1_models}', f'{file_names.c1_models}')
         clean_c_models_table(f)
+        create_c2_model_table(f)
