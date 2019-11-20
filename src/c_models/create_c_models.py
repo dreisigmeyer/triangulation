@@ -183,7 +183,7 @@ def create_c2_model_table(fh):
     """
 
     """
-    tbl_name = table_names.c1_models
+    tbl_name = table_names.c2_models
     fh.write(
         f'''
 CREATE TABLE {table_names.pik_emp_and_app_yr} AS
@@ -228,6 +228,119 @@ WHERE c2_models_holder.{columns.prdn.name} IN (
     ) subquery_1 
     WHERE subquery_1.counter > 1
 );
+
+CREATE TABLE c2_models_pik_data AS
+SELECT 
+    {table_names.pik_emp_and_app_yr}.{columns.prdn.name},                                                                                                                                                          
+    {table_names.pik_emp_and_app_yr}.{columns.app_yr.name},                                                                                                                                                     
+    {table_names.pik_emp_and_app_yr}.{columns.inv_seq.name},                                                                                                                                                    
+    {table_names.pik_emp_and_app_yr}.{columns.pik.name},                                                                                                                                                           
+    {table_names.pik_emp_and_app_yr}.{columns.firmid.name},
+    {table_names.pik_emp_and_app_yr}.{columns.grant_yr.name}
+FROM 
+    {table_names.pik_emp_and_app_yr},
+    c2_models_holder
+WHERE
+    {table_names.pik_emp_and_app_yr}.{columns.prdn.name} = c2_models_holder.{columns.prdn.name} AND
+    {table_names.pik_emp_and_app_yr}.{columns.firmid.name} = c2_models_holder.{columns.firmid.name};
+    
+ALTER TABLE c2_models_pik_data
+ADD COLUMN ui_firm_id TEXT;
+
+CREATE INDEX
+    temp_idx_c2_models_pik_data
+ON
+    c2_models_pik_data(
+        {columns.prdn.name},
+        {columns.inv_seq.name},
+        {columns.pik.name},
+        {columns.firmid.name},
+        ui_firm_id
+    );
+
+CREATE TABLE {tbl_name} (
+    {columns.prdn.cmd},
+    {columns.firmid.cmd},
+    {columns.pik.cmd}
+    PRIMARY KEY (    
+        {columns.prdn.name},
+        {columns.firmid.name},
+        {columns.pik.name}
+    )
+);
+
+INSERT OR IGNORE INTO {tbl_name}
+    (
+        {columns.prdn.name},
+        {columns.firmid.name},
+        {columns.pik.name}
+    )
+SELECT DISTINCT
+        {columns.prdn.name},
+        {columns.firmid.name},
+        {columns.pik.name}
+FROM 
+    c2_models_pik_data;
+    
+INSERT OR IGNORE INTO {tbl_name}
+    (
+        {columns.prdn.name},
+        {columns.firmid.name},
+        {columns.pik.name}
+    )
+SELECT DISTINCT
+    {columns.prdn.name},
+    ui_firm_id,
+    {columns.pik.name}
+FROM 
+    c2_models_pik_data;
+
+CREATE TABLE {table_names.c2_models_out} AS
+SELECT *, count(*) AS count
+FROM {tbl_name}
+GROUP BY 
+    {columns.prdn.name},
+    {columns.pik.name}
+HAVING count = 1;
+
+DROP TABLE {tbl_name};
+
+---- this is for the C3 models
+CREATE INDEX
+    idx_c2_models_out_prdn
+ON
+    {table_names.c2_models_out}({columns.prdn.name});
+
+CREATE TABLE {tbl_name} AS
+SELECT
+    {table_names.c2_models_out}.{columns.prdn.name},
+    {table_names.assignee_info}.{columns.assg_seq.name} AS  {columns.assg_seq.name},
+    {table_names.c2_models_out}.{columns.firmid.name},
+    {table_names.prdn_metadata}.{columns.app_yr.name},
+    {table_names.prdn_metadata}.{columns.grant_yr.name},
+    {table_names.assignee_info}.{columns.assg_type.name},
+    {table_names.assignee_info}.{columns.assg_st.name},
+    {table_names.assignee_info}.{columns.assg_ctry.name},
+    0 AS {columns.us_assg_flag.name},
+    0 AS {columns.foreign_assg_flag.name},
+    {table_names.prdn_metadata}.{columns.us_inv_flag.name},
+    {table_names.prdn_metadata}.{columns.num_assg.name},
+    "" AS {columns.cw_yr.name},
+    {table_names.prdn_metadata}.{columns.app_yr.name} AS {columns.emp_yr.name},
+    "C2" AS {columns.model.name},
+    "" AS {columns.uniq_firmid.name},
+    "" AS {columns.num_inv.name},
+    "" AS {columns.us_assg_flag.name},
+    "" AS {columns.foreign_assg_flag.name}
+FROM 
+    {table_names.c2_models_out},
+    {table_names.prdn_metadata},
+    {table_names.assignee_info}
+WHERE
+    {table_names.c2_models_out}.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name} AND
+    {table_names.c2_models_out}.{columns.prdn.name} = {table_names.assignee_info}.{columns.prdn.name}
+ORDER BY
+    {table_names.c2_models_out}.{columns.prdn.name};
     ''')
 
 
@@ -243,3 +356,4 @@ def generate_c_model_sql_script(sql_script_fn):
         shared_code.output_distinct_data(f, f'{table_names.c1_models}', f'{file_names.c1_models}')
         clean_c_models_table(f)
         create_c2_model_table(f)
+        shared_code.output_distinct_data(f, f'{table_names.c2_models}', f'{file_names.c2_models}')
