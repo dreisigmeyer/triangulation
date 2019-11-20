@@ -15,14 +15,14 @@ WITH subquery (
 ) AS
 (
     SELECT DISTINCT
-        c_models.prdn
-    FROM 
-        c_models, 
-        a_models_info_for_c_models
+        {table_names.c_models}.{columns.prdn.name}
+    FROM
+        {table_names.c_models},
+        {table_names.c_model_info}
     WHERE
-        c_models.pik = a_models_info_for_c_models.pik AND
-        c_models.emp_yr = a_models_info_for_c_models.employment_yr AND
-        c_models.firmid = a_models_info_for_c_models.firmid
+        {table_names.c_models}.{columns.pik.name} = {table_names.c_model_info}.{columns.pik.name} AND
+        {table_names.c_models}.{columns.emp_yr.name} = {table_names.c_model_info}.{columns.emp_yr.name} AND
+        {table_names.c_models}.{columns.firmid.name} = {table_names.c_model_info}.{columns.firmid.name}
 )
 DELETE FROM {table_names.c_models}
 WHERE EXISTS (
