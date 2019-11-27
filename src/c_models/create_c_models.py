@@ -10,26 +10,16 @@ def clean_c_models_table(fh):
     """
     fh.write(
         f'''
-WITH subquery (
-    {columns.prdn.name}
-) AS
-(
-    SELECT DISTINCT
-        {table_names.c_models}.{columns.prdn.name}
-    FROM
-        {table_names.c_models},
-        {table_names.c_model_info}
-    WHERE
-        {table_names.c_models}.{columns.pik.name} = {table_names.c_model_info}.{columns.pik.name} AND
-        {table_names.c_models}.{columns.emp_yr.name} = {table_names.c_model_info}.{columns.emp_yr.name} AND
-        {table_names.c_models}.{columns.firmid.name} = {table_names.c_model_info}.{columns.firmid.name}
-)
+CREATE INDEX {table_names.c_model_subquery}_p
+ON {table_names.c_model_subquery} (prdn);
+CREATE INDEX c_models_p
+ON {table_names.c_models} (prdn);
 DELETE FROM {table_names.c_models}
 WHERE EXISTS (
     SELECT *
-    FROM subquery
+    FROM {table_names.c_model_subquery}
     WHERE
-        {table_names.c_models}.{columns.prdn.name} = subquery.{columns.prdn.name}
+        {table_names.c_model_subquery}.prdn = {table_names.c_models}.prdn
 );
     ''')
 
@@ -91,8 +81,8 @@ def create_c1_model_table(fh):
     tbl_name = table_names.c1_models
     fh.write(
         f'''
-DROP TABLE IF EXISTS subquery1;
-CREATE TABLE subquery1
+DROP TABLE IF EXISTS {table_names.c_model_subquery};
+CREATE TABLE {table_names.c_model_subquery}
 AS
 -- uses a window function to order by closest to grant year in window ( 0 , -1, 1, -2, 2)
 SELECT
@@ -115,8 +105,8 @@ WHERE
     {table_names.c_models}.{columns.emp_yr.name} = {table_names.c_model_info}.{columns.emp_yr.name} AND
     {table_names.c_models}.{columns.firmid.name} = {table_names.c_model_info}.{columns.firmid.name};
 
-CREATE INDEX subquery1_r_p
-ON subquery1 (rnk, {columns.prdn.name});
+CREATE INDEX {table_names.c_model_subquery}_r_p
+ON {table_names.c_model_subquery} (rnk, {columns.prdn.name});
 
 DROP TABLE IF EXISTS firmid_count;
 CREATE TABLE firmid_count
@@ -129,7 +119,7 @@ SELECT
     {columns.grant_yr.name},
     COUNT(DISTINCT {columns.firmid.name}) AS firmid_count
 FROM
-    subquery1
+    {table_names.c_model_subquery}
 WHERE
     rnk = 1
 GROUP BY
@@ -188,9 +178,9 @@ def create_c2_model_table(fh):
         f'''
 CREATE TABLE {table_names.pik_emp_and_app_yr} AS
 SELECT *
-FROM {table_names.assignee_info}
+FROM {table_names.pik_data}
 WHERE
-    {table_names.assignee_info}.{columns.emp_yr.name} = {table_names.assignee_info}.{columns.app_yr.name};
+    {table_names.pik_data}.{columns.emp_yr.name} = {table_names.pik_data}.{columns.app_yr.name};
     
 CREATE INDEX pik_emp_and_app_yr_idx
 ON {table_names.pik_emp_and_app_yr} (
@@ -261,7 +251,7 @@ ON
 CREATE TABLE {tbl_name} (
     {columns.prdn.cmd},
     {columns.firmid.cmd},
-    {columns.pik.cmd}
+    {columns.pik.cmd},
     PRIMARY KEY (    
         {columns.prdn.name},
         {columns.firmid.name},
