@@ -390,20 +390,20 @@ FROM (
     FROM
         {table_names.c_models}
 )
+WHERE
+    rnk = 1
 GROUP BY
     {columns.prdn.name},
     {columns.emp_yr.name},
-    {columns.app_yr.name}
-WHERE
-    rnk = 1;
+    {columns.app_yr.name};
 
 CREATE INDEX
     temp_idx_c3_first_row
 ON
-    c3_models_holder_first_row(
-        {table_names.c_models}.{columns.prdn.name},
-        {table_names.c_models}.{columns.emp_yr.name},
-        {table_names.c_models}.{columns.app_yr.name}
+    {table_names.c_models}(
+        {columns.prdn.name},
+        {columns.emp_yr.name},
+        {columns.app_yr.name}
     );
 
 CREATE TABLE {table_names.c3_models} AS
@@ -496,11 +496,11 @@ CREATE INDEX
     idx_c_models
 ON
     {table_names.c_models}(
-        {table_names.pik_data}.{columns.prdn.name},
-        {table_names.pik_data}.{columns.inv_seq.name},
-        {table_names.pik_data}.{columns.pik.name},
-        {table_names.pik_data}.{columns.firmid.name},
-        {table_names.pik_data}.{columns.emp_yr.name}
+        {columns.prdn.name},
+        {columns.inv_seq.name},
+        {columns.pik.name},
+        {columns.firmid.name},
+        {columns.emp_yr.name}
     );
 
 DELETE FROM {table_names.c_models}
