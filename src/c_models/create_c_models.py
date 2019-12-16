@@ -345,9 +345,7 @@ SELECT
     {table_names.prdn_metadata}.{columns.app_yr.name} AS {columns.emp_yr.name},
     "C2" AS {columns.model.name},
     "" AS {columns.uniq_firmid.name},
-    "" AS {columns.num_inv.name},
-    "" AS {columns.us_assg_flag.name},
-    "" AS {columns.foreign_assg_flag.name}
+    "" AS {columns.num_inv.name}
 FROM
     {table_names.c2_models_out},
     {table_names.prdn_metadata},
@@ -364,6 +362,95 @@ def create_c3_model_table(fh):
     """
 
     """
+    fh.write(
+        f'''
+DROP TABLE IF EXISTS {table_names.c_model_subquery};
+CREATE TABLE {table_names.c_model_subquery}
+AS
+SELECT
+    {columns.prdn.name},
+    {table_names.c_models}.{columns.firmid.name},
+    {columns.emp_yr.name},
+    {columns.app_yr.name},
+    COUNT(*) AS counter
+FROM (
+-- uses a window function to order by closest to grant year in window ( 0 , -1, 1, -2, 2)
+    SELECT
+        {table_names.c_models}.{columns.prdn.name},
+        {table_names.c_models}.{columns.firmid.name},
+        {table_names.c_models}.{columns.emp_yr.name},
+        {table_names.c_models}.{columns.app_yr.name},
+        RANK() OVER (
+            PARTITION BY
+                {table_names.c_models}.{columns.prdn.name}
+            ORDER BY
+                {table_names.c_models}.{columns.abs_yr_diff.name},
+                {table_names.c_models}.{columns.yr_diff.name}
+        ) AS rnk
+    FROM
+        {table_names.c_models}
+)
+GROUP BY
+    {columns.prdn.name},
+    {columns.emp_yr.name},
+    {columns.app_yr.name}
+WHERE
+    rnk = 1;
+
+CREATE INDEX
+    temp_idx_c3_first_row
+ON
+    c3_models_holder_first_row(
+        {table_names.c_models}.{columns.prdn.name},
+        {table_names.c_models}.{columns.emp_yr.name},
+        {table_names.c_models}.{columns.app_yr.name}
+    );
+
+CREATE TABLE {table_names.c3_models} AS
+SELECT
+    {table_names.c_model_subquery}.{columns.prdn.name},
+    {table_names.assignee_info}.{columns.assg_seq.name} AS  {columns.assg_seq.name},
+    {table_names.c_model_subquery}.{columns.firmid.name},
+    {table_names.prdn_metadata}.{columns.app_yr.name},
+    {table_names.prdn_metadata}.{columns.grant_yr.name},
+    {table_names.assignee_info}.{columns.assg_type.name},
+    {table_names.assignee_info}.{columns.assg_st.name},
+    {table_names.assignee_info}.{columns.assg_ctry.name},
+    0 AS {columns.us_assg_flag.name},
+    0 AS {columns.foreign_assg_flag.name},
+    {table_names.prdn_metadata}.{columns.us_inv_flag.name},
+    {table_names.prdn_metadata}.{columns.num_assg.name},
+    "" AS {columns.cw_yr.name},
+    {table_names.c_model_subquery}.{columns.emp_yr.name},
+    "C3" AS {columns.model.name},
+    "" AS {columns.uniq_firmid.name},
+    "" AS {columns.num_inv.name}
+FROM
+    {table_names.c_model_subquery},
+    {table_names.prdn_metadata},
+    {table_names.assignee_info}
+WHERE
+    {table_names.c_model_subquery}.counter = 1 AND
+    {table_names.c_model_subquery}.{columns.prdn.name} = {table_names.assignee_info}.{columns.prdn.name} AND
+    {table_names.c_model_subquery}.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name}
+ORDER BY
+    {table_names.c_model_subquery}.{columns.prdn.name};
+
+-- a state => US assignee
+UPDATE {table_names.c3_models}
+SET {columns.us_assg_flag.name} = 1
+WHERE {columns.assg_st.name} != "";
+-- no state + country => foreign assignee
+UPDATE {table_names.c3_models}
+SET {columns.foreign_assg_flag.name} = 1
+WHERE
+    {columns.us_assg_flag.name} != 1 AND
+    {columns.assg_ctry.name} != "";
+
+.output c3_models.csv
+SELECT DISTINCT * FROM c3_models;
+.output stdout
+    ''')
 
 
 def generate_c_model_sql_script(sql_script_fn):
@@ -379,8 +466,8 @@ def generate_c_model_sql_script(sql_script_fn):
         clean_c_models_table(f)
         create_c2_model_table(f)
         shared_code.output_distinct_data(f, f'{table_names.c2_models}', f'{file_names.c2_models}')
-        # remake_c_model_table(f)
-        # create_c3_model_table(f)
+        remake_c_model_table(f)
+        create_c3_model_table(f)
 
 
 def remake_c_model_table(fh):
