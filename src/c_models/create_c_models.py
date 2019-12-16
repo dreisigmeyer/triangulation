@@ -247,8 +247,32 @@ ON
         {columns.inv_seq.name},
         {columns.pik.name},
         {columns.firmid.name},
-        ui_firm_id
+        {columns.ui_firm_id.name}
     );
+
+INSERT INTO c2_models_pik_data (
+    {columns.prdn.name},
+    {columns.app_yr.name},
+    {columns.inv_seq.name},
+    {columns.pik.name},
+    {columns.ui_firm_id.name},
+    {columns.grant_yr.name}
+)
+SELECT
+    {table_names.pik_emp_and_app_yr}.{columns.prdn.name},
+    {table_names.pik_emp_and_app_yr}.{columns.app_yr.name},
+    {table_names.pik_emp_and_app_yr}.{columns.inv_seq.name},
+    {table_names.pik_emp_and_app_yr}.{columns.pik.name},
+    {table_names.pik_emp_and_app_yr}.{columns.firmid.name},
+    {table_names.pik_emp_and_app_yr}.{columns.grant_yr.name}
+FROM
+    {table_names.pik_emp_and_app_yr},
+    c2_models_pik_data
+WHERE
+    {table_names.pik_emp_and_app_yr}.{columns.prdn.name} = c2_models_pik_data.{columns.prdn.name} AND
+    {table_names.pik_emp_and_app_yr}.{columns.pik.name} = c2_models_pik_data.{columns.pik.name} AND
+    {table_names.pik_emp_and_app_yr}.{columns.firmid.name} != c2_models_pik_data.{columns.firmid.name};
+
 
 CREATE TABLE {tbl_name} (
     {columns.prdn.cmd},
