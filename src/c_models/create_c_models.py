@@ -369,7 +369,7 @@ CREATE TABLE {table_names.c_model_subquery}
 AS
 SELECT
     {columns.prdn.name},
-    {table_names.c_models}.{columns.firmid.name},
+    {columns.firmid.name},
     {columns.emp_yr.name},
     {columns.app_yr.name},
     COUNT(*) AS counter
