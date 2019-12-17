@@ -446,10 +446,6 @@ SET {columns.foreign_assg_flag.name} = 1
 WHERE
     {columns.us_assg_flag.name} != 1 AND
     {columns.assg_ctry.name} != "";
-
-.output c3_models.csv
-SELECT DISTINCT * FROM c3_models;
-.output stdout
     ''')
 
 
@@ -468,6 +464,7 @@ def generate_c_model_sql_script(sql_script_fn):
         shared_code.output_distinct_data(f, f'{table_names.c2_models}', f'{file_names.c2_models}')
         remake_c_model_table(f)
         create_c3_model_table(f)
+        shared_code.output_distinct_data(f, f'{table_names.c3_models}', f'{file_names.c3_models}')
 
 
 def remake_c_model_table(fh):
@@ -504,40 +501,50 @@ ON
     );
 
 DELETE FROM {table_names.c_models}
-WHERE prdn IN (
-    SELECT DISTINCT prdn
-    FROM ein_data
+WHERE {columns.prdn.name} IN (
+    SELECT DISTINCT {columns.prdn.name}
+    FROM {table_names.ein_data}
 );
 
 ---- Only delete if a C1 model
 DELETE FROM {table_names.c_models}
-WHERE prdn IN (
-    SELECT DISTINCT prdn
-    FROM c1_models
+WHERE {columns.prdn.name} IN (
+    SELECT DISTINCT {columns.prdn.name}
+    FROM {table_names.c1_models}
 );
 
 ---- Only delete if a C2 model
 DELETE FROM {table_names.c_models}
-WHERE prdn IN (
-    SELECT DISTINCT prdn
-    FROM c2_models_out
+WHERE {columns.prdn.name} IN (
+    SELECT DISTINCT {columns.prdn.name}
+    FROM {table_names.c2_models_out}
 );
 
 ---- Remove prdn-inv_seq pairs if PIK is not unique
 CREATE TABLE to_delete_from_c_models AS
-SELECT prdn, inv_seq
+SELECT
+    {columns.prdn.name},
+    {columns.inv_seq.name}
 FROM
 (
-    SELECT DISTINCT prdn, inv_seq, pik
+    SELECT DISTINCT
+        {columns.prdn.name},
+        {columns.inv_seq.name},
+        {columns.pik.name}
     FROM {table_names.c_models}
 ) subquery
-GROUP BY prdn, inv_seq
-HAVING count(*) > 1;
+GROUP BY
+    {columns.prdn.name},
+    {columns.inv_seq.name}
+HAVING COUNT(*) > 1;
 
 CREATE INDEX
     idx_to_delete_from_c_models
 ON
-    to_delete_from_c_models(prdn,inv_seq);
+    to_delete_from_c_models(
+        {columns.prdn.name},
+        {columns.inv_seq.name}
+    );
 
 DELETE FROM {table_names.c_models}
 WHERE EXISTS
@@ -545,8 +552,8 @@ WHERE EXISTS
     SELECT *
     FROM to_delete_from_c_models
     WHERE
-        {table_names.c_models}.prdn = to_delete_from_c_models.prdn AND
-        {table_names.c_models}.inv_seq = to_delete_from_c_models.inv_seq
+        {table_names.c_models}.{columns.prdn.name} = to_delete_from_c_models.{columns.prdn.name} AND
+        {table_names.c_models}.{columns.inv_seq.name} = to_delete_from_c_models.{columns.inv_seq.name}
 );
 
 DROP TABLE to_delete_from_c_models;
