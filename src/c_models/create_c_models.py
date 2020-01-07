@@ -214,7 +214,8 @@ DELETE FROM c2_models_holder
 WHERE c2_models_holder.{columns.prdn.name} IN (
     SELECT subquery_1.{columns.prdn.name}
     FROM (
-        SELECT {columns.prdn.name}, count(*) AS counter
+        SELECT {columns.prdn.name},
+        count(*) AS counter
         FROM c2_models_holder
         GROUP BY {columns.prdn.name}
     ) subquery_1
@@ -372,7 +373,7 @@ SELECT
     {columns.firmid.name},
     {columns.emp_yr.name},
     {columns.app_yr.name},
-    COUNT(*) AS counter
+    COUNT(DISTINCT {columns.firmid.name}) AS counter
 FROM (
 -- uses a window function to order by closest to grant year in window ( 0 , -1, 1, -2, 2)
     SELECT
