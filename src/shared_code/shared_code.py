@@ -147,6 +147,8 @@ def in_data_tables(fh, model):
     """
     if model == 'C':
         preprocess_for_c_model(fh)
+    elif model == 'E':
+        preprocess_for_e_model(fh)
 
     # Create all of the tables
     fh.write(
@@ -163,7 +165,7 @@ CREATE TABLE IF NOT EXISTS {table_names.ein_data} (
     ''')
     import_data(fh, table_names.ein_data, file_names.ein_data_csvfile)
 
-    if model == 'A':
+    if model == 'A' or model == 'E':
         fh.write(
             f'''
 CREATE TABLE IF NOT EXISTS {table_names.pik_data} (
@@ -261,4 +263,17 @@ DROP TABLE {table_names.ein_data};
 DROP INDEX IF EXISTS {table_names.a_model_pik_idx};
 DROP INDEX IF EXISTS {table_names.a_model_ein_big_idx};
 DROP INDEX IF EXISTS {table_names.a_model_ein_small_idx};
+    ''')
+
+
+def preprocess_for_e_model(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+DROP TABLE {table_names.ein_data};
+DROP TABLE {table_names.pik_data};
+DROP TABLE {table_names.assignee_info};
+DROP TABLE {table_names.prdn_metadata};
     ''')
