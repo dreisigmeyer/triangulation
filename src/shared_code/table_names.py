@@ -1,4 +1,5 @@
 # Table name
+a_models_prdns = 'a_models_prdns'
 assignee_info = 'assignee_info'
 b_models = 'b_models'
 b1_models = 'b1_models'

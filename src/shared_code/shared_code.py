@@ -127,6 +127,44 @@ ON
     ''')
 
 
+def idx_e_model(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+CREATE INDEX
+    ein_data_main_idx
+ON
+    {table_names.ein_data}(
+        {columns.prdn.name},
+        {columns.assg_seq.name},
+        {columns.firmid.name},
+        {columns.cw_yr.name});
+
+CREATE INDEX
+    pik_data_main_idx
+ON
+    {table_names.pik_data}(
+        {columns.prdn.name},
+        {columns.firmid.name},
+        {columns.emp_yr.name});
+
+CREATE INDEX
+    assg_info_prdn_as_idx
+ON
+    {table_names.assignee_info}(
+        {columns.prdn.name},
+        {columns.assg_seq.name});
+
+CREATE INDEX
+    prdn_metadata_main_idx
+ON
+    {table_names.prdn_metadata}(
+        {columns.prdn.name});
+    ''')
+
+
 def import_data(fh, tbl_name, csv_file):
     """
     Helper function to import data from a CSV file into a SQLite3 database.
@@ -202,8 +240,10 @@ CREATE TABLE IF NOT EXISTS {table_names.prdn_metadata} (
     # Make the indexes
     if model == 'A':
         idx_a_model(fh)
-    if model == 'C':
+    elif model == 'C':
         idx_c_model(fh)
+    elif model == 'E':
+        idx_e_model(fh)
 
 
 def model_header(fh):
