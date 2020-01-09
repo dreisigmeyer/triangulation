@@ -133,7 +133,7 @@ ON firmid_count (firmid_count, {columns.prdn.name});
 CREATE TABLE {tbl_name} AS
 SELECT
     firmid_count.{columns.prdn.name},
-    {table_names.assignee_info}.{columns.assg_seq.name} AS  {columns.assg_seq.name},
+    {table_names.assignee_info}.{columns.assg_seq.name},
     firmid_count.{columns.firmid.name},
     {table_names.prdn_metadata}.{columns.app_yr.name},
     firmid_count.{columns.grant_yr.name},
