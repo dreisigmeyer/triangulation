@@ -193,7 +193,7 @@ def generate_a_model_sql_script(sql_script_fn):
         output_a_models(f, tbl_name, file_names.a1_models, 'A1')
         update_b_model_info(f)
         update_c_model_info(f, tbl_name)
-        update_e_model_info(f, tbl_name)
+        update_e_model_info(f)
         postprocess_database(f, tbl_name)
 
         # A2 models
@@ -203,7 +203,7 @@ def generate_a_model_sql_script(sql_script_fn):
         output_a_models(f, tbl_name, file_names.a2_models, 'A2')
         update_b_model_info(f)
         update_c_model_info(f, tbl_name)
-        update_e_model_info(f, tbl_name)
+        update_e_model_info(f)
         postprocess_database(f, tbl_name)
 
         # A3 models
@@ -213,7 +213,7 @@ def generate_a_model_sql_script(sql_script_fn):
         output_a_models(f, tbl_name, file_names.a3_models, 'A3')
         update_b_model_info(f)
         update_c_model_info(f, tbl_name)
-        update_e_model_info(f, tbl_name)
+        update_e_model_info(f)
         postprocess_database(f, tbl_name)
 
         # Final post-processing
@@ -433,7 +433,7 @@ WHERE
     ''')
 
 
-def update_e_model_info(fh, tbl_name):
+def update_e_model_info(fh):
     """
     This replaces Amodel_pik_year_firmid.pl
     """
@@ -441,7 +441,7 @@ def update_e_model_info(fh, tbl_name):
         f'''
 INSERT OR IGNORE INTO {table_names.e_model_info}
 SELECT DISTINCT
-    {tbl_name}.{columns.prdn.name}
+    {columns.assg_prdn.name}
 FROM
-    {tbl_name}
+    {table_names.closed_loops};
    ''')
