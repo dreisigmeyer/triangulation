@@ -4,19 +4,6 @@ import triangulation.src.shared_code.shared_code as shared_code
 import triangulation.src.shared_code.table_names as table_names
 
 
-def clean_e_models_table(fh):
-    """
-    """
-    fh.write(
-        f'''
-DELETE FROM {table_names.ein_data}
-WHERE {columns.prdn.name} NOT IN (
-    SELECT {columns.prdn.name}
-    FROM {table_names.e_models_prdns}
-);
-    ''')
-
-
 def create_e_models_table(fh):
     """
     """
@@ -42,6 +29,12 @@ DELETE FROM {table_names.e_models_prdns}
 WHERE {columns.prdn.name} IN (
     SELECT DISTINCT {columns.prdn.name}
     FROM {table_names.e_model_info}
+);
+
+DELETE FROM {table_names.ein_data}
+WHERE {columns.prdn.name} NOT IN (
+    SELECT {columns.prdn.name}
+    FROM {table_names.e_models_prdns}
 );
 
 CREATE TABLE {table_names.e_models} AS
@@ -184,6 +177,5 @@ def generate_e_model_sql_script(sql_script_fn):
         shared_code.model_header(f)
         shared_code.in_data_tables(f, 'E')
         create_e_models_table(f)
-        clean_e_models_table(f)
         create_eK_models_table(f)
         shared_code.output_distinct_data(f, f'{table_names.e1_models}', f'{file_names.e1_models}')
