@@ -247,7 +247,7 @@ SELECT
     {table_names.assignee_info}.{columns.assg_seq.name},
     {table_names.e_model_subquery}.{columns.firmid.name},
     {table_names.prdn_metadata}.{columns.app_yr.name},
-    {table_names.assignee_info}.{columns.grant_yr.name},
+    {table_names.prdn_metadata}.{columns.grant_yr.name},
     {table_names.assignee_info}.{columns.assg_type.name},
     {table_names.assignee_info}.{columns.assg_st.name},
     {table_names.assignee_info}.{columns.assg_ctry.name},
