@@ -255,7 +255,7 @@ SELECT
     0 AS {columns.foreign_assg_flag.name},
     {table_names.prdn_metadata}.{columns.us_inv_flag.name},
     {table_names.prdn_metadata}.{columns.num_assg.name},
-    "" AS {columns.cw_yr.name}
+    "" AS {columns.cw_yr.name},
     {table_names.e_model_subquery}.{columns.emp_yr.name},
     "E2" AS {columns.model.name},
     "" AS {columns.uniq_firmid.name},
