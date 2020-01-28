@@ -1,4 +1,4 @@
-import itertools
+# import itertools
 import pandas as pd
 import shutil
 import uuid
@@ -127,6 +127,80 @@ ON
     ''')
 
 
+def idx_d_model(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+CREATE INDEX a1_models_indx
+ON {table_names.a1_models} (
+    {columns.prdn.name},
+    {columns.firmid.name},
+    {columns.assg_seq.name});
+CREATE INDEX a2_models_indx
+ON {table_names.a2_models} (
+    {columns.prdn.name},
+    {columns.firmid.name},
+    {columns.assg_seq.name});
+CREATE INDEX a3_models_indx
+ON {table_names.a3_models} (
+    {columns.prdn.name},
+    {columns.firmid.name},
+    {columns.assg_seq.name});
+CREATE INDEX b1_models_indx
+ON {table_names.b1_models} (
+    {columns.prdn.name},
+    {columns.assg_seq.name});
+CREATE INDEX b2_models_indx
+ON {table_names.b2_models} (
+    {columns.prdn.name},
+    {columns.assg_seq.name});
+CREATE INDEX c1_models_indx
+ON {table_names.c1_models} (
+    {columns.prdn.name});
+CREATE INDEX c2_models_indx
+ON {table_names.c2_models} (
+    {columns.prdn.name});
+CREATE INDEX c3_models_indx
+ON {table_names.c3_models} (
+    {columns.prdn.name});
+CREATE INDEX e1_models_indx
+ON {table_names.e1_models} (
+    {columns.prdn.name},
+    {columns.assg_seq.name});
+CREATE INDEX e2_models_indx
+ON {table_names.e2_models} (
+    {columns.prdn.name});
+CREATE INDEX
+    assignee_name_data_indx
+ON
+    {table_names.assignee_name_data} (
+        {columns.xml_pat_num.name},
+        {columns.assg_seq.name});
+
+CREATE INDEX
+    name_match_indx
+ON
+    {table_names.name_match} (
+        {columns.xml_pat_num.name},
+        {columns.assg_seq.name});
+
+CREATE INDEX
+    assg_info_prdn_as_idx
+ON
+    {table_names.assignee_info}(
+        {columns.prdn.name},
+        {columns.assg_seq.name});
+
+CREATE INDEX
+    prdn_metadata_main_idx
+ON
+    {table_names.prdn_metadata}(
+        {columns.prdn.name});
+    ''')
+
+
 def idx_e_model(fh):
     """
 
@@ -185,12 +259,15 @@ def in_data_tables(fh, model):
     """
     if model == 'C':
         preprocess_for_c_model(fh)
+    elif model == 'D':
+        preprocess_for_d_model(fh)
     elif model == 'E':
         preprocess_for_e_model(fh)
 
     # Create all of the tables
-    fh.write(
-        f'''
+    if model != 'D':
+        fh.write(
+            f'''
 CREATE TABLE IF NOT EXISTS {table_names.ein_data} (
     {columns.prdn.cmd},
     {columns.grant_yr.cmd},
@@ -200,8 +277,8 @@ CREATE TABLE IF NOT EXISTS {table_names.ein_data} (
     {columns.cw_yr.cmd},
     {columns.pass_num.cmd}
 );
-    ''')
-    import_data(fh, table_names.ein_data, file_names.ein_data_csvfile)
+        ''')
+        import_data(fh, table_names.ein_data, file_names.ein_data_csvfile)
 
     if model == 'A' or model == 'E':
         fh.write(
@@ -216,6 +293,12 @@ CREATE TABLE IF NOT EXISTS {table_names.pik_data} (
     {columns.firmid.cmd},
     {columns.emp_yr.cmd}
 );
+        ''')
+        import_data(fh, table_names.pik_data, file_names.pik_data_csvfile)
+
+    if model == 'A' or model == 'D' or model == 'E':
+        fh.write(
+            f'''
 CREATE TABLE IF NOT EXISTS {table_names.assignee_info} (
     {columns.prdn.cmd},
     {columns.assg_seq.cmd},
@@ -233,15 +316,42 @@ CREATE TABLE IF NOT EXISTS {table_names.prdn_metadata} (
         ''')
 
         # Load the data in
-        import_data(fh, table_names.pik_data, file_names.pik_data_csvfile)
         import_data(fh, table_names.assignee_info, file_names.assignee_info_csvfile)
         import_data(fh, table_names.prdn_metadata, file_names.prdn_metadata_csvfile)
+
+    if model == 'D':
+        fh.write(
+            f'''
+CREATE TABLE {table_names.name_match} (
+    {columns.xml_pat_num.cmd},
+    {columns.uspto_pat_num.cmd},
+    {columns.assg_seq.cmd},
+    {columns.grant_yr.cmd},
+    {columns.zip3_flag.cmd},
+    {columns.ein.cmd},
+    {columns.firmid.cmd},
+    {columns.pass_num.cmd}
+    {columns.cw_yr.cmd}
+);
+
+-- from the hand-corrected D2 models
+CREATE TABLE {table_names.assg_name_firmid} (
+    {columns.assg_name.cmd},
+    {columns.year.cmd},
+    {columns.firmid.cmd},
+    UNIQUE({columns.assg_name.cmd}, {columns.year.cmd}, {columns.firmid.cmd})
+);
+        ''')
+        import_data(fh, table_names.name_match, file_names.name_match_csvfile)
+        import_data(fh, table_names.assg_name_firmid, file_names.assg_yr_firmid)
 
     # Make the indexes
     if model == 'A':
         idx_a_model(fh)
     elif model == 'C':
         idx_c_model(fh)
+    elif model == 'D':
+        idx_d_model(fh)
     elif model == 'E':
         idx_e_model(fh)
 
@@ -303,6 +413,19 @@ DROP TABLE {table_names.ein_data};
 DROP INDEX IF EXISTS {table_names.a_model_pik_idx};
 DROP INDEX IF EXISTS {table_names.a_model_ein_big_idx};
 DROP INDEX IF EXISTS {table_names.a_model_ein_small_idx};
+    ''')
+
+
+def preprocess_for_d_model(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+DROP TABLE {table_names.ein_data};
+DROP TABLE {table_names.pik_data};
+DROP TABLE {table_names.assignee_info};
+DROP TABLE {table_names.prdn_metadata};
     ''')
 
 

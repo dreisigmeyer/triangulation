@@ -1,6 +1,7 @@
 
 # in data file names
 assignee_info_csvfile = './triangulation/in_data/assignee_info.csv'
+assg_yr_firmid_csvfile = './triangulation/in_data/assg_yr_firmid.csv'
 ein_data_csvfile = './triangulation/in_data/prdn_eins.csv'
 iops = './triangulation/in_data/iops.csv'
 iops_unique = './triangulation/in_data/iops_prdn_assg_seq.csv'
