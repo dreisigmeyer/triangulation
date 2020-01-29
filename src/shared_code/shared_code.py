@@ -1,4 +1,4 @@
-# import itertools
+import itertools
 import pandas as pd
 import shutil
 import uuid
@@ -253,7 +253,28 @@ def import_data(fh, tbl_name, csv_file):
     ''')
 
 
-def in_data_tables(fh, model):
+def import_other_models(fh, assignee_years):
+    """
+    """
+    fh.write(
+        f'''
+.headers ON
+.import {file_names.a1_models} {table_names.a1_models}
+.import {file_names.a2_models} {table_names.a2_models}
+.import {file_names.a3_models} {table_names.a3_models}
+.import {file_names.b1_models} {table_names.b1_models}
+.import {file_names.b2_models} {table_names.b2_models}
+.import {file_names.c1_models} {table_names.c1_models}
+.import {file_names.c2_models} {table_names.c2_models}
+.import {file_names.c3_models} {table_names.c3_models}
+.import {file_names.e1_models} {table_names.e1_models}
+.import {file_names.e2_models} {table_names.e2_models}
+.import {assignee_years} {table_names.assignee_name_data}
+.headers OFF
+    ''')
+
+
+def in_data_tables(fh, model, assignee_years=None):
     """
 
     """
@@ -343,7 +364,7 @@ CREATE TABLE {table_names.assg_name_firmid} (
 );
         ''')
         import_data(fh, table_names.name_match, file_names.name_match_csvfile)
-        import_data(fh, table_names.assg_name_firmid, file_names.assg_yr_firmid)
+        import_data(fh, table_names.assg_name_firmid, file_names.assg_yr_firmid_csvfile)
 
     # Make the indexes
     if model == 'A':
@@ -351,6 +372,7 @@ CREATE TABLE {table_names.assg_name_firmid} (
     elif model == 'C':
         idx_c_model(fh)
     elif model == 'D':
+        import_other_models(fh, assignee_years)
         idx_d_model(fh)
     elif model == 'E':
         idx_e_model(fh)
