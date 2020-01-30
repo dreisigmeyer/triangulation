@@ -351,7 +351,7 @@ CREATE TABLE {table_names.name_match} (
     {columns.zip3_flag.cmd},
     {columns.ein.cmd},
     {columns.firmid.cmd},
-    {columns.pass_num.cmd}
+    {columns.pass_num.cmd},
     {columns.cw_yr.cmd}
 );
 
@@ -360,7 +360,7 @@ CREATE TABLE {table_names.assg_name_firmid} (
     {columns.assg_name.cmd},
     {columns.year.cmd},
     {columns.firmid.cmd},
-    UNIQUE({columns.assg_name.cmd}, {columns.year.cmd}, {columns.firmid.cmd})
+    UNIQUE({columns.assg_name.name}, {columns.year.name}, {columns.firmid.name})
 );
         ''')
         import_data(fh, table_names.name_match, file_names.name_match_csvfile)

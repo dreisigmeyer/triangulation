@@ -274,7 +274,7 @@ ON
 
 CREATE TABLE {table_names.closed_loops} AS
 SELECT
-    {columns.assg_prdn.name},
+    {columns.assg_prdn.name} AS {columns.prdn.name},
     {columns.assg_seq.name},
     {columns.assg_firmid.name},
     {columns.app_yr.name},
@@ -331,7 +331,7 @@ CREATE INDEX
     {table_names.closed_loops}_idx
 ON
     {table_names.closed_loops}(
-        {columns.assg_prdn.name},
+        {columns.prdn.name},
         {columns.assg_seq.name},
         {columns.cw_yr.name},
         {columns.emp_yr.name},
@@ -358,7 +358,7 @@ WHERE
         SELECT COUNT(*)
         FROM {table_names.closed_loops} AS inner_tbl
         WHERE
-            outer_tbl.{columns.assg_prdn.name} = inner_tbl.{columns.assg_prdn.name} AND
+            outer_tbl.{columns.prdn.name} = inner_tbl.{columns.prdn.name} AND
             outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
     ) > 1;
     ''')
@@ -425,7 +425,7 @@ FROM
     {tbl_name},
     {table_names.closed_loops}
 WHERE
-    {tbl_name}.{columns.assg_prdn.name} = {table_names.closed_loops}.{columns.assg_prdn.name} AND
+    {tbl_name}.{columns.assg_prdn.name} = {table_names.closed_loops}.{columns.prdn.name} AND
     {tbl_name}.{columns.assg_seq.name} = {table_names.closed_loops}.{columns.assg_seq.name} AND
     {tbl_name}.{columns.cw_yr.name} = {table_names.closed_loops}.{columns.cw_yr.name} AND
     {tbl_name}.{columns.emp_yr.name} = {table_names.closed_loops}.{columns.emp_yr.name} AND
@@ -441,7 +441,7 @@ def update_e_model_info(fh):
         f'''
 INSERT OR IGNORE INTO {table_names.e_model_info}
 SELECT DISTINCT
-    {columns.assg_prdn.name}
+    {columns.prdn.name}
 FROM
     {table_names.closed_loops};
    ''')

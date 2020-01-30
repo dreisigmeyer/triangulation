@@ -23,7 +23,8 @@ def randomString(stringLength=20):
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--assignee_years", dest="assignee_years", help="The assignee file.  For example: assignee_76_16.csv")
 args = parser.parse_args()
-assignee_years = args.assignee_years
+# assignee_years should be located in the directory file_names.in_data_path
+assignee_years = '{file_names.in_data_path}{args.assignee_years}'
 
 # Local dummy variables - can feely change as needed
 db_name = randomString()
