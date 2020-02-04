@@ -271,6 +271,13 @@ def import_other_models(fh, assignee_years):
 .import {file_names.e2_models} {table_names.e2_models}
 .import {assignee_years} {table_names.assignee_name_data}
 .headers OFF
+
+ALTER TABLE {table_names.assignee_name_data}
+RENAME COLUMN {columns.assg_num.name}
+TO {columns.assg_seq.name};
+ALTER TABLE {table_names.assignee_name_data}
+RENAME COLUMN {columns.name.name}
+TO {columns.assg_name.name};
     ''')
 
 

@@ -276,7 +276,7 @@ CREATE TABLE {table_names.closed_loops} AS
 SELECT
     {columns.assg_prdn.name} AS {columns.prdn.name},
     {columns.assg_seq.name},
-    {columns.assg_firmid.name},
+    {columns.assg_firmid.name} AS {columns.firmid.name},
     {columns.app_yr.name},
     {columns.grant_yr.name},
     {columns.assg_type.name},
