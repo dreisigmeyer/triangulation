@@ -401,8 +401,8 @@ def output_data(fh, tbl_name, csv_file):
     Helper function to outport data to a CSV file from a SQLite3 database.
 
     fh -- file handle
-    tbl_name -- table in database to load data into
-    csv_file -- CSV file
+    tbl_name -- table in database to select data from
+    csv_file -- CSV file to print to
     """
     fh.write(
         f'''
@@ -419,8 +419,8 @@ def output_distinct_data(fh, tbl_name, csv_file):
     Helper function to outport data to a CSV file from a SQLite3 database.
 
     fh -- file handle
-    tbl_name -- table in database to load data into
-    csv_file -- CSV file
+    tbl_name -- table in database to select data from
+    csv_file -- CSV file to print to
     """
     fh.write(
         f'''

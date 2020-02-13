@@ -22,6 +22,8 @@ b2_models = f'{out_data_path}b2_models.csv'
 c1_models = f'{out_data_path}c1_models.csv'
 c2_models = f'{out_data_path}c2_models.csv'
 c3_models = f'{out_data_path}c3_models.csv'
+d1_models = f'{out_data_path}d1_models.csv'
+d2_models = f'{out_data_path}d2_models.csv'
 e1_models = f'{out_data_path}e1_models.csv'
 e2_models = f'{out_data_path}e2_models.csv'
 
