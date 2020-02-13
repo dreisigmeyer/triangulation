@@ -8,16 +8,16 @@ def delete_previous_models(fh):
     """
     """
     previous_models = [
-        {table_names.a1_models},
-        {table_names.a2_models},
-        {table_names.a3_models},
-        {table_names.b1_models},
-        {table_names.b2_models},
-        {table_names.c1_models},
-        {table_names.c2_models},
-        {table_names.c3_models},
-        {table_names.e1_models},
-        {table_names.e2_models},
+        table_names.a1_models,
+        table_names.a2_models,
+        table_names.a3_models,
+        table_names.b1_models,
+        table_names.b2_models,
+        table_names.c1_models,
+        table_names.c2_models,
+        table_names.c3_models,
+        table_names.e1_models,
+        table_names.e2_models,
     ]
 
     for model in previous_models:
