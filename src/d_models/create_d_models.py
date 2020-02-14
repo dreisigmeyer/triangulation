@@ -130,24 +130,19 @@ def make_possible_d1_models(fh):
     """
     fh.write(
         f'''
+DROP TABLE IF EXISTS {table_names.possible_d_models};
 CREATE TABLE {table_names.possible_d_models} (
     {columns.prdn.cmd},
-    {columns.count.cmd},
     {columns.assg_seq.cmd},
-    {columns.cw_yr.cmd},
-    {columns.emp_yr.cmd},
     {columns.firmid.cmd},
-    {columns.grant_yr.cmd},
     {columns.app_yr.cmd},
-    {columns.assg_ctry.cmd},
-    {columns.assg_st.cmd},
+    {columns.grant_yr.cmd},
     {columns.assg_type.cmd},
+    {columns.assg_st.cmd},
+    {columns.assg_ctry.cmd},
     {columns.us_inv_flag.cmd},
-    {columns.mult_assg_flag.cmd},
-    {columns.model.cmd},
-    {columns.uniq_firmid.cmd},
     {columns.assg_name.cmd}
-)
+);
 
 INSERT INTO {table_names.possible_d_models} (
     {columns.prdn.name},
@@ -192,8 +187,7 @@ SET {columns.firmid.name} = (
 CREATE INDEX possible_d_models_indx
 ON {table_names.possible_d_models} (
     {columns.prdn.name},
-    {columns.assg_seq.name},
-    {columns.assg_name.name}
+    {columns.assg_seq.name}
 );
 
 DELETE FROM {table_names.possible_d_models}
@@ -207,6 +201,49 @@ WHERE NOT EXISTS (
     ''')
 
 
+def make_output_d_models(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+DROP TABLE IF EXISTS {table_names.d_final_models};
+CREATE TABLE {table_names.d_final_models} AS
+SELECT
+    {table_names.possible_d_models}.{columns.prdn.name},
+    {table_names.possible_d_models}.{columns.assg_seq.name},
+    {table_names.possible_d_models}.{columns.firmid.name},
+    {table_names.possible_d_models}.{columns.app_yr.name},
+    {table_names.possible_d_models}.{columns.grant_yr.name},
+    {table_names.possible_d_models}.{columns.assg_type.name},
+    {table_names.possible_d_models}.{columns.assg_st.name},
+    {table_names.possible_d_models}.{columns.assg_ctry.name},
+    0 AS {columns.us_assg_flag.name},
+    0 AS {columns.foreign_assg_flag.name},
+    {table_names.prdn_metadata}.{columns.us_inv_flag.name},
+    {table_names.prdn_metadata}.{columns.num_assg.name},
+    "" AS {columns.cw_yr.name},
+    "" AS {columns.emp_yr.name},
+    "D1" AS {columns.model.name},
+    "" AS {columns.uniq_firmid.name},
+    "" AS {columns.num_inv.name}
+FROM
+    {table_names.possible_d_models},
+    {table_names.prdn_metadata};
+
+-- a state => US assignee
+UPDATE {table_names.d_final_models}
+SET {columns.us_assg_flag.name} = 1
+WHERE {columns.assg_st.name} != "";
+-- no state + country => foreign assignee
+UPDATE {table_names.d_final_models}
+SET {columns.foreign_assg_flag.name} = 1
+WHERE
+    {columns.us_assg_flag.name} != 1 AND
+    {columns.assg_ctry.name} != "";
+    ''')
+
+
 def generate_d_model_sql_script(sql_script_fn, assignee_years):
     """
 
@@ -217,4 +254,5 @@ def generate_d_model_sql_script(sql_script_fn, assignee_years):
         make_aux_tables(f)
         make_possible_d1_models(f)
         delete_previous_models(f)
-        shared_code.output_distinct_data(f, f'{table_names.possible_d_models}', f'{file_names.d1_models}')
+        make_output_d_models(f)
+        shared_code.output_distinct_data(f, f'{table_names.d_final_models}', f'{file_names.d1_models}')
