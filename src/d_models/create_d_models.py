@@ -140,7 +140,8 @@ CREATE TABLE {table_names.possible_d_models} (
     {columns.assg_st.cmd},
     {columns.assg_ctry.cmd},
     {columns.us_inv_flag.cmd},
-    {columns.assg_name.cmd}
+    {columns.assg_name.cmd},
+    {columns.num_assg.cmd}
 );
 
 INSERT INTO {table_names.possible_d_models} (
@@ -152,7 +153,8 @@ INSERT INTO {table_names.possible_d_models} (
     {columns.assg_st.name},
     {columns.assg_type.name},
     {columns.us_inv_flag.name},
-    {columns.assg_name.name}
+    {columns.assg_name.name},
+    {columns.num_assg.cmd}
 )
 SELECT
     {table_names.assignee_name_data}.{columns.xml_pat_num.name},
@@ -163,7 +165,8 @@ SELECT
     {table_names.assignee_info}.{columns.assg_st.name},
     {table_names.assignee_info}.{columns.assg_type.name},
     {table_names.prdn_metadata}.{columns.us_inv_flag.name},
-    {table_names.assignee_name_data}.{columns.assg_name.name}
+    {table_names.assignee_name_data}.{columns.assg_name.name},
+    {table_names.prdn_metadata}.{columns.num_assg.name},
 FROM
     {table_names.assignee_name_data},
     {table_names.assignee_info},
@@ -175,7 +178,7 @@ WHERE {table_names.assignee_name_data}.{columns.assg_name.name} IN (
     {table_names.assignee_name_data}.{columns.xml_pat_num.name} = {table_names.prdn_metadata}.{columns.prdn.name};
 
 ALTER TABLE {table_names.possible_d_models}
-ADD COLUMN {columns.firmid.cmd};
+ADD COLUMN {columns.firmid_null.cmd};
 
 UPDATE {table_names.possible_d_models}
 SET {columns.firmid.name} = (
@@ -210,26 +213,27 @@ def make_output_d_models(fh):
 DROP TABLE IF EXISTS {table_names.d_final_models};
 CREATE TABLE {table_names.d_final_models} AS
 SELECT
-    {table_names.possible_d_models}.{columns.prdn.name},
-    {table_names.possible_d_models}.{columns.assg_seq.name},
-    {table_names.possible_d_models}.{columns.firmid.name},
-    {table_names.possible_d_models}.{columns.app_yr.name},
-    {table_names.possible_d_models}.{columns.grant_yr.name},
-    {table_names.possible_d_models}.{columns.assg_type.name},
-    {table_names.possible_d_models}.{columns.assg_st.name},
-    {table_names.possible_d_models}.{columns.assg_ctry.name},
+    {columns.prdn.name},
+    {columns.assg_seq.name},
+    {columns.firmid.name},
+    {columns.app_yr.name},
+    {columns.grant_yr.name},
+    {columns.assg_type.name},
+    {columns.assg_st.name},
+    {columns.assg_ctry.name},
     0 AS {columns.us_assg_flag.name},
     0 AS {columns.foreign_assg_flag.name},
-    {table_names.prdn_metadata}.{columns.us_inv_flag.name},
-    {table_names.prdn_metadata}.{columns.num_assg.name},
+    {columns.us_inv_flag.name},
+    {columns.num_assg.name},
     "" AS {columns.cw_yr.name},
     "" AS {columns.emp_yr.name},
     "D1" AS {columns.model.name},
     "" AS {columns.uniq_firmid.name},
     "" AS {columns.num_inv.name}
 FROM
-    {table_names.possible_d_models},
-    {table_names.prdn_metadata};
+    {table_names.possible_d_models}
+WHERE
+    {columns.firmid.name} IS NOT NULL;
 
 -- a state => US assignee
 UPDATE {table_names.d_final_models}
