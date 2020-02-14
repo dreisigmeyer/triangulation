@@ -134,7 +134,6 @@ DROP TABLE IF EXISTS {table_names.possible_d_models};
 CREATE TABLE {table_names.possible_d_models} (
     {columns.prdn.cmd},
     {columns.assg_seq.cmd},
-    {columns.firmid.cmd},
     {columns.app_yr.cmd},
     {columns.grant_yr.cmd},
     {columns.assg_type.cmd},
@@ -153,7 +152,6 @@ INSERT INTO {table_names.possible_d_models} (
     {columns.assg_st.name},
     {columns.assg_type.name},
     {columns.us_inv_flag.name},
-    {columns.mult_assg_flag.name},
     {columns.assg_name.name}
 )
 SELECT
@@ -165,23 +163,25 @@ SELECT
     {table_names.assignee_info}.{columns.assg_st.name},
     {table_names.assignee_info}.{columns.assg_type.name},
     {table_names.prdn_metadata}.{columns.us_inv_flag.name},
-    {table_names.prdn_metadata}.{columns.mult_assg_flag.name},
     {table_names.assignee_name_data}.{columns.assg_name.name}
 FROM
     {table_names.assignee_name_data},
     {table_names.assignee_info},
     {table_names.prdn_metadata}
 WHERE {table_names.assignee_name_data}.{columns.assg_name.name} IN (
-    SELECT {columns.firm_name} FROM {table_names.firmid_name_data}) AND
+    SELECT {columns.firm_name.name} FROM {table_names.firmid_name_data}) AND
     {table_names.assignee_name_data}.{columns.xml_pat_num.name} = {table_names.assignee_info}.{columns.prdn.name} AND
     {table_names.assignee_name_data}.{columns.assg_seq.name} = {table_names.assignee_info}.{columns.assg_seq.name} AND
     {table_names.assignee_name_data}.{columns.xml_pat_num.name} = {table_names.prdn_metadata}.{columns.prdn.name};
+
+ALTER TABLE {table_names.possible_d_models}
+ADD COLUMN {columns.firmid.cmd};
 
 UPDATE {table_names.possible_d_models}
 SET {columns.firmid.name} = (
     SELECT {table_names.firmid_name_data}.{columns.firmid.name}
     FROM {table_names.firmid_name_data}
-    WHERE {table_names.possible_d_models}.{columns.assg_name.name} = {table_names.firmid_name_data}.{columns.assg_name.name}
+    WHERE {table_names.possible_d_models}.{columns.assg_name.name} = {table_names.firmid_name_data}.{columns.firm_name.name}
 );
 
 CREATE INDEX possible_d_models_indx
