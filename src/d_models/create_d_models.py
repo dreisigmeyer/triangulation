@@ -154,7 +154,7 @@ INSERT INTO {table_names.possible_d_models} (
     {columns.assg_type.name},
     {columns.us_inv_flag.name},
     {columns.assg_name.name},
-    {columns.num_assg.cmd}
+    {columns.num_assg.name}
 )
 SELECT
     {table_names.assignee_name_data}.{columns.xml_pat_num.name},
@@ -166,7 +166,7 @@ SELECT
     {table_names.assignee_info}.{columns.assg_type.name},
     {table_names.prdn_metadata}.{columns.us_inv_flag.name},
     {table_names.assignee_name_data}.{columns.assg_name.name},
-    {table_names.prdn_metadata}.{columns.num_assg.name},
+    {table_names.prdn_metadata}.{columns.num_assg.name}
 FROM
     {table_names.assignee_name_data},
     {table_names.assignee_info},
