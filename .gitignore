@@ -2,7 +2,6 @@
 *_TITLED*
 /cfg_files/TITLED/*
 !/cfg_files/TITLED/.gitignore
-!/cfg_files/TITLED/__init__.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
