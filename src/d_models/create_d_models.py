@@ -352,7 +352,7 @@ WHERE
     {table_names.assg_name_firmid}.{columns.firmid.name} IS NOT NULL AND
     {table_names.possible_d_models}.{columns.assg_name.name} IN (SELECT {columns.assg_name.name} FROM {table_names.big_firm_names}) AND
     {table_names.possible_d_models}.{columns.grant_yr.name} = {table_names.assg_name_firmid}.{columns.year.name} AND
-    {table_names.possible_d_models}.{columns.assg_name.name} = {table_names.assg_name_firmid}.{columns.assg_name};
+    {table_names.possible_d_models}.{columns.assg_name.name} = {table_names.assg_name_firmid}.{columns.assg_name.name};
 
 -- a state => US assignee
 UPDATE {table_names.d_final_models}
