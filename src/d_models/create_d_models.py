@@ -101,17 +101,6 @@ CREATE TABLE {table_names.firmid_name_data} (
     )
 );
 
-CREATE TABLE {table_names.assg_name_firmid} (
-    {columns.firm_name.cmd},
-    {columns.year.cmd},
-    {columns.firmid.cmd},
-    UNIQUE(
-        {columns.firm_name.name},
-        {columns.year.name},
-        {columns.firmid.name}
-    )
-);
-
 INSERT INTO {table_names.name_match_prdn_assg_num}
 SELECT DISTINCT
     {columns.xml_pat_num.name},
@@ -275,7 +264,7 @@ def make_possible_d2_models(fh):
 
     fh.write(
         f'''
-.import {file_names.out_data_path}{file_names.d1_models} {table_names.d1_models}
+.import {file_names.d1_models} {table_names.d1_models}
 
 CREATE INDEX d1_final_indx
 ON {table_names.d1_models} (
@@ -363,7 +352,7 @@ WHERE
     {table_names.assg_name_firmid}.{columns.firmid.name} IS NOT NULL AND
     {table_names.possible_d_models}.{columns.assg_name.name} IN (SELECT {columns.assg_name.name} FROM {table_names.big_firm_names}) AND
     {table_names.possible_d_models}.{columns.grant_yr.name} = {table_names.assg_name_firmid}.{columns.year.name} AND
-    {table_names.possible_d_models}.{columns.assg_name.name} = {table_names.assg_name_firmid}.name;
+    {table_names.possible_d_models}.{columns.assg_name.name} = {table_names.assg_name_firmid}.{columns.assg_name};
 
 -- a state => US assignee
 UPDATE {table_names.d_final_models}
