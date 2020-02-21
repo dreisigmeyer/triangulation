@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Get the prdn|assg_seq|grant_yr|assg_st|assg_ctry|xml_name|uspto_name|corrected_name|assg_type
-# awk -F'|' -v OFS='|' '{ if ($4 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv | sort -u > prdn_seq_name.csv
-# awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv | 
 awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1,$6,$3,$9,$10,$5,$11,$12,$7}}' ../inData/assigneeOutData/*.csv | 
     grep -v "INDIVIDUALLY OWNED PATENT" |
     sort -T ./ -u > prdn_seq_name.csv
@@ -17,8 +15,6 @@ awk -F'|' -v OFS='|' '{ col6=$6;  gsub("[^A-Z0-9 ]","",col6); col7=$7; gsub("[^A
 sed -i 's/|/,/g' prdn_seq_stand_name.csv
 rm prdn_seq_name.csv
 
-# awk -F'|' -v OFS='|' '{ if ($4 != "") {print $1$5,$1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv | sort -u > prdn_seq_name.csv
-# awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1$5,$1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv | 
 awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1$6,$1,$6,$3,$9,$10,$5,$11,$12,$7}}' ../inData/assigneeOutData/*.csv | 
     grep -v "INDIVIDUALLY OWNED PATENT" |
     sort -T ./ -u > prdn_seq_name.csv

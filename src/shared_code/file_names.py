@@ -5,6 +5,7 @@ sql_script_path = './triangulation/src/tmp/'
 
 # in data file names
 assignee_info_csvfile = f'{in_data_path}assignee_info.csv'
+assignee_out_data = f'{in_data_path}assignee_out_data/'
 assg_yr_firmid_csvfile = f'{in_data_path}assg_yr_firmid.csv'
 ein_data_csvfile = f'{in_data_path}prdn_eins.csv'
 iops = f'{in_data_path}iops.csv'
