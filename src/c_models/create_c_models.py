@@ -158,7 +158,7 @@ WHERE
     firmid_count.{columns.prdn.name} = {table_names.assignee_info}.{columns.prdn.name} AND
     firmid_count.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name};
 
--- a state => US assignee
+    -- a state => US assignee
 UPDATE {tbl_name}
 SET {columns.us_assg_flag.name} = 1
 WHERE {columns.assg_st.name} != "";
@@ -356,6 +356,17 @@ WHERE
     {table_names.c2_models_out}.{columns.prdn.name} = {table_names.assignee_info}.{columns.prdn.name}
 ORDER BY
     {table_names.c2_models_out}.{columns.prdn.name};
+
+-- a state => US assignee
+UPDATE {table_names.c3_models}
+SET {columns.us_assg_flag.name} = 1
+WHERE {columns.assg_st.name} != "";
+-- no state + country => foreign assignee
+UPDATE {table_names.c3_models}
+SET {columns.foreign_assg_flag.name} = 1
+WHERE
+    {columns.us_assg_flag.name} != 1 AND
+    {columns.assg_ctry.name} != "";
     ''')
 
 
