@@ -158,7 +158,7 @@ WHERE
     firmid_count.{columns.prdn.name} = {table_names.assignee_info}.{columns.prdn.name} AND
     firmid_count.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name};
 
-    -- a state => US assignee
+-- a state => US assignee
 UPDATE {tbl_name}
 SET {columns.us_assg_flag.name} = 1
 WHERE {columns.assg_st.name} != "";
