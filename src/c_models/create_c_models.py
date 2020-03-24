@@ -358,11 +358,11 @@ ORDER BY
     {table_names.c2_models_out}.{columns.prdn.name};
 
 -- a state => US assignee
-UPDATE {table_names.c3_models}
+UPDATE {table_names.c2_models}
 SET {columns.us_assg_flag.name} = 1
 WHERE {columns.assg_st.name} != "";
 -- no state + country => foreign assignee
-UPDATE {table_names.c3_models}
+UPDATE {table_names.c2_models}
 SET {columns.foreign_assg_flag.name} = 1
 WHERE
     {columns.us_assg_flag.name} != 1 AND
