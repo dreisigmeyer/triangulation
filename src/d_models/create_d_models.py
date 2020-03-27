@@ -112,21 +112,21 @@ INSERT INTO {table_names.firmid_seq_data}
 SELECT DISTINCT
     {columns.prdn.name},
     {columns.assg_seq.name},
-    {columns.firmid.name}
+    {columns.assg_firmid.name}
 FROM {table_names.a1_models};
 
 INSERT INTO {table_names.firmid_seq_data}
 SELECT DISTINCT
     {columns.prdn.name},
     {columns.assg_seq.name},
-    {columns.firmid.name}
+    {columns.assg_firmid.name}
 FROM {table_names.a2_models};
 
 INSERT INTO {table_names.firmid_seq_data}
 SELECT DISTINCT
     {columns.prdn.name},
     {columns.assg_seq.name},
-    {columns.firmid.name}
+    {columns.assg_firmid.name}
 FROM {table_names.a3_models};
 
 INSERT INTO {table_names.firmid_name_data}
