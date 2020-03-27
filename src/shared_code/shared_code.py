@@ -136,17 +136,17 @@ def idx_d_model(fh):
 CREATE INDEX a1_models_indx
 ON {table_names.a1_models} (
     {columns.prdn.name},
-    {columns.firmid.name},
+    {columns.assg_firmid.name},
     {columns.assg_seq.name});
 CREATE INDEX a2_models_indx
 ON {table_names.a2_models} (
     {columns.prdn.name},
-    {columns.firmid.name},
+    {columns.assg_firmid.name},
     {columns.assg_seq.name});
 CREATE INDEX a3_models_indx
 ON {table_names.a3_models} (
     {columns.prdn.name},
-    {columns.firmid.name},
+    {columns.assg_firmid.name},
     {columns.assg_seq.name});
 CREATE INDEX b1_models_indx
 ON {table_names.b1_models} (
