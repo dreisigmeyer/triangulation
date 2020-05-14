@@ -1,4 +1,3 @@
-# triangulation
 Code to find patent triangulation models.
 This can be run by issuing the command outside of this directory
 `python -m triangulation assignee_76_16.csv`
