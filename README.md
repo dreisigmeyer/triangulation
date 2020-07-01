@@ -35,7 +35,8 @@ CREATE TABLE assignee_info (
 );
 ~~~
 - `iops.csv`: CSV file created by the assignee_prep2 preprocessing phase.
-This is used to create a file giving the PRDN and assignee sequence number of inventor owned patents.
+This will need some preprocessing (see below for how to do this).
+The preprocessed file has the SQL table structure
 ~~~
 CREATE TABLE iops (
     prdn TEXT NOT NULL,
@@ -100,6 +101,8 @@ CREATE TABLE pik_data (
 Some of the input data files need to be preprocessed due to changes in file formats or files created.
 As an example, the following commands were used for the run that occured in 2019-2020.
 
+ 
+    awk -F'|' -v OFS=',' '{print $1,$4}' iops.csv | sort -T ./ -u > iops_prdn_assg_seq.csv  
     # carra_for_triangulation  
     tail -n +2 carra_for_triangulation.csv > holder.csv  
     awk -F',' -v OFS=',' '{print $10,$6,$5,$8,$3,$4,$7,$1}' holder.csv > prdn_piks.csv
@@ -118,7 +121,9 @@ As an example, the following commands were used for the run that occured in 2019
     cat holder.csv >> assg_yr_firmid.csv  
     # Create assignee_info.csv with structure PRDN,ASSG_NUM,ASSG_TYPE,ST,CTRY:  
     `awk -F'|' -v OFS=',' '{print $1,$6,$7,$9,$10}' assigneeOutData/*.csv > assignee_info.csv  
-    # Cut last column off prdn_metadata.csv  
+    # Cut last column off prdn_metadata.csv then do  
+    sort -T ./ -u prdn_metadata.csv > holder  
+    mv holder prdn_metadata.csv  
 
 
 ## Setting up the Python environment
@@ -135,7 +140,7 @@ This file name will likely change each year.
 
 
 ## The individual pieces of the code
-The general methodology used her is to first generate SQLite3 code using Python, and then to run the SQLite3 code to find the triangulation models.
+The general methodology used here is to first generate SQLite3 code using Python, and then to run the SQLite3 code to find the triangulation models.
 The Python code to generate each model is located in **src/[abcdef]_models** in the file **create\_[abcdef]\_models.py**.
 The generated SQLite3 code is placed into **src/tmp** as **create\_[abcdef]\_models.sql**.
 
