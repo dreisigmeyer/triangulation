@@ -35,6 +35,14 @@ CREATE TABLE assignee_info (
 );
 ~~~
 - `iops.csv`: CSV file created by the assignee_prep2 preprocessing phase.
+This is used to create a file giving the PRDN and assignee sequence number of inventor owned patents.
+~~~
+CREATE TABLE iops (
+    prdn TEXT NOT NULL,
+    assg_seq INTEGER NOT NULL,
+    UNIQUE(prdn, assg_seq)
+);
+~~~
 - `name_match.csv`: Created upstream and may need to be preprocessed (see below for how to do this).
 SQL table structure is  
 ~~~
