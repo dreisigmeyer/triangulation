@@ -8,7 +8,7 @@ Here is a list of the files and their descriptions.
 Some of the input data files needs to be preprocessed due to changes in file formats or files created.
 As an example, the following commands were used for the run that occured in 2019-2020.
 
-`# carra_for_triangulation`  
+> `# carra_for_triangulation`  
 `tail -n +2 carra_for_triangulation.csv > holder.csv`  
 `awk -F',' -v OFS=',' '{print $10,$6,$5,$8,$3,$4,$7,$1}' holder.csv > prdn_piks.csv
 rm holder.csv`  
