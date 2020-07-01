@@ -7,26 +7,27 @@ Here is a list of the files and their descriptions.
 
 Some of the input data files needs to be preprocessed due to changes in file formats or files created.
 As an example, the following commands were used for the run that occured in 2019-2020.
-`# carra_for_triangulation`
-`tail -n +2 carra_for_triangulation.csv > holder.csv`
+
+`# carra_for_triangulation`  
+`tail -n +2 carra_for_triangulation.csv > holder.csv`  
 `awk -F',' -v OFS=',' '{print $10,$6,$5,$8,$3,$4,$7,$1}' holder.csv > prdn_piks.csv
-rm holder.csv`
-`# Put prdn_piks.csv into sql directory`
-`# Need to create firmid in name_match file and remove last two columns:`
-`awk -F, -v OFS=, '{ print $1,$2,$3,$4,$5,$6,$12,$8,$9}' name_match.csv > name_match_HOLD.csv`
-`mv name_match.csv name_match.csv_SAVED`
-`tail -n +2 name_match_HOLD.csv > name_match.csv`
-`awk -F',' -v OFS=',' '{print $1,$4,$3,$6,$7,$9,$8}' name_match.csv > prdn_eins.csv`
-`rm name_match_HOLD.csv`
-`# Put prdn_eins.csv into sql directory`
-`# Put name_match.csv into inData directory`
-`# Extend assg_yr_firmid.csv to new year`
-`awk -F',' -v OFS=',' '{ if ($2==2015) {print $1,2016,$3"\n"$1,2017,$3}}' assg_yr_firmid.csv > holder.csv`
-`cat holder.csv >> assg_yr_firmid.csv`
-`# Create assignee_info.csv with structure PRDN,ASSG_NUM,ASSG_TYPE,ST,CTRY:`
-`awk -F'|' -v OFS=',' '{print $1,$6,$7,$9,$10}' assigneeOutData/*.csv > assignee_info.csv`
-`# Cut last column off prdn_metadata.csv`
-`# Modify name ../inData/assignee_76_16.csv in create_Dmodels.sql and create_Fmodels.sql`
+rm holder.csv`  
+`# Put prdn_piks.csv into sql directory`  
+`# Need to create firmid in name_match file and remove last two columns:`  
+`awk -F, -v OFS=, '{ print $1,$2,$3,$4,$5,$6,$12,$8,$9}' name_match.csv > name_match_HOLD.csv`  
+`mv name_match.csv name_match.csv_SAVED`  
+`tail -n +2 name_match_HOLD.csv > name_match.csv`  
+`awk -F',' -v OFS=',' '{print $1,$4,$3,$6,$7,$9,$8}' name_match.csv > prdn_eins.csv`  
+`rm name_match_HOLD.csv`  
+`# Put prdn_eins.csv into sql directory`  
+`# Put name_match.csv into inData directory`  
+`# Extend assg_yr_firmid.csv to new year`  
+`awk -F',' -v OFS=',' '{ if ($2==2015) {print $1,2016,$3"\n"$1,2017,$3}}' assg_yr_firmid.csv > holder.csv`  
+`cat holder.csv >> assg_yr_firmid.csv`  
+`# Create assignee_info.csv with structure PRDN,ASSG_NUM,ASSG_TYPE,ST,CTRY:`  
+`awk -F'|' -v OFS=',' '{print $1,$6,$7,$9,$10}' assigneeOutData/*.csv > assignee_info.csv`  
+`# Cut last column off prdn_metadata.csv`  
+`# Modify name ../inData/assignee_76_16.csv in create_Dmodels.sql and create_Fmodels.sql`  
 
 
 ## Setting up the Python environment
