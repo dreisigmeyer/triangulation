@@ -119,6 +119,7 @@ As an example, the following commands were used for the run that occured in 2019
     # Extend assg_yr_firmid.csv to new year  
     awk -F',' -v OFS=',' '{ if ($2==2015) {print $1,2016,$3"\n"$1,2017,$3}}' assg_yr_firmid.csv > holder.csv  
     cat holder.csv >> assg_yr_firmid.csv  
+    rm holder  
     # Create assignee_info.csv with structure PRDN,ASSG_NUM,ASSG_TYPE,ST,CTRY:  
     `awk -F'|' -v OFS=',' '{print $1,$6,$7,$9,$10}' assigneeOutData/*.csv > assignee_info.csv  
     # Cut last column off prdn_metadata.csv then do  
