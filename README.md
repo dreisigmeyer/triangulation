@@ -6,7 +6,17 @@ All of the required input datashould be placed into the **in\_data** directory.
 Here is a list of the files and their descriptions.
 
 * `prdn_eins.csv`:
-* `prdn_piks.csv`:
+* `prdn_piks.csv`: File created from `carra_for_triangulation.csv` (see below for how to do this).  SQL table structure is
+        CREATE TABLE IF NOT EXISTS pik_data (
+            prdn TEXT NOT NULL,
+            grant_yr INTEGER NOT NULL,
+            app_yr INTEGER NOT NULL,
+            inv_seq INTEGER NOT NULL,
+            pik TEXT NOT NULL,
+            ein TEXT NOT NULL,
+            firmid TEXT NOT NULL,
+            emp_yr INTEGER NOT NULL
+        );
 * `assignee_info.csv`:
 * `prdn_metadata.csv`
 * `name_match.csv`:
