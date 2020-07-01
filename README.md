@@ -15,13 +15,13 @@ CREATE TABLE assg_name_firmid (
     UNIQUE(assg_name, year, firmid)
 );
 ~~~
-- `assignee_76_16.csv`:
+- `assignee_76_16.csv`: Created upstream.
 SQL table structure is  
 ~~~
 CREATE TABLE IF NOT EXISTS assignee_name_data (
 );
 ~~~
-- `assignee_info.csv`: File created from CSV files generated during the preprocessing phase (see below for how to do this).
+- `assignee_info.csv`: File created from CSV files output from the assignee_prep2 preprocessing phase (see below for how to do this).
 SQL table structure is  
 ~~~
 CREATE TABLE IF NOT EXISTS assignee_info (
@@ -47,7 +47,8 @@ CREATE TABLE name_match (
     cw_yr INTEGER NOT NULL
 );
 ~~~
-- `prdn_eins.csv`: File created from `name_match.csv` (see below for how to do this).  SQL table structure is  
+- `prdn_eins.csv`: File created from `name_match.csv` (see below for how to do this).
+SQL table structure is  
 ~~~
 CREATE TABLE IF NOT EXISTS ein_data (
     prdn TEXT NOT NULL,
@@ -59,7 +60,8 @@ CREATE TABLE IF NOT EXISTS ein_data (
     pass_num INTEGER NOT NULL
 );
 ~~~
-- `prdn_metadata.csv`:
+- `prdn_metadata.csv`: CSV file output from the carra_prep2 preprocessing phase.
+This will need some preprocessing (see below for how to do this).
 SQL table structure is  
 ~~~
 CREATE TABLE IF NOT EXISTS prdn_metadata (
