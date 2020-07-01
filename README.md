@@ -5,7 +5,71 @@ Code to find patent triangulation models.
 All of the required input datashould be placed into the **in\_data** directory.
 Here is a list of the files and their descriptions.
 
-- `prdn_eins.csv`:
+- `assg_yr_firmid.csv`:
+SQL table structure is  
+~~~
+CREATE TABLE assg_name_firmid (
+    assg_name TEXT NOT NULL,
+    year INTEGER,
+    firmid TEXT NOT NULL,
+    UNIQUE(assg_name, year, firmid)
+);
+~~~
+- `assignee_76_16.csv`:
+SQL table structure is  
+~~~
+CREATE TABLE IF NOT EXISTS assignee_name_data (
+);
+~~~
+- `assignee_info.csv`: File created from CSV files generated during the preprocessing phase (see below for how to do this).
+SQL table structure is  
+~~~
+CREATE TABLE IF NOT EXISTS assignee_info (
+    prdn TEXT NOT NULL,
+    assg_seq INTEGER NOT NULL,
+    assg_type TEXT,
+    assg_st TEXT,
+    assg_ctry TEXT
+);
+~~~
+- `name_match.csv`: Created upstream and may need to be preprocessed (see below for how to do this).
+SQL table structure is  
+~~~
+CREATE TABLE name_match (
+    xml_pat_num TEXT NOT NULL,
+    uspto_pat_num TEXT NOT NULL,
+    assg_seq INTEGER NOT NULL,
+    grant_yr INTEGER NOT NULL,
+    zip3_flag INTEGER,
+    ein TEXT NOT NULL,
+    firmid TEXT NOT NULL,
+    pass_num INTEGER NOT NULL,
+    cw_yr INTEGER NOT NULL
+);
+~~~
+- `prdn_eins.csv`: File created from `name_match.csv` (see below for how to do this).  SQL table structure is  
+~~~
+CREATE TABLE IF NOT EXISTS ein_data (
+    prdn TEXT NOT NULL,
+    grant_yr INTEGER NOT NULL,
+    assg_seq INTEGER NOT NULL,
+    ein TEXT NOT NULL,
+    firmid TEXT NOT NULL,
+    cw_yr INTEGER NOT NULL,
+    pass_num INTEGER NOT NULL
+);
+~~~
+- `prdn_metadata.csv`:
+SQL table structure is  
+~~~
+CREATE TABLE IF NOT EXISTS prdn_metadata (
+    prdn TEXT NOT NULL,
+    grant_yr INTEGER NOT NULL,
+    app_yr INTEGER NOT NULL,
+    num_assg INTEGER,
+    us_inv_flag INTEGER
+);
+~~~
 - `prdn_piks.csv`: File created from `carra_for_triangulation.csv` (see below for how to do this).  SQL table structure is  
 ~~~
 CREATE TABLE IF NOT EXISTS pik_data (
@@ -19,11 +83,6 @@ CREATE TABLE IF NOT EXISTS pik_data (
     emp_yr INTEGER NOT NULL
 );
 ~~~
-- `assignee_info.csv`:
-- `prdn_metadata.csv`
-- `name_match.csv`:
-- `assg_yr_firmid.csv`:
-= `assignee_76_16.csv`:
 
 Some of the input data files need to be preprocessed due to changes in file formats or files created.
 As an example, the following commands were used for the run that occured in 2019-2020.
