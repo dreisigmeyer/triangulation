@@ -2,10 +2,11 @@ Code to find patent triangulation models.
 
 
 ## Getting the data
-All of the required input datashould be placed into the **in\_data** directory.
-Here is a list of the files and their descriptions.
+All of the required input data will be placed into the **in\_data** directory.
+Here is a list of the files and their formats.
 
-- `assg_yr_firmid.csv`:
+- `assg_yr_firmid.csv`: Hand mapping of name to firmid.
+Can be updated each year automatically (see below on how this is done), or by hand.
 SQL table structure is  
 ~~~
 CREATE TABLE assg_name_firmid (
@@ -18,13 +19,14 @@ CREATE TABLE assg_name_firmid (
 - `assignee_76_16.csv`: Created upstream.
 SQL table structure is  
 ~~~
-CREATE TABLE IF NOT EXISTS assignee_name_data (
+CREATE TABLE assignee_name_data (
 );
 ~~~
-- `assignee_info.csv`: File created from CSV files output from the assignee_prep2 preprocessing phase (see below for how to do this).
+- `assignee_info.csv`: File created from CSV files output from the assignee_prep2 preprocessing phase.
+These will be preprocessed (see below for how to do this).
 SQL table structure is  
 ~~~
-CREATE TABLE IF NOT EXISTS assignee_info (
+CREATE TABLE assignee_info (
     prdn TEXT NOT NULL,
     assg_seq INTEGER NOT NULL,
     assg_type TEXT,
@@ -32,6 +34,7 @@ CREATE TABLE IF NOT EXISTS assignee_info (
     assg_ctry TEXT
 );
 ~~~
+- `iops.csv`: CSV file created by the assignee_prep2 preprocessing phase.
 - `name_match.csv`: Created upstream and may need to be preprocessed (see below for how to do this).
 SQL table structure is  
 ~~~
@@ -50,7 +53,7 @@ CREATE TABLE name_match (
 - `prdn_eins.csv`: File created from `name_match.csv` (see below for how to do this).
 SQL table structure is  
 ~~~
-CREATE TABLE IF NOT EXISTS ein_data (
+CREATE TABLE ein_data (
     prdn TEXT NOT NULL,
     grant_yr INTEGER NOT NULL,
     assg_seq INTEGER NOT NULL,
@@ -64,7 +67,7 @@ CREATE TABLE IF NOT EXISTS ein_data (
 This will need some preprocessing (see below for how to do this).
 SQL table structure is  
 ~~~
-CREATE TABLE IF NOT EXISTS prdn_metadata (
+CREATE TABLE prdn_metadata (
     prdn TEXT NOT NULL,
     grant_yr INTEGER NOT NULL,
     app_yr INTEGER NOT NULL,
@@ -74,7 +77,7 @@ CREATE TABLE IF NOT EXISTS prdn_metadata (
 ~~~
 - `prdn_piks.csv`: File created from `carra_for_triangulation.csv` (see below for how to do this).  SQL table structure is  
 ~~~
-CREATE TABLE IF NOT EXISTS pik_data (
+CREATE TABLE pik_data (
     prdn TEXT NOT NULL,
     grant_yr INTEGER NOT NULL,
     app_yr INTEGER NOT NULL,
