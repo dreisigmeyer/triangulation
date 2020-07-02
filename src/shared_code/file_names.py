@@ -13,6 +13,7 @@ iops_unique = f'{in_data_path}iops_prdn_assg_seq.csv'
 name_match_csvfile = f'{in_data_path}name_match.csv'
 pik_data_csvfile = f'{in_data_path}prdn_piks.csv'
 prdn_metadata_csvfile = f'{in_data_path}prdn_metadata.csv'
+prdn_seq_stand_name = f'{in_data_path}prdn_seq_stand_name.csv'
 
 # out data file names
 a1_models = f'{out_data_path}a1_models.csv'

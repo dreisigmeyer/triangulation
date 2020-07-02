@@ -2,126 +2,126 @@
 
 */
 
-.mode csv
-pragma temp_store = MEMORY;
+-- pragma temp_store = MEMORY;
+-- .mode csv
 
--- this has the name match standardized names on it
-.headers ON
-.import ../inData/assignee_76_16.csv assignee_name_data
-.headers OFF
-CREATE INDEX assignee_name_data_indx
-ON assignee_name_data
-(xml_pat_num, assg_num);
+-- -- this has the name match standardized names on it
+-- .headers ON
+-- .import ../inData/assignee_76_16.csv assignee_name_data
+-- .headers OFF
+-- CREATE INDEX assignee_name_data_indx
+-- ON assignee_name_data
+-- (xml_pat_num, assg_num);
 
--- this is what was sent into the name match
-CREATE TABLE holder (
-    prdn TEXT NOT NULL,
-    assg_seq INT NOT NULL,
-    grant_yr INT NOT NULL,
-    assg_st TEXT,
-    assg_ctry TEXT,
-    xml_name TEXT NOT NULL,
-    uspto_name TEXT,
-    corrected_name TEXT,
-    assg_type TEXT NOT NULL,
-    UNIQUE(prdn, assg_seq)
-);
-.import prdn_seq_stand_name.csv holder
+-- -- this is what was sent into the name match
+-- CREATE TABLE holder (
+--     prdn TEXT NOT NULL,
+--     assg_seq INT NOT NULL,
+--     grant_yr INT NOT NULL,
+--     assg_st TEXT,
+--     assg_ctry TEXT,
+--     xml_name TEXT NOT NULL,
+--     uspto_name TEXT,
+--     corrected_name TEXT,
+--     assg_type TEXT NOT NULL,
+--     UNIQUE(prdn, assg_seq)
+-- );
+-- .import prdn_seq_stand_name.csv holder
 
-CREATE TABLE prdn_assg_names AS
-SELECT
-    holder.*,
-    assignee_name_data.name AS name_match_name
-FROM
-    holder
-JOIN
-    assignee_name_data
-ON
-    holder.prdn = assignee_name_data.xml_pat_num AND
-    holder.assg_seq = assignee_name_data.assg_num;
+-- CREATE TABLE prdn_assg_names AS
+-- SELECT
+--     holder.*,
+--     assignee_name_data.name AS name_match_name
+-- FROM
+--     holder
+-- JOIN
+--     assignee_name_data
+-- ON
+--     holder.prdn = assignee_name_data.xml_pat_num AND
+--     holder.assg_seq = assignee_name_data.assg_num;
 
-CREATE INDEX an_xml_indx
-ON prdn_assg_names
-(prdn, assg_seq, xml_name);
-CREATE INDEX an_uspto_indx
-ON prdn_assg_names
-(prdn, assg_seq, uspto_name);
-CREATE INDEX an_corrected_indx
-ON prdn_assg_names
-(prdn, assg_seq, corrected_name);
-CREATE INDEX an_name_match_indx
-ON prdn_assg_names
-(prdn, assg_seq, name_match_name);
+-- CREATE INDEX an_xml_indx
+-- ON prdn_assg_names
+-- (prdn, assg_seq, xml_name);
+-- CREATE INDEX an_uspto_indx
+-- ON prdn_assg_names
+-- (prdn, assg_seq, uspto_name);
+-- CREATE INDEX an_corrected_indx
+-- ON prdn_assg_names
+-- (prdn, assg_seq, corrected_name);
+-- CREATE INDEX an_name_match_indx
+-- ON prdn_assg_names
+-- (prdn, assg_seq, name_match_name);
 
-DROP TABLE assignee_name_data;
-DROP TABLE holder;
+-- DROP TABLE assignee_name_data;
+-- DROP TABLE holder;
 
--- from the hand-corrected D2 models
-CREATE TABLE assg_name_firmid (
-    name TEXT NOT NULL,
-    yr INT,
-    firmid TEXT NOT NULL,
-    UNIQUE(name, yr, firmid)
-);
-.import ../inData/assg_yr_firmid.csv assg_name_firmid
+-- -- from the hand-corrected D2 models
+-- CREATE TABLE assg_name_firmid (
+--     name TEXT NOT NULL,
+--     yr INT,
+--     firmid TEXT NOT NULL,
+--     UNIQUE(name, yr, firmid)
+-- );
+-- .import ../inData/assg_yr_firmid.csv assg_name_firmid
 
-.headers ON
--- from the A1 models
-CREATE TABLE a1_information (
-    prdn TEXT NOT NULL,
-    assg_seq INT NOT NULL,
-    firmid TEXT NOT NULL,
-    app_yr INT NOT NULL,
-    grant_yr INT NOT NULL,
-    assg_type INT,
-    assg_st TEXT,
-    assg_ctry TEXT,
-    us_assignee_flag INT,
-    foreign_assignee_flag INT,
-    us_inventor_flag INT,
-    multiple_assignee_flag INT,
-    br_yr INT NOT NULL,
-    lehd_yr INT,
-    model_type TEXT,
-    unique_firm_id INT,        
-    count INT,
-    UNIQUE (prdn, assg_seq, firmid)
-);
-.import ../outData/a1_models.csv a1_information
+-- .headers ON
+-- -- from the A1 models
+-- CREATE TABLE a1_information (
+--     prdn TEXT NOT NULL,
+--     assg_seq INT NOT NULL,
+--     firmid TEXT NOT NULL,
+--     app_yr INT NOT NULL,
+--     grant_yr INT NOT NULL,
+--     assg_type INT,
+--     assg_st TEXT,
+--     assg_ctry TEXT,
+--     us_assignee_flag INT,
+--     foreign_assignee_flag INT,
+--     us_inventor_flag INT,
+--     multiple_assignee_flag INT,
+--     br_yr INT NOT NULL,
+--     lehd_yr INT,
+--     model_type TEXT,
+--     unique_firm_id INT,        
+--     count INT,
+--     UNIQUE (prdn, assg_seq, firmid)
+-- );
+-- .import ../outData/a1_models.csv a1_information
 
-CREATE TABLE d2_information (
-    prdn TEXT NOT NULL,
-    assg_seq INT NOT NULL,
-    firmid TEXT NOT NULL,
-    app_yr INT NOT NULL,
-    grant_yr INT NOT NULL,
-    assg_type INT,
-    assg_st TEXT,
-    assg_ctry TEXT,
-    us_assignee_flag INT,
-    foreign_assignee_flag INT,
-    us_inventor_flag INT,
-    multiple_assignee_flag INT,
-    br_yr INT NOT NULL,
-    lehd_yr INT,
-    model_type TEXT,
-    unique_firm_id INT,        
-    count INT,
-    UNIQUE (prdn, assg_seq, firmid)
-);
-.import ../outData/d2_models.csv d2_information
-.headers OFF
+-- CREATE TABLE d2_information (
+--     prdn TEXT NOT NULL,
+--     assg_seq INT NOT NULL,
+--     firmid TEXT NOT NULL,
+--     app_yr INT NOT NULL,
+--     grant_yr INT NOT NULL,
+--     assg_type INT,
+--     assg_st TEXT,
+--     assg_ctry TEXT,
+--     us_assignee_flag INT,
+--     foreign_assignee_flag INT,
+--     us_inventor_flag INT,
+--     multiple_assignee_flag INT,
+--     br_yr INT NOT NULL,
+--     lehd_yr INT,
+--     model_type TEXT,
+--     unique_firm_id INT,        
+--     count INT,
+--     UNIQUE (prdn, assg_seq, firmid)
+-- );
+-- .import ../outData/d2_models.csv d2_information
+-- .headers OFF
 
--- metadata for the patents: 
-CREATE TABLE patent_metadata (
-    prdn TEXT NOT NULL,
-    grant_yr INT NOT NULL,
-    app_yr INT NOT NULL,
-    num_assigs INT NOT NULL,
-    us_inventor_flag INT NOT NULL,
-    UNIQUE (prdn, grant_yr) -- for index on grant_yr
-);
-.import ../inData/prdn_metadata.csv patent_metadata
+-- -- metadata for the patents: 
+-- CREATE TABLE patent_metadata (
+--     prdn TEXT NOT NULL,
+--     grant_yr INT NOT NULL,
+--     app_yr INT NOT NULL,
+--     num_assigs INT NOT NULL,
+--     us_inventor_flag INT NOT NULL,
+--     UNIQUE (prdn, grant_yr) -- for index on grant_yr
+-- );
+-- .import ../inData/prdn_metadata.csv patent_metadata
 
 -- this will be the final output
 CREATE TABLE f_models (
@@ -147,38 +147,38 @@ CREATE TABLE f_models (
     UNIQUE (prdn, assg_seq, firmid, model_type, standardized_name, alias_name)
 );
 
--- collect together all of the name spellings, firmids and valid years
-CREATE TABLE name_information AS
-SELECT DISTINCT
-    prdn_assg_names.xml_name AS xml_name,
-    prdn_assg_names.uspto_name AS uspto_name,
-    prdn_assg_names.corrected_name AS corrected_name,
-    prdn_assg_names.name_match_name AS name_match_name,
-    prdn_assg_names.assg_st AS assg_st,
-    prdn_assg_names.assg_ctry AS assg_ctry,
-    a1_information.br_yr AS br_yr,
-    a1_information.firmid AS a1_model_firmid
-FROM 
-    prdn_assg_names,
-    a1_information
-WHERE
-    prdn_assg_names.prdn = a1_information.prdn AND
-    prdn_assg_names.assg_seq = a1_information.assg_seq;
+-- -- collect together all of the name spellings, firmids and valid years
+-- CREATE TABLE name_information AS
+-- SELECT DISTINCT
+--     prdn_assg_names.xml_name AS xml_name,
+--     prdn_assg_names.uspto_name AS uspto_name,
+--     prdn_assg_names.corrected_name AS corrected_name,
+--     prdn_assg_names.name_match_name AS name_match_name,
+--     prdn_assg_names.assg_st AS assg_st,
+--     prdn_assg_names.assg_ctry AS assg_ctry,
+--     a1_information.br_yr AS br_yr,
+--     a1_information.firmid AS a1_model_firmid
+-- FROM 
+--     prdn_assg_names,
+--     a1_information
+-- WHERE
+--     prdn_assg_names.prdn = a1_information.prdn AND
+--     prdn_assg_names.assg_seq = a1_information.assg_seq;
     
 -- we'll map all of the (mis)spellings onto a standardized (USPTO) name
-CREATE TABLE standard_name_to_firmid (
-    standard_name TEXT NOT NULL,
-    alias_name TEXT,
-    valid_yr INT NOT NULL,
-    firmid TEXT NOT NULL,
-    state TEXT,
-    country TEXT,
-    model_origin TEXT NOT NULL,
-    sn_on_prdn_count INT,
-    alias_on_prdn_count INT
-);
-CREATE UNIQUE INDEX sn_indx ON standard_name_to_firmid
-(standard_name, valid_yr, firmid, alias_name, model_origin);
+-- CREATE TABLE standard_name_to_firmid (
+--     standard_name TEXT NOT NULL,
+--     alias_name TEXT,
+--     valid_yr INT NOT NULL,
+--     firmid TEXT NOT NULL,
+--     state TEXT,
+--     country TEXT,
+--     model_origin TEXT NOT NULL,
+--     sn_on_prdn_count INT,
+--     alias_on_prdn_count INT
+-- );
+-- CREATE UNIQUE INDEX sn_indx ON standard_name_to_firmid
+-- (standard_name, valid_yr, firmid, alias_name, model_origin);
 
 -- and now get the by year map from the A1 model information: 
 --      standard name -> mis-/alternate spelling -> firmid
@@ -272,25 +272,25 @@ FROM
 WHERE
     name_match_name != "";
     
-DROP TABLE name_information;
-CREATE TABLE name_information AS
-SELECT DISTINCT
-    prdn_assg_names.xml_name AS xml_name,
-    prdn_assg_names.uspto_name AS uspto_name,
-    prdn_assg_names.corrected_name AS corrected_name,
-    prdn_assg_names.name_match_name AS name_match_name,
-    --assignee_name_data.name AS name_match_name,
-    prdn_assg_names.assg_st AS assg_st,
-    prdn_assg_names.assg_ctry AS assg_ctry,
-    d2_information.grant_yr AS br_yr,
-    d2_information.firmid AS d2_model_firmid
-FROM 
-    prdn_assg_names,
-    d2_information
-    --,assignee_name_data
-WHERE
-    prdn_assg_names.prdn = d2_information.prdn AND
-    prdn_assg_names.assg_seq = d2_information.assg_seq;
+-- DROP TABLE name_information;
+-- CREATE TABLE name_information AS
+-- SELECT DISTINCT
+--     prdn_assg_names.xml_name AS xml_name,
+--     prdn_assg_names.uspto_name AS uspto_name,
+--     prdn_assg_names.corrected_name AS corrected_name,
+--     prdn_assg_names.name_match_name AS name_match_name,
+--     --assignee_name_data.name AS name_match_name,
+--     prdn_assg_names.assg_st AS assg_st,
+--     prdn_assg_names.assg_ctry AS assg_ctry,
+--     d2_information.grant_yr AS br_yr,
+--     d2_information.firmid AS d2_model_firmid
+-- FROM 
+--     prdn_assg_names,
+--     d2_information
+--     --,assignee_name_data
+-- WHERE
+--     prdn_assg_names.prdn = d2_information.prdn AND
+--     prdn_assg_names.assg_seq = d2_information.assg_seq;
 
 -- trying to patch things up for the D2 models by mapping the hand matched,
 -- name matched and XML/USPTO firm name strings

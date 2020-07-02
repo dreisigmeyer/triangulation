@@ -239,6 +239,44 @@ ON
     ''')
 
 
+def idx_f_model(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+CREATE INDEX an_xml_indx
+ON {table_names.prdn_assg_names}
+({columns.prdn.name}, {columns.assg_seq.name}, {columns.xml_name.name});
+CREATE INDEX an_uspto_indx
+ON {table_names.prdn_assg_names}
+({columns.prdn.name}, {columns.assg_seq.name}, {columns.uspto_name.name});
+CREATE INDEX an_corrected_indx
+ON {table_names.prdn_assg_names}
+({columns.prdn.name}, {columns.assg_seq.name}, {columns.corrected_name.name});
+CREATE INDEX an_name_match_indx
+ON {table_names.prdn_assg_names}
+({columns.prdn.name}, {columns.assg_seq.name}, {columns.name_match_name.name});
+
+CREATE UNIQUE INDEX a1_models_indx
+ON {table_names.a1_models} (
+    {columns.prdn.name},
+    {columns.assg_seq.name},
+    {columns.assg_firmid.name});
+
+CREATE INDEX UNIQUE d2_models_indx
+ON {table_names.d2_models} (
+    {columns.prdn.name},
+    {columns.assg_seq.name},
+    {columns.assg_firmid.name});
+
+CREATE UNIQUE INDEX prdn_metadata_indx
+ON {table_names.prdn_metadata} (
+    {columns.prdn.name},
+    {columns.grant_yr.name});
+    ''')
+
+
 def import_data(fh, tbl_name, csv_file):
     """
     Helper function to import data from a CSV file into a SQLite3 database.
@@ -250,6 +288,53 @@ def import_data(fh, tbl_name, csv_file):
     fh.write(
         f'''
 .import {csv_file} {tbl_name}
+    ''')
+
+
+def import_other_models_for_f(fh, assignee_years):
+    """
+    """
+    fh.write(
+        f'''
+.headers ON
+.import {file_names.a1_models} {table_names.a1_models}
+.import {file_names.d2_models} {table_names.d2_models}
+.import {assignee_years} {table_names.assignee_name_data}
+.headers OFF
+
+-- this is what was sent into the name match
+CREATE TABLE holder (
+    {columns.prdn.cmd},
+    {columns.assg_seq.cmd},
+    {columns.grant_yr.cmd},
+    {columns.assg_st.cmd},
+    {columns.assg_ctry.cmd},
+    {columns.xml_name.cmd},
+    {columns.uspto_name.cmd},
+    {columns.corrected_name.cmd},
+    {columns.assg_type.cmd},
+    UNIQUE({columns.prdn.name}, {columns.assg_seq.name})
+);
+.import {file_names.prdn_seq_stand_name} holder
+
+CREATE INDEX assignee_name_data_indx
+ON {table_names.assignee_name_data}
+({columns.xml_pat_num.name}, {columns.assg_num.name});
+
+CREATE TABLE {table_names.prdn_assg_names} AS
+SELECT
+    holder.*,
+    {table_names.assignee_name_data}.{columns.name.name} AS {columns.name_match_name.name}
+FROM
+    holder
+JOIN
+    {table_names.assignee_name_data}
+ON
+    holder.{columns.prdn.name} = {table_names.assignee_name_data}.{columns.xml_pat_num.name} AND
+    holder.{columns.assg_seq.name} = {table_names.assignee_name_data}.{columns.assg_num.name};
+
+DROP TABLE {table_names.assignee_name_data};
+DROP TABLE holder;
     ''')
 
 
@@ -295,7 +380,7 @@ def in_data_tables(fh, model, assignee_years=None):
         preprocess_for_f_model(fh)
 
     # Create all of the tables
-    if model != 'D':
+    if model != 'D' and model != 'F':
         fh.write(
             f'''
 CREATE TABLE IF NOT EXISTS {table_names.ein_data} (
@@ -326,16 +411,9 @@ CREATE TABLE IF NOT EXISTS {table_names.pik_data} (
         ''')
         import_data(fh, table_names.pik_data, file_names.pik_data_csvfile)
 
-    if model == 'A' or model == 'D' or model == 'E':
+    if model == 'A' or model == 'D' or model == 'E' or model == 'F':
         fh.write(
             f'''
-CREATE TABLE IF NOT EXISTS {table_names.assignee_info} (
-    {columns.prdn.cmd},
-    {columns.assg_seq.cmd},
-    {columns.assg_type.cmd},
-    {columns.assg_st.cmd},
-    {columns.assg_ctry.cmd}
-);
 CREATE TABLE IF NOT EXISTS {table_names.prdn_metadata} (
     {columns.prdn.cmd},
     {columns.grant_yr.cmd},
@@ -346,8 +424,22 @@ CREATE TABLE IF NOT EXISTS {table_names.prdn_metadata} (
         ''')
 
         # Load the data in
-        import_data(fh, table_names.assignee_info, file_names.assignee_info_csvfile)
         import_data(fh, table_names.prdn_metadata, file_names.prdn_metadata_csvfile)
+
+    if model == 'A' or model == 'D' or model == 'E':
+        fh.write(
+            f'''
+CREATE TABLE IF NOT EXISTS {table_names.assignee_info} (
+    {columns.prdn.cmd},
+    {columns.assg_seq.cmd},
+    {columns.assg_type.cmd},
+    {columns.assg_st.cmd},
+    {columns.assg_ctry.cmd}
+);
+        ''')
+
+        # Load the data in
+        import_data(fh, table_names.assignee_info, file_names.assignee_info_csvfile)
 
     if model == 'D':
         fh.write(
@@ -389,6 +481,9 @@ CREATE TABLE {table_names.assg_name_firmid} (
         idx_d_model(fh)
     elif model == 'E':
         idx_e_model(fh)
+    elif model == 'F':
+        import_other_models_for_f(fh, assignee_years)
+        idx_f_model(fh)
 
 
 def model_header(fh):
@@ -485,7 +580,6 @@ def preprocess_for_f_model(fh):
         f'''
 DROP TABLE {table_names.assignee_name_data};
 DROP TABLE {table_names.assg_name_firmid};
-DROP TABLE {table_names.a1_models};
-DROP TABLE {table_names.d2_models};
 DROP TABLE {table_names.prdn_metadata};
+DROP TABLE {table_names.a1_models};
     ''')
