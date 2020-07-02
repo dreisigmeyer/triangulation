@@ -23,6 +23,7 @@ CREATE TABLE assignee_name_data (
 );
 ~~~
 - `assignee_info.csv`: File created from CSV files output from the assignee_prep2 preprocessing phase.
+The assignee_prep2 CSV files are placed in **in\_data/assignee\_out\_data**.
 These will be preprocessed (see below for how to do this).
 SQL table structure is  
 ~~~
@@ -121,7 +122,7 @@ As an example, the following commands were used for the run that occured in 2019
     cat holder.csv >> assg_yr_firmid.csv  
     rm holder  
     # Create assignee_info.csv with structure PRDN,ASSG_NUM,ASSG_TYPE,ST,CTRY:  
-    `awk -F'|' -v OFS=',' '{print $1,$6,$7,$9,$10}' assigneeOutData/*.csv > assignee_info.csv  
+    `awk -F'|' -v OFS=',' '{print $1,$6,$7,$9,$10}' assignee_out_data/*.csv > assignee_info.csv  
     # Cut last column off prdn_metadata.csv then do  
     sort -T ./ -u prdn_metadata.csv > holder  
     mv holder prdn_metadata.csv  
