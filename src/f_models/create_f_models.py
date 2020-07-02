@@ -51,10 +51,11 @@ CREATE TABLE {table_names.d2_assg_info} (
             shared_code.import_data(fh, f'{table_names.d2_assg_info}', file_name)
 
 
-def generate_f_model_sql_script(sql_script_fn):
+def generate_f_model_sql_script(sql_script_fn, assignee_years):
     """
 
     """
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
-        create_d2_name_maps(f)
+        shared_code.in_data_tables(f, 'fh', assignee_years)
+        # create_d2_name_maps(f)
