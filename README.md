@@ -1,5 +1,5 @@
 Code to find patent triangulation models.
-This builds on outputs from the upstream preprocessing steps (in **https://github.com/dreisigmeyer/preprocessing**, and additional files creates by other code.
+This builds on outputs from the upstream preprocessing steps in **https://github.com/dreisigmeyer/preprocessing**, and additional files creates by other code.
 
 
 ## Getting the data
@@ -21,6 +21,10 @@ CREATE TABLE assg_name_firmid (
 SQL table structure is  
 ~~~
 CREATE TABLE assignee_name_data (
+    xml_pat_num TEXT NOT NULL,
+    assg_seq INTEGER NOT NULL,
+    grant_yr INTEGER NOT NULL,
+    assg_name TEXT NOT NULL
 );
 ~~~
 - `assignee_info.csv`: File created from CSV files output from the assignee_prep2 preprocessing phase.
@@ -101,6 +105,8 @@ CREATE TABLE pik_data (
 ~~~
 
 Some of the input data files need to be preprocessed due to changes in file formats or files created.
+These are run 'by hand' since they have upstream input files, which may change their format.
+The user is required to preprocess those to make sure they match the formats given above.
 As an example, the following commands were used for the run that occured in 2019-2020.
 
  
