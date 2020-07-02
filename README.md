@@ -1,4 +1,5 @@
 Code to find patent triangulation models.
+This builds on outputs from the upstream preprocessing steps (in **https://github.com/dreisigmeyer/preprocessing**, and additional files creates by other code.
 
 
 ## Getting the data
