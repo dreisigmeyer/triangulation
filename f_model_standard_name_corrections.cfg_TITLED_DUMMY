@@ -1,0 +1,14 @@
+-- These are dummy examples of hand corrections to clean things up.
+-- >>>> Remove the _DUMMY ending before running the module.
+-- The user will need to put the actual corrections into this file.
+-- This file will contain TITLED information after modeification.
+
+---- If you need to modify the standard name based on the alias name:
+UPDATE OR REPLACE standard_name_to_firmid
+SET standard_name = "A FAKE NAME"
+WHERE alias_name == "MAYBE A DIFFERENT FAKE NAME" AND valid_yr == 1776;
+
+---- If you need to modify the standard name based on the standard name:
+UPDATE OR REPLACE standard_name_to_firmid
+SET standard_name = "A FAKE NAME"
+WHERE standard_name == "MAYBE A DIFFERENT FAKE NAME" AND valid_yr == 1776;
