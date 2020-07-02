@@ -1,2 +1,3 @@
 *
 !*.gitignore
+!*assignee_out_data/
