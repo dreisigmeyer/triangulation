@@ -182,95 +182,95 @@ CREATE TABLE f_models (
 
 -- and now get the by year map from the A1 model information: 
 --      standard name -> mis-/alternate spelling -> firmid
-INSERT OR IGNORE INTO standard_name_to_firmid
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT
-    corrected_name,
-    corrected_name,
-    br_yr,
-    a1_model_firmid,
-    assg_st,
-    assg_ctry,
-    "A1"
-FROM
-    name_information
-WHERE
-    corrected_name != "";
-INSERT OR IGNORE INTO standard_name_to_firmid
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT
-    corrected_name,
-    xml_name,
-    br_yr,
-    a1_model_firmid,
-    assg_st,
-    assg_ctry,
-    "A1"
-FROM
-    name_information
-WHERE
-    xml_name != "";
-INSERT OR IGNORE INTO standard_name_to_firmid
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT
-    corrected_name,
-    uspto_name,
-    br_yr,
-    a1_model_firmid,
-    assg_st,
-    assg_ctry,
-    "A1"
-FROM
-    name_information
-WHERE
-    uspto_name != "";
+-- INSERT OR IGNORE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     corrected_name,
+--     corrected_name,
+--     br_yr,
+--     a1_model_firmid,
+--     assg_st,
+--     assg_ctry,
+--     "A1"
+-- FROM
+--     name_information
+-- WHERE
+--     corrected_name != "";
+-- INSERT OR IGNORE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     corrected_name,
+--     xml_name,
+--     br_yr,
+--     a1_model_firmid,
+--     assg_st,
+--     assg_ctry,
+--     "A1"
+-- FROM
+--     name_information
+-- WHERE
+--     xml_name != "";
+-- INSERT OR IGNORE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     corrected_name,
+--     uspto_name,
+--     br_yr,
+--     a1_model_firmid,
+--     assg_st,
+--     assg_ctry,
+--     "A1"
+-- FROM
+--     name_information
+-- WHERE
+--     uspto_name != "";
 -- this one includes the names from the name match code
-INSERT OR IGNORE INTO standard_name_to_firmid
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT
-    corrected_name,
-    name_match_name,
-    br_yr,
-    a1_model_firmid,
-    assg_st,
-    assg_ctry,
-    "A1"
-FROM
-    name_information
-WHERE
-    name_match_name != "";
+-- INSERT OR IGNORE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     corrected_name,
+--     name_match_name,
+--     br_yr,
+--     a1_model_firmid,
+--     assg_st,
+--     assg_ctry,
+--     "A1"
+-- FROM
+--     name_information
+-- WHERE
+--     name_match_name != "";
     
 -- DROP TABLE name_information;
 -- CREATE TABLE name_information AS
@@ -294,107 +294,107 @@ WHERE
 
 -- trying to patch things up for the D2 models by mapping the hand matched,
 -- name matched and XML/USPTO firm name strings
-INSERT OR REPLACE INTO standard_name_to_firmid
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT
-    corrected_name,
-    corrected_name,
-    br_yr,
-    d2_model_firmid,
-    "",
-    "",
-    "D2"
-FROM
-    name_information
-WHERE
-    corrected_name != "";
-INSERT OR REPLACE INTO standard_name_to_firmid
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT
-    corrected_name,
-    uspto_name,
-    br_yr,
-    d2_model_firmid,
-    "",
-    "",
-    "D2"
-FROM
-    name_information
-WHERE
-    uspto_name != "";
-INSERT OR REPLACE INTO standard_name_to_firmid
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT
-    corrected_name,
-    xml_name,
-    br_yr,
-    d2_model_firmid,
-    "",
-    "",
-    "D2"
-FROM
-    name_information
-WHERE
-    xml_name != "";
-INSERT OR REPLACE INTO standard_name_to_firmid
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT
-    corrected_name,
-    name_match_name,
-    br_yr,
-    d2_model_firmid,
-    "",
-    "",
-    "D2"
-FROM
-    name_information
-WHERE
-    name_match_name != "";
+-- INSERT OR REPLACE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     corrected_name,
+--     corrected_name,
+--     br_yr,
+--     d2_model_firmid,
+--     "",
+--     "",
+--     "D2"
+-- FROM
+--     name_information
+-- WHERE
+--     corrected_name != "";
+-- INSERT OR REPLACE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     corrected_name,
+--     uspto_name,
+--     br_yr,
+--     d2_model_firmid,
+--     "",
+--     "",
+--     "D2"
+-- FROM
+--     name_information
+-- WHERE
+--     uspto_name != "";
+-- INSERT OR REPLACE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     corrected_name,
+--     xml_name,
+--     br_yr,
+--     d2_model_firmid,
+--     "",
+--     "",
+--     "D2"
+-- FROM
+--     name_information
+-- WHERE
+--     xml_name != "";
+-- INSERT OR REPLACE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     corrected_name,
+--     name_match_name,
+--     br_yr,
+--     d2_model_firmid,
+--     "",
+--     "",
+--     "D2"
+-- FROM
+--     name_information
+-- WHERE
+--     name_match_name != "";
     
 -- remove trash from non-first assignees
-DELETE FROM standard_name_to_firmid
-WHERE
-    (
-        standard_name == "" AND 
-        alias_name == ""
-    ) 
-    OR
-    (
-        standard_name == "INDIVIDUALLY OWNED PATENT" OR 
-        alias_name == "INDIVIDUALLY OWNED PATENT"
-    );
+-- DELETE FROM standard_name_to_firmid
+-- WHERE
+--     (
+--         standard_name == "" AND 
+--         alias_name == ""
+--     ) 
+--     OR
+--     (
+--         standard_name == "INDIVIDUALLY OWNED PATENT" OR 
+--         alias_name == "INDIVIDUALLY OWNED PATENT"
+--     );
     
 
     
@@ -403,97 +403,116 @@ WHERE
 
 
 
-INSERT OR REPLACE INTO standard_name_to_firmid
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT
-    name,
-    name,
-    yr,
-    firmid,
-    "",
-    "",
-    "D2"
-FROM
-    assg_name_firmid;
+-- INSERT OR REPLACE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     name,
+--     name,
+--     yr,
+--     firmid,
+--     "",
+--     "",
+--     "D2"
+-- FROM
+--     assg_name_firmidINSERT OR REPLACE INTO standard_name_to_firmid
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT
+--     name,
+--     name,
+--     yr,
+--     firmid,
+--     "",
+--     "",
+--     "D2"
+-- FROM
+--     assg_name_firmid;;
  
 -- augment the D2 model information with A1 model information
-CREATE TABLE expanded_d2_names (
-    standard_name TEXT NOT NULL,
-    alias_name TEXT,
-    valid_yr INT NOT NULL,
-    firmid TEXT NOT NULL,
-    state TEXT,
-    country TEXT,
-    model_origin TEXT NOT NULL,
-    sn_on_prdn_count INT,
-    alias_on_prdn_count INT,
-    UNIQUE (standard_name, valid_yr, alias_name)
-);
--- put the original data in
-INSERT INTO expanded_d2_names
-SELECT *
-FROM standard_name_to_firmid
-WHERE model_origin = "D2";
+-- CREATE TABLE expanded_d2_names (
+--     standard_name TEXT NOT NULL,
+--     alias_name TEXT,
+--     valid_yr INT NOT NULL,
+--     firmid TEXT NOT NULL,
+--     state TEXT,
+--     country TEXT,
+--     model_origin TEXT NOT NULL,
+--     sn_on_prdn_count INT,
+--     alias_on_prdn_count INT,
+--     UNIQUE (standard_name, valid_yr, alias_name)
+-- );
+-- -- put the original data in
+-- INSERT INTO expanded_d2_names
+-- SELECT *
+-- FROM standard_name_to_firmid
+-- WHERE model_origin = "D2";
 
-INSERT OR IGNORE INTO expanded_d2_names
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT 
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.valid_yr,
-    expanded_d2_names.firmid,
-    "","","STANDARD"
-FROM 
-    expanded_d2_names,
-    standard_name_to_firmid
-WHERE
-    expanded_d2_names.alias_name = standard_name_to_firmid.alias_name AND
-    standard_name_to_firmid.standard_name != "" AND -- avoid non-1st assg problems
-    expanded_d2_names.valid_yr = standard_name_to_firmid.valid_yr AND
-    expanded_d2_names.model_origin = "D2" AND
-    standard_name_to_firmid.model_origin = "A1";
--- find all of the other aliases for the standardized D2 names
-INSERT OR IGNORE INTO expanded_d2_names
-    (
-        standard_name,
-        alias_name,
-        valid_yr,
-        firmid,
-        state,
-        country,
-        model_origin
-    )
-SELECT 
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.valid_yr,
-    expanded_d2_names.firmid,
-    "","","ALIAS"
-FROM 
-    expanded_d2_names,
-    standard_name_to_firmid
-WHERE
-    expanded_d2_names.standard_name = standard_name_to_firmid.standard_name AND
-    standard_name_to_firmid.standard_name != "" AND -- avoid non-1st assg problems
-    expanded_d2_names.valid_yr = standard_name_to_firmid.valid_yr AND
-    expanded_d2_names.model_origin = "STANDARD" AND
-    standard_name_to_firmid.model_origin = "A1";
+-- INSERT OR IGNORE INTO expanded_d2_names
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT 
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.valid_yr,
+--     expanded_d2_names.firmid,
+--     "","","STANDARD"
+-- FROM 
+--     expanded_d2_names,
+--     standard_name_to_firmid
+-- WHERE
+--     expanded_d2_names.alias_name = standard_name_to_firmid.alias_name AND
+--     standard_name_to_firmid.standard_name != "" AND -- avoid non-1st assg problems
+--     expanded_d2_names.valid_yr = standard_name_to_firmid.valid_yr AND
+--     expanded_d2_names.model_origin = "D2" AND
+--     standard_name_to_firmid.model_origin = "A1";
+-- -- find all of the other aliases for the standardized D2 names
+-- INSERT OR IGNORE INTO expanded_d2_names
+--     (
+--         standard_name,
+--         alias_name,
+--         valid_yr,
+--         firmid,
+--         state,
+--         country,
+--         model_origin
+--     )
+-- SELECT 
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.valid_yr,
+--     expanded_d2_names.firmid,
+--     "","","ALIAS"
+-- FROM 
+--     expanded_d2_names,
+--     standard_name_to_firmid
+-- WHERE
+--     expanded_d2_names.standard_name = standard_name_to_firmid.standard_name AND
+--     standard_name_to_firmid.standard_name != "" AND -- avoid non-1st assg problems
+--     expanded_d2_names.valid_yr = standard_name_to_firmid.valid_yr AND
+--     expanded_d2_names.model_origin = "STANDARD" AND
+--     standard_name_to_firmid.model_origin = "A1";
 -- and now put it all back in overwriting any results from the A1 with the D2
 DELETE FROM standard_name_to_firmid
 WHERE EXISTS (

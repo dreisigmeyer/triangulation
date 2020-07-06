@@ -1,4 +1,4 @@
-import os
+# import os
 import triangulation.src.shared_code.column_names as columns
 import triangulation.src.shared_code.file_names as file_names
 import triangulation.src.shared_code.shared_code as shared_code
@@ -50,6 +50,87 @@ import triangulation.src.shared_code.table_names as table_names
 #             file_name = os.path.join(f'{file_names.assignee_out_data}', file)
 #             shared_code.import_data(fh, f'{table_names.d2_assg_info}', file_name)
 
+def create_expanded_d2_name(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+CREATE TABLE {table_names.expanded_d2_names} (
+    {columns.standard_name.cmd},
+    {columns.alias_name.cmd},
+    {columns.valid_yr.cmd},
+    {columns.firmid.cmd},
+    {columns.state.cmd},
+    {columns.country.cmd},
+    {columns.model_origin.cmd},
+    {columns.sn_on_prdn_count.cmd},
+    {columns.alias_on_prdn_count.cmd}
+    UNIQUE (
+        {columns.standard_name.name},
+        {columns.valid_yr.name},
+        {columns.alias_name.name}
+    )
+);
+-- put the original data in
+INSERT INTO {table_names.expanded_d2_names}
+SELECT *
+FROM {table_names.standard_name_to_firmid}
+WHERE     {columns.model_origin.name} = "D2";
+
+INSERT OR IGNORE INTO {table_names.expanded_d2_names}
+    (
+        {columns.standard_name.name},
+        {columns.alias_name.name},
+        {columns.valid_yr.name},
+        {columns.firmid.name},
+        {columns.state.name},
+        {columns.country.name},
+        {columns.model_origin.name}
+    )
+SELECT
+    {table_names.standard_name_to_firmid}.{columns.standard_name.name},
+    {table_names.standard_name_to_firmid}.{columns.alias_name.name},
+    {table_names.standard_name_to_firmid}.{columns.valid_yr.name},
+    {table_names.expanded_d2_names}.{columns.firmid.name},
+    "","","STANDARD"
+FROM
+    {table_names.expanded_d2_names},
+    {table_names.standard_name_to_firmid}
+WHERE
+    {table_names.expanded_d2_names}.{columns.alias_name.name} = {table_names.standard_name_to_firmid}.{columns.alias_name.name} AND
+    {table_names.standard_name_to_firmid}.{columns.standard_name.name} != "" AND -- avoid non-1st assg problems
+    {table_names.expanded_d2_names}.{columns.valid_yr.name} = {table_names.standard_name_to_firmid}.{columns.valid_yr.name} AND
+    {table_names.expanded_d2_names}.{columns.model_origin.name} = "D2" AND
+    {table_names.standard_name_to_firmid}.{columns.model_origin.name} = "A1";
+-- find all of the other aliases for the standardized D2 names
+INSERT OR IGNORE INTO {table_names.expanded_d2_names}
+    (
+        {columns.standard_name.name},
+        {columns.alias_name.name},
+        {columns.valid_yr.name},
+        {columns.firmid.name},
+        {columns.state.name},
+        {columns.country.name},
+        {columns.model_origin.name}
+    )
+SELECT
+    {table_names.standard_name_to_firmid}.{columns.standard_name.name},
+    {table_names.standard_name_to_firmid}.{columns.alias_name.name},
+    {table_names.standard_name_to_firmid}.{columns.valid_yr.name},
+    {table_names.expanded_d2_names}.{columns.firmid.name},
+    "","","ALIAS"
+FROM
+    {table_names.expanded_d2_names},
+    {table_names.standard_name_to_firmid}
+WHERE
+    {table_names.expanded_d2_names}.{columns.standard_name.name} = {table_names.standard_name_to_firmid}.{columns.standard_name.name} AND
+    {table_names.standard_name_to_firmid}.{columns.standard_name.name} != "" AND -- avoid non-1st assg problems
+    {table_names.expanded_d2_names}.{columns.valid_yr.name} = {table_names.standard_name_to_firmid}.{columns.valid_yr.name} AND
+    {table_names.expanded_d2_names}.{columns.model_origin.name} = "STANDARD" AND
+    {table_names.standard_name_to_firmid}.{columns.model_origin.name} = "A1";
+        ''')
+
 
 def create_name_information(fh, in_table, in_model_firmid, br_yr):
     """
@@ -94,7 +175,122 @@ CREATE TABLE {table_names.standard_name_to_firmid} ()
     {columns.sn_on_prdn_count.cmd},
     {columns.alias_on_prdn_count.cmd}
 );
+CREATE UNIQUE INDEX {table_names.sn_idx} ON {table_names.standard_name_to_firmid}
+(
+    {columns.standard_name.name},
+    {columns.valid_yr.name},
+    {columns.firmid.name},
+    {columns.alias_name.name},
+    {columns.model_origin.name}
+);
         ''')
+
+
+def put_d2_standard_name_to_firmid(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+INSERT OR REPLACE INTO {table_names.standard_name_to_firmid}
+    (
+        {columns.standard_name.cmd},
+        {columns.alias_name.cmd},
+        {columns.valid_yr.cmd},
+        {columns.firmid.cmd},
+        {columns.state.cmd},
+        {columns.country.cmd},
+        {columns.model_origin.cmd}
+    )
+SELECT
+    {columns.assg_name.name},
+    {columns.assg_name.name},
+    {columns.year.name},
+    {columns.firmid.name},
+    "",
+    "",
+    "D2"
+FROM
+    {table_names.assg_name_firmid};
+        ''')
+
+
+def remove_trash_standard_name_to_firmid(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+DELETE FROM {table_names.standard_name_to_firmid}
+WHERE
+    (
+        {columns.standard_name.name} == "" AND
+        {columns.alias_name.name} == ""
+    )
+    OR
+    (
+        {columns.standard_name.name} == "INDIVIDUALLY OWNED PATENT" OR
+        {columns.alias_name.name} == "INDIVIDUALLY OWNED PATENT"
+    );
+        ''')
+
+
+def update_standard_name_to_firmid(fh, model_name, model_firmid):
+    """
+
+    """
+    def helper_fun(fh, alt_name, model, firmid):
+        """
+
+        """
+        if model == 'A1':
+            fh.write(
+                f'''
+--      standard name -> mis-/alternate spelling -> firmid
+INSERT OR IGNORE INTO {table_names.standard_name_to_firmid}
+                ''')
+        elif model == 'D2':
+            fh.write(
+                f'''
+--      standard name -> mis-/alternate spelling -> firmid
+INSERT OR REPLACE INTO {table_names.standard_name_to_firmid}
+                ''')
+
+        fh.write(
+            f'''
+    (
+        {columns.standard_name.name},
+        {columns.alias_name.name},
+        {columns.valid_yr.name},
+        {columns.firmid.name},
+        {columns.state.name},
+        {columns.country.name},
+        {columns.model_origin.name}
+    )
+SELECT
+    {columns.corrected_name.name},
+    {alt_name},
+    {columns.br_yr.name},
+    {firmid},
+    {columns.assg_st.name},
+    {columns.assg_ctry.name},
+    {model}
+FROM
+    {table_names.name_information}
+WHERE
+    {alt_name} != "";
+            ''')
+
+    if model_name == 'A1':
+        helper_fun(fh, columns.corrected_name.name, model_name, model_firmid)
+        helper_fun(fh, columns.xml_name.name, model_name, model_firmid)
+        helper_fun(fh, columns.uspto_name.name, model_name, model_firmid)
+        helper_fun(fh, columns.name_match_name.name, model_name, model_firmid)
+    elif model_name == 'D2':
+        helper_fun(fh, columns.corrected_name.name, model_name, model_firmid)
+        helper_fun(fh, columns.uspto_name.name, model_name, model_firmid)
+        helper_fun(fh, columns.xml_name.name, model_name, model_firmid)
+        helper_fun(fh, columns.name_match_name.name, model_name, model_firmid)
 
 
 def generate_f_model_sql_script(sql_script_fn, assignee_years):
@@ -106,4 +302,9 @@ def generate_f_model_sql_script(sql_script_fn, assignee_years):
         shared_code.in_data_tables(f, 'F', assignee_years)
         create_standard_name_to_firmid(f)
         create_name_information(f, table_names.a1_models, columns.a1_model_firmid.name, columns.br_yr.name)
+        update_standard_name_to_firmid(f, 'A1', columns.a1_model_firmid.name)
         create_name_information(f, table_names.d2_models, columns.d2_model_firmid.name, columns.grant_yr.name)
+        update_standard_name_to_firmid(f, 'D2', columns.d2_model_firmid.name)
+        remove_trash_standard_name_to_firmid(f)
+        put_d2_standard_name_to_firmid(f)
+        create_expanded_d2_name(f)
