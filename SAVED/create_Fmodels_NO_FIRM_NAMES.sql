@@ -660,685 +660,685 @@ CREATE TABLE f_models (
 -- CREATE INDEX sn_indx ON standard_name_to_firmid
 -- (valid_yr, alias_name);
 
---------------------------------------------------------------------------------
--- F models with br_yr = grant_yr
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
+-- --------------------------------------------------------------------------------
+-- -- F models with br_yr = grant_yr
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
 
-DELETE FROM prdn_assg_names
-WHERE EXISTS
-    (
-        SELECT *
-        FROM f_models
-        WHERE
-            f_models.prdn = prdn_assg_names.prdn AND
-            f_models.assg_seq = prdn_assg_names.assg_seq
-    );
+-- DELETE FROM prdn_assg_names
+-- WHERE EXISTS
+--     (
+--         SELECT *
+--         FROM f_models
+--         WHERE
+--             f_models.prdn = prdn_assg_names.prdn AND
+--             f_models.assg_seq = prdn_assg_names.assg_seq
+--     );
 
---------------------------------------------------------------------------------
--- F models with br_yr = grant_yr - 1
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 1 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
+-- --------------------------------------------------------------------------------
+-- -- F models with br_yr = grant_yr - 1
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 1 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 1 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 1 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 1 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 1 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 1 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 1 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
 
-DELETE FROM prdn_assg_names
-WHERE EXISTS
-    (
-        SELECT *
-        FROM f_models
-        WHERE
-            f_models.prdn = prdn_assg_names.prdn AND
-            f_models.assg_seq = prdn_assg_names.assg_seq
-    );
+-- DELETE FROM prdn_assg_names
+-- WHERE EXISTS
+--     (
+--         SELECT *
+--         FROM f_models
+--         WHERE
+--             f_models.prdn = prdn_assg_names.prdn AND
+--             f_models.assg_seq = prdn_assg_names.assg_seq
+--     );
 
---------------------------------------------------------------------------------
--- F models with br_yr = grant_yr + 1
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 1 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
+-- --------------------------------------------------------------------------------
+-- -- F models with br_yr = grant_yr + 1
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 1 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 1 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 1 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 1 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 1 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 1 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 1 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
 
-DELETE FROM prdn_assg_names
-WHERE EXISTS
-    (
-        SELECT *
-        FROM f_models
-        WHERE
-            f_models.prdn = prdn_assg_names.prdn AND
-            f_models.assg_seq = prdn_assg_names.assg_seq
-    );
+-- DELETE FROM prdn_assg_names
+-- WHERE EXISTS
+--     (
+--         SELECT *
+--         FROM f_models
+--         WHERE
+--             f_models.prdn = prdn_assg_names.prdn AND
+--             f_models.assg_seq = prdn_assg_names.assg_seq
+--     );
 
---------------------------------------------------------------------------------
--- F models with br_yr = grant_yr - 2
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 2 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
+-- --------------------------------------------------------------------------------
+-- -- F models with br_yr = grant_yr - 2
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 2 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 2 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 2 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 2 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 2 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 2 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr - 2 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
 
-DELETE FROM prdn_assg_names
-WHERE EXISTS
-    (
-        SELECT *
-        FROM f_models
-        WHERE
-            f_models.prdn = prdn_assg_names.prdn AND
-            f_models.assg_seq = prdn_assg_names.assg_seq
-    );
+-- DELETE FROM prdn_assg_names
+-- WHERE EXISTS
+--     (
+--         SELECT *
+--         FROM f_models
+--         WHERE
+--             f_models.prdn = prdn_assg_names.prdn AND
+--             f_models.assg_seq = prdn_assg_names.assg_seq
+--     );
 
---------------------------------------------------------------------------------
--- F models with br_yr = grant_yr + 2
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 2 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
+-- --------------------------------------------------------------------------------
+-- -- F models with br_yr = grant_yr + 2
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 2 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.name_match_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 2 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 2 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.corrected_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 2 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 2 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.uspto_name;
 
-INSERT OR IGNORE INTO f_models
-SELECT
-    prdn_assg_names.prdn,
-    "",
-    prdn_assg_names.assg_seq,
-    standard_name_to_firmid.valid_yr,
-    "",
-    standard_name_to_firmid.firmid,
-    patent_metadata.grant_yr,
-    patent_metadata.app_yr,
-    prdn_assg_names.assg_st,
-    prdn_assg_names.assg_ctry,
-    prdn_assg_names.assg_type,
-    patent_metadata.us_inventor_flag,
-    patent_metadata.num_assigs,
-    standard_name_to_firmid.model_origin,
-    "",
-    standard_name_to_firmid.standard_name,
-    standard_name_to_firmid.sn_on_prdn_count,
-    standard_name_to_firmid.alias_name,
-    standard_name_to_firmid.alias_on_prdn_count
-FROM
-    patent_metadata,
-    prdn_assg_names,
-    standard_name_to_firmid
-WHERE
-    patent_metadata.grant_yr >= 2000 AND
-    prdn_assg_names.prdn = patent_metadata.prdn AND
-    standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 2 AND
-    standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
+-- INSERT OR IGNORE INTO f_models
+-- SELECT
+--     prdn_assg_names.prdn,
+--     "",
+--     prdn_assg_names.assg_seq,
+--     standard_name_to_firmid.valid_yr,
+--     "",
+--     standard_name_to_firmid.firmid,
+--     patent_metadata.grant_yr,
+--     patent_metadata.app_yr,
+--     prdn_assg_names.assg_st,
+--     prdn_assg_names.assg_ctry,
+--     prdn_assg_names.assg_type,
+--     patent_metadata.us_inventor_flag,
+--     patent_metadata.num_assigs,
+--     standard_name_to_firmid.model_origin,
+--     "",
+--     standard_name_to_firmid.standard_name,
+--     standard_name_to_firmid.sn_on_prdn_count,
+--     standard_name_to_firmid.alias_name,
+--     standard_name_to_firmid.alias_on_prdn_count
+-- FROM
+--     patent_metadata,
+--     prdn_assg_names,
+--     standard_name_to_firmid
+-- WHERE
+--     patent_metadata.grant_yr >= 2000 AND
+--     prdn_assg_names.prdn = patent_metadata.prdn AND
+--     standard_name_to_firmid.valid_yr = patent_metadata.grant_yr + 2 AND
+--     standard_name_to_firmid.alias_name = prdn_assg_names.xml_name;
 
-DELETE FROM prdn_assg_names
-WHERE EXISTS
-    (
-        SELECT *
-        FROM f_models
-        WHERE
-            f_models.prdn = prdn_assg_names.prdn AND
-            f_models.assg_seq = prdn_assg_names.assg_seq
-    );
+-- DELETE FROM prdn_assg_names
+-- WHERE EXISTS
+--     (
+--         SELECT *
+--         FROM f_models
+--         WHERE
+--             f_models.prdn = prdn_assg_names.prdn AND
+--             f_models.assg_seq = prdn_assg_names.assg_seq
+--     );
 
 -- this is the post-processed output
 CREATE TABLE final_f_models (

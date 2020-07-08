@@ -59,6 +59,10 @@ import triangulation.src.shared_code.table_names as table_names
 Code for working with SQLite3 databases
 """
 
+# Information for F models
+earliest_grant_yr = '2000'
+shift_yrs = ['', '- 1', '+ 1', '- 2', '+ 2']
+
 
 def idx_a_model(fh):
     """

@@ -213,11 +213,11 @@ CREATE UNIQUE INDEX {table_names.sn_idx} ON {table_names.standard_name_to_firmid
         ''')
 
 
-def f_models(fh, earliest_grant_yr, shift_yr=''):
+def f_models(fh, earliest_grant_yr, shift_yrs):
     """
 
     """
-    def inserts(f, earliest_grant_yr, name_column, shift_yr):
+    def inserts(f, first_grant_yr, name_column, shift_yr):
         fh.write(
             f'''
 INSERT OR IGNORE INTO {table_names.f_models}
@@ -246,17 +246,16 @@ FROM
     {table_names.prdn_assg_names},
     {table_names.standard_name_to_firmid}
 WHERE
-    {table_names.prdn_metadata}.{columns.grant_yr.name} >= {earliest_grant_yr} AND
+    {table_names.prdn_metadata}.{columns.grant_yr.name} >= {first_grant_yr} AND
     {table_names.prdn_assg_names}.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name} AND
     {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.prdn_metadata}.{columns.grant_yr.name} {shift_yr} AND
     {table_names.standard_name_to_firmid}.{columns.alias_name.name} = {table_names.prdn_assg_names}.{name_column};
             ''')
-
-    def all_name_columns(f, earliest_grant_yr, shift_yr):
-        inserts(f, earliest_grant_yr, {columns.name_match_name}, shift_yr)
-        inserts(f, earliest_grant_yr, {columns.corrected_name}, shift_yr)
-        inserts(f, earliest_grant_yr, {columns.uspto_name}, shift_yr)
-        inserts(f, earliest_grant_yr, {columns.xml_name}, shift_yr)
+    for shift_yr in shift_yrs:
+        inserts(fh, earliest_grant_yr, columns.name_match_name.name, shift_yr)
+        inserts(fh, earliest_grant_yr, columns.corrected_name.name, shift_yr)
+        inserts(fh, earliest_grant_yr, columns.uspto_name.name, shift_yr)
+        inserts(fh, earliest_grant_yr, columns.xml_name.name, shift_yr)
         fh.write(
             f'''
 DELETE FROM {table_names.prdn_assg_names}
@@ -525,3 +524,4 @@ def generate_f_model_sql_script(sql_script_fn, assignee_years):
         create_expanded_d2_name(f)
         final_standard_name_to_firmid(f)
         shared_code.output_distinct_data(f, f'{table_names.standard_name_to_firmid}', f'{file_names.standard_name_to_firmid}')
+        f_models(f, shared_code.earliest_grant_yr, shared_code.shift_yrs)
