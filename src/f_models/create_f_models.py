@@ -251,6 +251,41 @@ WHERE
     {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.prdn_metadata}.{columns.grant_yr.name} {shift_yr} AND
     {table_names.standard_name_to_firmid}.{columns.alias_name.name} = {table_names.prdn_assg_names}.{name_column};
             ''')
+
+    fh.write(
+        f'''
+-- this will be the final output
+CREATE TABLE {table_names.f_models} (
+    {columns.prdn.cmd},
+    {columns.num_inv.cmd},
+    {columns.assg_seq.cmd},
+    {columns.cw_yr.cmd},
+    {columns.emp_yr.cmd},
+    {columns.firmid.cmd},
+    {columns.grant_yr.cmd},
+    {columns.app_yr.cmd},
+    {columns.assg_st.cmd},
+    {columns.assg_ctry.cmd},
+    {columns.assg_type.cmd},
+    {columns.us_inv_flag.cmd},
+    {columns.num_assg.cmd},
+    {columns.model.cmd},
+    {columns.uniq_firmid.cmd},
+    {columns.standard_name.cmd},
+    {columns.a1_prdns_with_standardized_name.cmd},
+    {columns.alias_name.cmd},
+    {columns.a1_prdns_with_alias_name.cmd},
+    UNIQUE (
+        {columns.prdn.name},
+        {columns.assg_seq.name},
+        {columns.firmid.name},
+        {columns.model.name},
+        {columns.standard_name.name},
+        {columns.alias_name.name}
+    )
+);
+        ''')
+
     for shift_yr in shift_yrs:
         inserts(fh, earliest_grant_yr, columns.name_match_name.name, shift_yr)
         inserts(fh, earliest_grant_yr, columns.corrected_name.name, shift_yr)

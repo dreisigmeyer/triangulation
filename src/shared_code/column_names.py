@@ -12,6 +12,8 @@ class DatabaseColumn():
 
 
 a1_model_firmid = DatabaseColumn('a1_model_firmid', '')
+a1_prdns_with_alias_name = DatabaseColumn('a1_prdns_with_alias_name', '{} INTEGER')
+a1_prdns_with_standardized_name = DatabaseColumn('a1_prdns_with_standardized_name', '{} INTEGER')
 abs_cw_yr = DatabaseColumn('abs_cw_yr', '{} INTEGER')
 abs_emp_yr = DatabaseColumn('abs_emp_yr', '{} INTEGER')
 abs_yr_diff = DatabaseColumn('abs_yr_diff', '')

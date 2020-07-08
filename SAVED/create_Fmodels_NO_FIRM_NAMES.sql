@@ -124,28 +124,28 @@
 -- .import ../inData/prdn_metadata.csv patent_metadata
 
 -- this will be the final output
-CREATE TABLE f_models (
-    prdn TEXT NOT NULL,
-    count INT,
-    assg_seq INT NOT NULL,
-    br_yr INT NOT NULL,
-    lehd_yr INT,
-    firmid TEXT NOT NULL,
-    grant_yr INT NOT NULL,
-    app_yr INT NOT NULL,
-    assg_st TEXT,
-    assg_ctry TEXT,
-    assg_type INT,
-    us_inventor_flag INT,
-    multiple_assignee_flag INT,
-    model_type TEXT,
-    unique_firm_id INT,
-    standardized_name TEXT,
-    a1_prdns_with_standardized_name INT,
-    alias_name TEXT,
-    a1_prdns_with_alias_name INT,
-    UNIQUE (prdn, assg_seq, firmid, model_type, standardized_name, alias_name)
-);
+-- CREATE TABLE f_models (
+--     prdn TEXT NOT NULL,
+--     count INT,
+--     assg_seq INT NOT NULL,
+--     br_yr INT NOT NULL,
+--     lehd_yr INT,
+--     firmid TEXT NOT NULL,
+--     grant_yr INT NOT NULL,
+--     app_yr INT NOT NULL,
+--     assg_st TEXT,
+--     assg_ctry TEXT,
+--     assg_type INT,
+--     us_inventor_flag INT,
+--     multiple_assignee_flag INT,
+--     model_type TEXT,
+--     unique_firm_id INT,
+--     standardized_name TEXT,
+--     a1_prdns_with_standardized_name INT,
+--     alias_name TEXT,
+--     a1_prdns_with_alias_name INT,
+--     UNIQUE (prdn, assg_seq, firmid, model_type, standardized_name, alias_name)
+-- );
 
 -- -- collect together all of the name spellings, firmids and valid years
 -- CREATE TABLE name_information AS
