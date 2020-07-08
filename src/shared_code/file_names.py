@@ -28,6 +28,7 @@ d1_models = f'{out_data_path}d1_models.csv'
 d2_models = f'{out_data_path}d2_models.csv'
 e1_models = f'{out_data_path}e1_models.csv'
 e2_models = f'{out_data_path}e2_models.csv'
+standard_name_to_firmid = f'{out_data_path}standard_name_to_firmid.csv'
 
 # SQL script file names
 create_loops_sql_script = f'{sql_script_path}create_loops.sql'

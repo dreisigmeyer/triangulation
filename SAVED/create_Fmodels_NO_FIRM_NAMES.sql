@@ -514,151 +514,151 @@ CREATE TABLE f_models (
 --     expanded_d2_names.model_origin = "STANDARD" AND
 --     standard_name_to_firmid.model_origin = "A1";
 -- and now put it all back in overwriting any results from the A1 with the D2
-DELETE FROM standard_name_to_firmid
-WHERE EXISTS (
-    SELECT 1
-    FROM
-        expanded_d2_names
-    WHERE
-        standard_name_to_firmid.standard_name = expanded_d2_names.standard_name AND
-        standard_name_to_firmid.alias_name = expanded_d2_names.alias_name AND
-        standard_name_to_firmid.valid_yr = expanded_d2_names.valid_yr
-);
+-- DELETE FROM standard_name_to_firmid
+-- WHERE EXISTS (
+--     SELECT 1
+--     FROM
+--         expanded_d2_names
+--     WHERE
+--         standard_name_to_firmid.standard_name = expanded_d2_names.standard_name AND
+--         standard_name_to_firmid.alias_name = expanded_d2_names.alias_name AND
+--         standard_name_to_firmid.valid_yr = expanded_d2_names.valid_yr
+-- );
 
-DROP INDEX sn_indx;
-CREATE UNIQUE INDEX sn_indx ON standard_name_to_firmid
-(valid_yr, alias_name, standard_name, firmid);
+-- DROP INDEX sn_indx;
+-- CREATE UNIQUE INDEX sn_indx ON standard_name_to_firmid
+-- (valid_yr, alias_name, standard_name, firmid);
 
--- just need to know it was a D2 model initially
-UPDATE expanded_d2_names SET model_origin = "D2";
-INSERT OR REPLACE INTO standard_name_to_firmid
-SELECT *
-FROM expanded_d2_names;
+-- -- just need to know it was a D2 model initially
+-- UPDATE expanded_d2_names SET model_origin = "D2";
+-- INSERT OR REPLACE INTO standard_name_to_firmid
+-- SELECT *
+-- FROM expanded_d2_names;
 
 -- For non-1st assignees see if the alias is mapped to a standard name
-UPDATE OR IGNORE standard_name_to_firmid
-SET
-    standard_name = (
-        SELECT sntf.standard_name
-        FROM standard_name_to_firmid AS sntf
-        WHERE
-            standard_name_to_firmid.alias_name = sntf.alias_name AND
-            standard_name_to_firmid.valid_yr = sntf.valid_yr AND
-            sntf.standard_name != ""
-    )
-WHERE EXISTS (
-        SELECT sntf.standard_name
-        FROM standard_name_to_firmid AS sntf
-        WHERE
-            standard_name_to_firmid.alias_name = sntf.alias_name AND
-            standard_name_to_firmid.valid_yr = sntf.valid_yr AND
-            sntf.standard_name != ""
-    ) 
-    AND
-    standard_name = "";
+-- UPDATE OR IGNORE standard_name_to_firmid
+-- SET
+--     standard_name = (
+--         SELECT sntf.standard_name
+--         FROM standard_name_to_firmid AS sntf
+--         WHERE
+--             standard_name_to_firmid.alias_name = sntf.alias_name AND
+--             standard_name_to_firmid.valid_yr = sntf.valid_yr AND
+--             sntf.standard_name != ""
+--     )
+-- WHERE EXISTS (
+--         SELECT sntf.standard_name
+--         FROM standard_name_to_firmid AS sntf
+--         WHERE
+--             standard_name_to_firmid.alias_name = sntf.alias_name AND
+--             standard_name_to_firmid.valid_yr = sntf.valid_yr AND
+--             sntf.standard_name != ""
+--     ) 
+--     AND
+--     standard_name = "";
     
-UPDATE OR IGNORE standard_name_to_firmid
-SET
-    standard_name = (
-        SELECT DISTINCT sntf.standard_name
-        FROM standard_name_to_firmid AS sntf
-        WHERE
-            standard_name_to_firmid.alias_name = sntf.alias_name AND
-            sntf.standard_name != ""
-    )
-WHERE 
-    standard_name = ""
-    AND
-    (
-        SELECT count( DISTINCT sntf.standard_name)
-        FROM standard_name_to_firmid AS sntf
-        WHERE
-            standard_name_to_firmid.alias_name = sntf.alias_name AND
-            sntf.standard_name != ""
-    ) = 1;
--- fallback position
-UPDATE OR IGNORE standard_name_to_firmid
-SET
-    standard_name = alias_name
-WHERE
-    standard_name = "";
--- and clean things up
-DELETE FROM standard_name_to_firmid WHERE standard_name = "";
+-- UPDATE OR IGNORE standard_name_to_firmid
+-- SET
+--     standard_name = (
+--         SELECT DISTINCT sntf.standard_name
+--         FROM standard_name_to_firmid AS sntf
+--         WHERE
+--             standard_name_to_firmid.alias_name = sntf.alias_name AND
+--             sntf.standard_name != ""
+--     )
+-- WHERE 
+--     standard_name = ""
+--     AND
+--     (
+--         SELECT count( DISTINCT sntf.standard_name)
+--         FROM standard_name_to_firmid AS sntf
+--         WHERE
+--             standard_name_to_firmid.alias_name = sntf.alias_name AND
+--             sntf.standard_name != ""
+--     ) = 1;
+-- -- fallback position
+-- UPDATE OR IGNORE standard_name_to_firmid
+-- SET
+--     standard_name = alias_name
+-- WHERE
+--     standard_name = "";
+-- -- and clean things up
+-- DELETE FROM standard_name_to_firmid WHERE standard_name = "";
 
--- put the counts in to determine which names are most common
--- only A1 1st assignee information is used
-CREATE TABLE name_counts AS
-SELECT
-    COUNT( DISTINCT prdn_assg_names.prdn ) AS count,
-    prdn_assg_names.corrected_name AS standard_name,
-    prdn_assg_names.uspto_name AS uspto_name,
-    prdn_assg_names.xml_name AS xml_name,
-    prdn_assg_names.name_match_name AS name_match_name,
-    a1_information.br_yr AS br_yr,
-    a1_information.firmid AS firmid
-FROM 
-    prdn_assg_names,
-    a1_information
-WHERE
-    prdn_assg_names.prdn = a1_information.prdn AND
-    prdn_assg_names.assg_seq = a1_information.assg_seq AND
-    prdn_assg_names.corrected_name != "" AND
-    prdn_assg_names.uspto_name != "" AND
-    prdn_assg_names.xml_name != ""
-GROUP BY
-    prdn_assg_names.corrected_name,
-    prdn_assg_names.uspto_name,
-    prdn_assg_names.xml_name,
-    prdn_assg_names.name_match_name,
-    a1_information.br_yr,
-    a1_information.firmid;
+-- -- put the counts in to determine which names are most common
+-- -- only A1 1st assignee information is used
+-- CREATE TABLE name_counts AS
+-- SELECT
+--     COUNT( DISTINCT prdn_assg_names.prdn ) AS count,
+--     prdn_assg_names.corrected_name AS standard_name,
+--     prdn_assg_names.uspto_name AS uspto_name,
+--     prdn_assg_names.xml_name AS xml_name,
+--     prdn_assg_names.name_match_name AS name_match_name,
+--     a1_information.br_yr AS br_yr,
+--     a1_information.firmid AS firmid
+-- FROM 
+--     prdn_assg_names,
+--     a1_information
+-- WHERE
+--     prdn_assg_names.prdn = a1_information.prdn AND
+--     prdn_assg_names.assg_seq = a1_information.assg_seq AND
+--     prdn_assg_names.corrected_name != "" AND
+--     prdn_assg_names.uspto_name != "" AND
+--     prdn_assg_names.xml_name != ""
+-- GROUP BY
+--     prdn_assg_names.corrected_name,
+--     prdn_assg_names.uspto_name,
+--     prdn_assg_names.xml_name,
+--     prdn_assg_names.name_match_name,
+--     a1_information.br_yr,
+--     a1_information.firmid;
     
-CREATE INDEX sn_name_counts_indx ON name_counts
-(br_yr, firmid, standard_name);
-CREATE INDEX un_name_counts_indx ON name_counts
-(br_yr, firmid, uspto_name);
-CREATE INDEX xn_name_counts_indx ON name_counts
-(br_yr, firmid, xml_name);
-CREATE INDEX nm_name_counts_indx ON name_counts
-(br_yr, firmid, name_match_name);
+-- CREATE INDEX sn_name_counts_indx ON name_counts
+-- (br_yr, firmid, standard_name);
+-- CREATE INDEX un_name_counts_indx ON name_counts
+-- (br_yr, firmid, uspto_name);
+-- CREATE INDEX xn_name_counts_indx ON name_counts
+-- (br_yr, firmid, xml_name);
+-- CREATE INDEX nm_name_counts_indx ON name_counts
+-- (br_yr, firmid, name_match_name);
 
-UPDATE standard_name_to_firmid
-SET
-    sn_on_prdn_count = (
-        SELECT SUM(count)
-        FROM name_counts
-        WHERE
-            standard_name_to_firmid.standard_name = name_counts.standard_name AND
-            standard_name_to_firmid.valid_yr = name_counts.br_yr AND
-            standard_name_to_firmid.firmid = name_counts.firmid
-    );
+-- UPDATE standard_name_to_firmid
+-- SET
+--     sn_on_prdn_count = (
+--         SELECT SUM(count)
+--         FROM name_counts
+--         WHERE
+--             standard_name_to_firmid.standard_name = name_counts.standard_name AND
+--             standard_name_to_firmid.valid_yr = name_counts.br_yr AND
+--             standard_name_to_firmid.firmid = name_counts.firmid
+--     );
 
-UPDATE standard_name_to_firmid
-SET
-    alias_on_prdn_count = (
-        SELECT SUM(count)
-        FROM name_counts
-        WHERE
-            (
-                standard_name_to_firmid.alias_name = name_counts.uspto_name
-                OR
-                standard_name_to_firmid.alias_name = name_counts.xml_name
-                OR
-                standard_name_to_firmid.alias_name = name_counts.name_match_name
-            ) AND
-            standard_name_to_firmid.valid_yr = name_counts.br_yr AND
-            standard_name_to_firmid.firmid = name_counts.firmid
-    );
+-- UPDATE standard_name_to_firmid
+-- SET
+--     alias_on_prdn_count = (
+--         SELECT SUM(count)
+--         FROM name_counts
+--         WHERE
+--             (
+--                 standard_name_to_firmid.alias_name = name_counts.uspto_name
+--                 OR
+--                 standard_name_to_firmid.alias_name = name_counts.xml_name
+--                 OR
+--                 standard_name_to_firmid.alias_name = name_counts.name_match_name
+--             ) AND
+--             standard_name_to_firmid.valid_yr = name_counts.br_yr AND
+--             standard_name_to_firmid.firmid = name_counts.firmid
+--     );
 
-.headers ON
-.output standard_name_to_firmid.csv
-SELECT * FROM standard_name_to_firmid;
-.output stdout
-.headers OFF
+-- .headers ON
+-- .output standard_name_to_firmid.csv
+-- SELECT * FROM standard_name_to_firmid;
+-- .output stdout
+-- .headers OFF
 
-DROP INDEX sn_indx;
-CREATE INDEX sn_indx ON standard_name_to_firmid
-(valid_yr, alias_name);
+-- DROP INDEX sn_indx;
+-- CREATE INDEX sn_indx ON standard_name_to_firmid
+-- (valid_yr, alias_name);
 
 --------------------------------------------------------------------------------
 -- F models with br_yr = grant_yr

@@ -129,6 +129,33 @@ WHERE
     {table_names.expanded_d2_names}.{columns.valid_yr.name} = {table_names.standard_name_to_firmid}.{columns.valid_yr.name} AND
     {table_names.expanded_d2_names}.{columns.model_origin.name} = "STANDARD" AND
     {table_names.standard_name_to_firmid}.{columns.model_origin.name} = "A1";
+-- Use {table_names.expanded_d2_names} to process {table_names.standard_name_to_firmid}
+-- and now put it all back in overwriting any results from the A1 with the D2
+DELETE FROM {table_names.standard_name_to_firmid}
+WHERE EXISTS (
+    SELECT 1
+    FROM
+        {table_names.expanded_d2_names}
+    WHERE
+        {table_names.standard_name_to_firmid}.{columns.standard_name.name} = {table_names.expanded_d2_names}.{columns.standard_name.name} AND
+        {table_names.standard_name_to_firmid}.{columns.alias_name.name} = {table_names.expanded_d2_names}.{columns.alias_name.name} AND
+        {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.expanded_d2_names}.{columns.valid_yr.name}
+);
+
+DROP INDEX {table_names.sn_idx};
+CREATE UNIQUE INDEX {table_names.sn_idx} ON {table_names.standard_name_to_firmid}
+(
+    {columns.valid_yr.name},
+    {columns.alias_name.name},
+    {columns.standard_name.name},
+    {columns.firmid.name}
+);
+
+-- just need to know it was a D2 model initially
+UPDATE {table_names.expanded_d2_names} SET {columns.model_origin.name} = "D2";
+INSERT OR REPLACE INTO {table_names.standard_name_to_firmid}
+SELECT *
+FROM {table_names.expanded_d2_names};
         ''')
 
 
@@ -182,6 +209,194 @@ CREATE UNIQUE INDEX {table_names.sn_idx} ON {table_names.standard_name_to_firmid
     {columns.firmid.name},
     {columns.alias_name.name},
     {columns.model_origin.name}
+);
+        ''')
+
+
+def f_models(fh, earliest_grant_yr, shift_yr=''):
+    """
+
+    """
+    def inserts(f, earliest_grant_yr, name_column, shift_yr):
+        fh.write(
+            f'''
+INSERT OR IGNORE INTO {table_names.f_models}
+SELECT
+    {table_names.prdn_assg_names}.{columns.prdn.name},
+    "",
+    {table_names.prdn_assg_names}.{columns.assg_seq.name},
+    {table_names.standard_name_to_firmid}.{columns.valid_yr.name},
+    "",
+    {table_names.standard_name_to_firmid}.{columns.firmid.name},
+    {table_names.prdn_metadata}.{columns.grant_yr.name},
+    {table_names.prdn_metadata}.{columns.app_yr.name},
+    {table_names.prdn_assg_names}.{columns.assg_st.name},
+    {table_names.prdn_assg_names}.{columns.assg_ctry.name},
+    {table_names.prdn_assg_names}.{columns.assg_type.name},
+    {table_names.prdn_metadata}.{columns.us_inv_flag.name},
+    {table_names.prdn_metadata}.{columns.num_assg.name},
+    {table_names.standard_name_to_firmid}.{columns.model_origin.name},
+    "",
+    {table_names.standard_name_to_firmid}.{columns.standard_name.name},
+    {table_names.standard_name_to_firmid}.{columns.sn_on_prdn_count.name},
+    {table_names.standard_name_to_firmid}.{columns.alias_name.name},
+    {table_names.standard_name_to_firmid}.{columns.alias_on_prdn_count.name}
+FROM
+    {table_names.prdn_metadata},
+    {table_names.prdn_assg_names},
+    {table_names.standard_name_to_firmid}
+WHERE
+    {table_names.prdn_metadata}.{columns.grant_yr.name} >= {earliest_grant_yr} AND
+    {table_names.prdn_assg_names}.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name} AND
+    {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.prdn_metadata}.{columns.grant_yr.name} {shift_yr} AND
+    {table_names.standard_name_to_firmid}.{columns.alias_name.name} = {table_names.prdn_assg_names}.{name_column};
+            ''')
+
+    def all_name_columns(f, earliest_grant_yr, shift_yr):
+        inserts(f, earliest_grant_yr, {columns.name_match_name}, shift_yr)
+        inserts(f, earliest_grant_yr, {columns.corrected_name}, shift_yr)
+        inserts(f, earliest_grant_yr, {columns.uspto_name}, shift_yr)
+        inserts(f, earliest_grant_yr, {columns.xml_name}, shift_yr)
+        fh.write(
+            f'''
+DELETE FROM {table_names.prdn_assg_names}
+WHERE EXISTS
+    (
+        SELECT *
+        FROM {table_names.f_models}
+        WHERE
+            {table_names.f_models}.{columns.prdn.name} = {table_names.prdn_assg_names}.{columns.prdn.name} AND
+            {table_names.f_models}.{columns.assg_seq.name} = {table_names.prdn_assg_names}.{columns.assg_seq.name}
+    );
+            ''')
+
+
+def final_standard_name_to_firmid(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+-- For non-1st assignees see if the alias is mapped to a standard name
+UPDATE OR IGNORE {table_names.standard_name_to_firmid}
+SET
+    {columns.standard_name.name} = (
+        SELECT sntf.{columns.standard_name.name}
+        FROM {table_names.standard_name_to_firmid} AS sntf
+        WHERE
+            {table_names.standard_name_to_firmid}.{columns.alias_name.name} = sntf.{columns.alias_name.name} AND
+            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = sntf.{columns.valid_yr.name} AND
+            sntf.{columns.standard_name.name} != ""
+    )
+WHERE EXISTS (
+        SELECT sntf.{columns.standard_name.name}
+        FROM {table_names.standard_name_to_firmid} AS sntf
+        WHERE
+            {table_names.standard_name_to_firmid}.{columns.alias_name.name} = sntf.{columns.alias_name.name} AND
+            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = sntf.{columns.valid_yr.name} AND
+            sntf.{columns.standard_name.name} != ""
+    )
+    AND
+    {columns.standard_name.name} = "";
+
+UPDATE OR IGNORE {table_names.standard_name_to_firmid}
+SET
+    {columns.standard_name.name} = (
+        SELECT DISTINCT sntf.{columns.standard_name.name}
+        FROM {table_names.standard_name_to_firmid} AS sntf
+        WHERE
+            {table_names.standard_name_to_firmid}.{columns.alias_name.name} = sntf.{columns.alias_name.name} AND
+            sntf.{columns.standard_name.name} != ""
+    )
+WHERE
+    {columns.standard_name.name} = ""
+    AND
+    (
+        SELECT COUNT( DISTINCT sntf.{columns.standard_name.name})
+        FROM {table_names.standard_name_to_firmid} AS sntf
+        WHERE
+            {table_names.standard_name_to_firmid}.{columns.alias_name.name} = sntf.{columns.alias_name.name} AND
+            sntf.{columns.standard_name.name} != ""
+    ) = 1;
+-- fallback position
+UPDATE OR IGNORE {table_names.standard_name_to_firmid}
+SET
+    {columns.standard_name.name} = {columns.alias_name.name}
+WHERE
+    {columns.standard_name.name} = "";
+-- and clean things up
+DELETE FROM {table_names.standard_name_to_firmid} WHERE {columns.standard_name.name} = "";
+
+-- put the counts in to determine which names are most common
+-- only A1 1st assignee information is used
+CREATE TABLE {table_names.name_counts} AS
+SELECT
+    COUNT( DISTINCT {table_names.prdn_assg_names}.{columns.prdn.name} ) AS {columns.count.name},
+    {table_names.prdn_assg_names}.{columns.corrected_name.name} AS {columns.standard_name.name},
+    {table_names.prdn_assg_names}.{columns.uspto_name.name} AS {columns.uspto_name.name},
+    {table_names.prdn_assg_names}.{columns.xml_name.name} AS {columns.xml_name.name},
+    {table_names.prdn_assg_names}.{columns.name_match_name.name} AS {columns.name_match_name.name},
+    {table_names.a1_information}.{columns.br_yr.name} AS {columns.br_yr.name},
+    {table_names.a1_information}.{columns.firmid.name} AS {columns.firmid.name}
+FROM
+    {table_names.prdn_assg_names},
+    {table_names.a1_information}
+WHERE
+    {table_names.prdn_assg_names}.{columns.prdn.name} = {table_names.a1_information}.{columns.prdn.name} AND
+    {table_names.prdn_assg_names}.{columns.assg_seq.name} = {table_names.a1_information}.{columns.assg_seq.name} AND
+    {table_names.prdn_assg_names}.{columns.corrected_name.name} != "" AND
+    {table_names.prdn_assg_names}.{columns.uspto_name.name} != "" AND
+    {table_names.prdn_assg_names}.{columns.xml_name.name} != ""
+GROUP BY
+    {table_names.prdn_assg_names}.{columns.corrected_name.name},
+    {table_names.prdn_assg_names}.{columns.uspto_name.name},
+    {table_names.prdn_assg_names}.{columns.xml_name.name},
+    {table_names.prdn_assg_names}.{columns.name_match_name.name},
+    {table_names.a1_information}.{columns.br_yr.name},
+    {table_names.a1_information}.{columns.firmid.name};
+
+CREATE INDEX sn_name_counts_indx ON {table_names.name_counts}
+({columns.br_yr.name}, {columns.firmid.name}, {columns.standard_name.name});
+CREATE INDEX un_name_counts_indx ON {table_names.name_counts}
+({columns.br_yr.name}, {columns.firmid.name}, {columns.uspto_name.name});
+CREATE INDEX xn_name_counts_indx ON {table_names.name_counts}
+({columns.br_yr.name}, {columns.firmid.name}, {columns.xml_name.name});
+CREATE INDEX nm_name_counts_indx ON {table_names.name_counts}
+({columns.br_yr.name}, {columns.firmid.name}, {columns.name_match_name.name});
+
+UPDATE {table_names.standard_name_to_firmid}
+SET
+    {columns.sn_on_prdn_count.name} = (
+        SELECT SUM({columns.count.name})
+        FROM {table_names.name_counts}
+        WHERE
+            {table_names.standard_name_to_firmid}.{columns.standard_name.name} = {table_names.name_counts}.{columns.standard_name.name} AND
+            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.br_yr.name} AND
+            {table_names.standard_name_to_firmid}.{columns.firmid.name} = {table_names.name_counts}.{columns.firmid.name}
+    );
+
+UPDATE {table_names.standard_name_to_firmid}
+SET
+    {columns.alias_on_prdn_count.name} = (
+        SELECT SUM({columns.count.name})
+        FROM {table_names.name_counts}
+        WHERE
+            (
+                {table_names.standard_name_to_firmid}.{columns.alias_name.name} = {table_names.name_counts}.{columns.uspto_name.name}
+                OR
+                {table_names.standard_name_to_firmid}.{columns.alias_name.name} = {table_names.name_counts}.{columns.xml_name.name}
+                OR
+                {table_names.standard_name_to_firmid}.{columns.alias_name.name} = {table_names.name_counts}.{columns.name_match_name.name}
+            ) AND
+            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.br_yr.name} AND
+            {table_names.standard_name_to_firmid}.{columns.firmid.name} = {table_names.name_counts}.{columns.firmid.name}
+    );
+
+DROP INDEX {table_names.sn_idx};
+CREATE UNIQUE INDEX {table_names.sn_idx} ON {table_names.standard_name_to_firmid}
+(
+    {columns.valid_yr.name},
+    {columns.alias_name.name}
 );
         ''')
 
@@ -308,3 +523,5 @@ def generate_f_model_sql_script(sql_script_fn, assignee_years):
         remove_trash_standard_name_to_firmid(f)
         put_d2_standard_name_to_firmid(f)
         create_expanded_d2_name(f)
+        final_standard_name_to_firmid(f)
+        shared_code.output_distinct_data(f, f'{table_names.standard_name_to_firmid}', f'{file_names.standard_name_to_firmid}')
