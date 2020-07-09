@@ -243,24 +243,24 @@ awk -F'|' -v OFS=',' '{print $1,$4}' iops.csv | sort -T ./ -u > iops_prdn_assg_s
 # rm prdnseq_D2name.csv uspto_xml_names.csv
 
 # ./create_D2_name_maps.sh
-rm prdn_db.db
-sqlite3 prdn_db.db < create_Fmodels.sql
-sed -i 's/"//g' f_models.csv
-awk -F',' -v OFS=',' '{ 
-    if ($7 != "") { 
-        print $0,1,0 
-    } 
-    else if ($8 != "") { 
-        print $0,0,1 
-    } 
-    else { 
-        print $0,0,0 
-    } }' f_models.csv > trash.csv
-awk -F',' -v OFS=',' '{ print $1,$2,$3,$4,$5,$6,$7,$8,$16,$17,$9,$10,$11,$12,$13,$14,$15 }' trash.csv > holder_f.csv
-sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' holder_f.csv
-mv holder_f.csv f_models.csv
-rm trash.csv 
-mv f_models.csv ../outData
+# rm prdn_db.db
+# sqlite3 prdn_db.db < create_Fmodels.sql
+# sed -i 's/"//g' f_models.csv
+# awk -F',' -v OFS=',' '{ 
+#     if ($7 != "") { 
+#         print $0,1,0 
+#     } 
+#     else if ($8 != "") { 
+#         print $0,0,1 
+#     } 
+#     else { 
+#         print $0,0,0 
+#     } }' f_models.csv > trash.csv
+# awk -F',' -v OFS=',' '{ print $1,$2,$3,$4,$5,$6,$7,$8,$16,$17,$9,$10,$11,$12,$13,$14,$15 }' trash.csv > holder_f.csv
+# sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' holder_f.csv
+# mv holder_f.csv f_models.csv
+# rm trash.csv 
+# mv f_models.csv ../outData
 
 
 # Final crosswalk and cleanup
@@ -282,20 +282,20 @@ sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us
 
 sqlite3 cw_db.db < create_crosswalk.sql
 sed 's/"//g' crosswalk.csv > crosswalk.csv_sed
-mv crosswalk.csv_sed crosswalk.csv
-mv crosswalk.csv ../outData
-sed 's/"//g' crosswalk_F.csv > crosswalk_F.csv_sed
-mv crosswalk_F.csv_sed crosswalk_F.csv
-mv crosswalk_F.csv ../outData
-sed -i 's/"//g' standard_name_to_firmid.csv
-mv standard_name_to_firmid.csv ../outData
-rm D2_prdnseq_name.csv D2_name_maps.csv
-rm prdn_db.db cw_db.db
-rm Amodels_prdns
-# rm prdn_eins.csv prdn_piks.csv
-rm prdn_seq_stand_name.csv
-# rm D2_USPTO_XML_names_year.csv
-rm full_frame.csv
-rm ../inData/iops_prdn_assg_seq.csv
-cd ../
-#COMMENTS
+# mv crosswalk.csv_sed crosswalk.csv
+# mv crosswalk.csv ../outData
+# sed 's/"//g' crosswalk_F.csv > crosswalk_F.csv_sed
+# mv crosswalk_F.csv_sed crosswalk_F.csv
+# mv crosswalk_F.csv ../outData
+# sed -i 's/"//g' standard_name_to_firmid.csv
+# mv standard_name_to_firmid.csv ../outData
+# rm D2_prdnseq_name.csv D2_name_maps.csv
+# rm prdn_db.db cw_db.db
+# rm Amodels_prdns
+# # rm prdn_eins.csv prdn_piks.csv
+# rm prdn_seq_stand_name.csv
+# # rm D2_USPTO_XML_names_year.csv
+# rm full_frame.csv
+# rm ../inData/iops_prdn_assg_seq.csv
+# cd ../
+# #COMMENTS

@@ -185,6 +185,169 @@ WHERE
         ''')
 
 
+def create_output_file(fh):
+    """
+
+    """
+    def insert_into_f_models(fh, f_model_type, model_type):
+        """
+
+        """
+        fh.write(
+            f'''
+INSERT INTO {table_names.final_f_models}
+SELECT DISTINCT
+    {columns.prdn.name},
+    {columns.num_inv.name},
+    {columns.assg_seq.name},
+    {columns.cw_yr.name},
+    {columns.emp_yr.name},
+    {columns.firmid.name},
+    {columns.grant_yr.name},
+    {columns.app_yr.name},
+    {columns.assg_st.name},
+    {columns.assg_ctry.name},
+    {columns.assg_type.name},
+    {columns.us_inv_flag.name},
+    {columns.num_assg.name},
+    '{f_model_type}',
+    {columns.uniq_firmid.name},
+            ''')
+        if model_type == 'A1':
+            fh.write(
+                f'''
+    SUM({columns.a1_prdns_with_standardized_name.name}),
+    SUM({columns.a1_prdns_with_alias_name.name})
+                ''')
+        elif model_type == 'D2':
+            fh.write(
+                f'''
+    {shared_code.D2_dummy_number},
+    {shared_code.D2_dummy_number}
+                ''')
+
+        fh.write(
+            f'''
+FROM
+    {table_names.f_models}
+WHERE
+    {columns.model.name} = '{model_type}'
+GROUP BY
+    {columns.prdn.name},
+    {columns.assg_seq.name},
+    {columns.firmid.name},
+    {columns.cw_yr.name},
+    {columns.emp_yr.name};
+            ''')
+
+    fh.write(
+        f'''
+-- this is the post-processed output
+CREATE TABLE {table_names.final_f_models} (
+    {columns.prdn.cmd},
+    {columns.num_inv.cmd},
+    {columns.assg_seq.cmd},
+    {columns.cw_yr.cmd},
+    {columns.emp_yr.cmd},
+    {columns.firmid.cmd},
+    {columns.grant_yr.cmd},
+    {columns.app_yr.cmd},
+    {columns.assg_st.cmd},
+    {columns.assg_ctry.cmd},
+    {columns.assg_type.cmd},
+    {columns.us_inv_flag.cmd},
+    {columns.num_assg.cmd},
+    {columns.model.cmd},
+    {columns.uniq_firmid.cmd},
+    {columns.a1_prdns_with_standardized_name.cmd},
+    {columns.a1_prdns_with_alias_name.cmd},
+    UNIQUE (
+        {columns.prdn.name},
+        {columns.assg_seq.name},
+        {columns.firmid.name}
+);
+        ''')
+
+    insert_into_f_models(fh, 'FA1', 'A1')
+    insert_into_f_models(fh, 'FD2', 'D2')
+
+    fh.write(
+        f'''
+CREATE TABLE {table_names.total_counts}
+AS
+SELECT
+    {columns.prdn.name},
+    {columns.assg_seq.name},
+    SUM({columns.a1_prdns_with_standardized_name.name}) AS {columns.total_sn_count.name},
+    SUM({columns.a1_prdns_with_alias_name.name}) AS {columns.total_an_count.name}
+FROM
+    {table_names.final_f_models}
+GROUP BY
+    {columns.prdn.name},
+    {columns.assg_seq.name};
+CREATE UNIQUE INDEX tc_indx ON {table_names.total_counts}(
+    {columns.prdn.name},
+    {columns.assg_seq.name}
+);
+
+CREATE TABLE {table_names.output_f_models}
+AS
+SELECT
+    {table_names.final_f_models}.{columns.prdn.name},
+    {table_names.final_f_models}.{columns.assg_seq.name},
+    {columns.firmid.name},
+    {columns.app_yr.name},
+    {columns.grant_yr.name},
+    {columns.assg_type.name},
+    {columns.assg_st.name},
+    {columns.assg_ctry.name},
+    0 AS {columns.us_assg_flag.name},
+    0 AS {columns.foreign_assg_flag.name},
+    {columns.us_inv_flag.name},
+    {columns.num_assg.name},
+    {columns.cw_yr.name},
+    {columns.emp_yr.name},
+    {columns.model.name},
+    {columns.uniq_firmid.name},
+    0 AS {columns.uniq_firmid.name},
+    {columns.num_inv.cmd},
+FROM
+    {table_names.final_f_models},
+    {table_names.total_counts}
+WHERE
+    {table_names.final_f_models}.firmid != '' AND
+    {table_names.final_f_models}.{columns.prdn.name} = {table_names.total_counts}.{columns.prdn.name} AND
+    {table_names.final_f_models}.{columns.assg_seq.name} = {table_names.total_counts}.{columns.assg_seq.name} AND
+    ( 1.0 * {columns.a1_prdns_with_standardized_name.name} ) / {columns.total_sn_count.name} > 0.7 AND
+    ( 1.0 * {columns.a1_prdns_with_alias_name.name} ) / {columns.total_an_count.name} > 0.7
+ORDER BY
+    {table_names.final_f_models}.{columns.prdn.name},
+    {table_names.final_f_models}.{columns.assg_seq.name};
+
+-- a state => US assignee
+UPDATE {table_names.output_f_models}
+SET {columns.us_assg_flag.name} = 1
+WHERE {columns.assg_st.name} != "";
+-- no state + country => foreign assignee
+UPDATE {table_names.output_f_models}
+SET {columns.foreign_assg_flag.name} = 1
+WHERE
+    {columns.us_assg_flag.name} != 1 AND
+    {columns.assg_ctry.name} != "";
+
+UPDATE {table_names.output_f_models} AS outer_tbl
+SET {columns.uniq_firmid.name} = 1
+WHERE
+    (
+        SELECT COUNT(*)
+        FROM {table_names.output_f_models} AS inner_tbl
+        WHERE
+            outer_tbl.{columns.prdn.name} = inner_tbl.{columns.prdn.name} AND
+            outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
+    ) > 1;
+        ''')
+
+
 def create_standard_name_to_firmid(fh):
     """
 
@@ -482,6 +645,8 @@ WHERE
         {columns.alias_name.name} == "INDIVIDUALLY OWNED PATENT"
     );
         ''')
+    with open(file_names.f_model_standard_name_corrections_cfg_TITLED) as infile:
+        fh.write(infile.read())
 
 
 def update_standard_name_to_firmid(fh, model_name, model_firmid):
@@ -560,3 +725,5 @@ def generate_f_model_sql_script(sql_script_fn, assignee_years):
         final_standard_name_to_firmid(f)
         shared_code.output_distinct_data(f, f'{table_names.standard_name_to_firmid}', f'{file_names.standard_name_to_firmid}')
         f_models(f, shared_code.earliest_grant_yr, shared_code.shift_yrs)
+        create_output_file(f)
+        shared_code.output_distinct_data(f, f'{table_names.output_f_models}', f'{file_names.f_models}')

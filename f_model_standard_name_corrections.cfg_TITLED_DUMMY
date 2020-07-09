@@ -1,7 +1,7 @@
 -- These are dummy examples of hand corrections to clean things up.
 -- >>>> Remove the _DUMMY ending before running the module.
 -- The user will need to put the actual corrections into this file.
--- This file will contain TITLED information after modeification.
+-- This file will contain TITLED information after modification.
 
 ---- If you need to modify the standard name based on a different alias name:
 UPDATE OR REPLACE standard_name_to_firmid

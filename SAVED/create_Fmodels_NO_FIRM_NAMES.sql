@@ -1341,135 +1341,135 @@
 --     );
 
 -- this is the post-processed output
-CREATE TABLE final_f_models (
-    prdn TEXT NOT NULL,
-    count INT,
-    assg_seq INT NOT NULL,
-    br_yr INT NOT NULL,
-    lehd_yr INT,
-    firmid TEXT NOT NULL,
-    grant_yr INT NOT NULL,
-    app_yr INT NOT NULL,
-    assg_st TEXT,
-    assg_ctry TEXT,
-    assg_type INT,
-    us_inventor_flag INT,
-    multiple_assignee_flag INT,
-    model_type TEXT,
-    unique_firm_id INT,
-    standardized_name_count INT,
-    alias_name_count INT,
-    UNIQUE (prdn, assg_seq, firmid)
-);
+-- CREATE TABLE final_f_models (
+--     prdn TEXT NOT NULL,
+--     count INT,
+--     assg_seq INT NOT NULL,
+--     br_yr INT NOT NULL,
+--     lehd_yr INT,
+--     firmid TEXT NOT NULL,
+--     grant_yr INT NOT NULL,
+--     app_yr INT NOT NULL,
+--     assg_st TEXT,
+--     assg_ctry TEXT,
+--     assg_type INT,
+--     us_inventor_flag INT,
+--     multiple_assignee_flag INT,
+--     model_type TEXT,
+--     unique_firm_id INT,
+--     standardized_name_count INT,
+--     alias_name_count INT,
+--     UNIQUE (prdn, assg_seq, firmid)
+-- );
 
-INSERT INTO final_f_models
-SELECT DISTINCT
-    prdn,
-    count,
-    assg_seq,
-    br_yr,
-    lehd_yr,
-    firmid,
-    grant_yr,
-    app_yr,
-    assg_st,
-    assg_ctry,
-    assg_type,
-    us_inventor_flag,
-    multiple_assignee_flag,
-    'FA1',
-    unique_firm_id,
-    SUM(a1_prdns_with_standardized_name),
-    SUM(a1_prdns_with_alias_name)
-FROM
-    f_models
-WHERE
-    model_type = 'A1'
-GROUP BY
-    prdn,
-    assg_seq,
-    firmid,
-    br_yr,
-    lehd_yr;
+-- INSERT INTO final_f_models
+-- SELECT DISTINCT
+--     prdn,
+--     count,
+--     assg_seq,
+--     br_yr,
+--     lehd_yr,
+--     firmid,
+--     grant_yr,
+--     app_yr,
+--     assg_st,
+--     assg_ctry,
+--     assg_type,
+--     us_inventor_flag,
+--     multiple_assignee_flag,
+--     'FA1',
+--     unique_firm_id,
+--     SUM(a1_prdns_with_standardized_name),
+--     SUM(a1_prdns_with_alias_name)
+-- FROM
+--     f_models
+-- WHERE
+--     model_type = 'A1'
+-- GROUP BY
+--     prdn,
+--     assg_seq,
+--     firmid,
+--     br_yr,
+--     lehd_yr;
     
-INSERT OR REPLACE INTO final_f_models
-SELECT DISTINCT
-    prdn,
-    count,
-    assg_seq,
-    br_yr,
-    lehd_yr,
-    firmid,
-    grant_yr,
-    app_yr,
-    assg_st,
-    assg_ctry,
-    assg_type,
-    us_inventor_flag,
-    multiple_assignee_flag,
-    'FD2',
-    unique_firm_id,
-    -- these are just big dummy numbers so D2 gets picked
-    --SUM(a1_prdns_with_standardized_name),
-    --SUM(a1_prdns_with_alias_name)
-    1000000,
-    1000000
-FROM
-    f_models
-WHERE
-    model_type = 'D2'
-GROUP BY
-    prdn,
-    assg_seq,
-    firmid,
-    br_yr,
-    lehd_yr;
+-- INSERT OR REPLACE INTO final_f_models
+-- SELECT DISTINCT
+--     prdn,
+--     count,
+--     assg_seq,
+--     br_yr,
+--     lehd_yr,
+--     firmid,
+--     grant_yr,
+--     app_yr,
+--     assg_st,
+--     assg_ctry,
+--     assg_type,
+--     us_inventor_flag,
+--     multiple_assignee_flag,
+--     'FD2',
+--     unique_firm_id,
+--     -- these are just big dummy numbers so D2 gets picked
+--     --SUM(a1_prdns_with_standardized_name),
+--     --SUM(a1_prdns_with_alias_name)
+--     1000000,
+--     1000000
+-- FROM
+--     f_models
+-- WHERE
+--     model_type = 'D2'
+-- GROUP BY
+--     prdn,
+--     assg_seq,
+--     firmid,
+--     br_yr,
+--     lehd_yr;
     
-CREATE TABLE total_counts
-AS
-SELECT
-    prdn,
-    assg_seq,
-    --SUM(a1_prdns_with_standardized_name) AS total_sn_count,
-    --SUM(a1_prdns_with_alias_name) AS total_an_count
-    SUM(standardized_name_count) AS total_sn_count,
-    SUM(alias_name_count) AS total_an_count
-FROM
-    final_f_models
-GROUP BY
-    prdn,
-    assg_seq;
-CREATE UNIQUE INDEX tc_indx ON total_counts
-(prdn, assg_seq);
+-- CREATE TABLE total_counts
+-- AS
+-- SELECT
+--     prdn,
+--     assg_seq,
+--     --SUM(a1_prdns_with_standardized_name) AS total_sn_count,
+--     --SUM(a1_prdns_with_alias_name) AS total_an_count
+--     SUM(standardized_name_count) AS total_sn_count,
+--     SUM(alias_name_count) AS total_an_count
+-- FROM
+--     final_f_models
+-- GROUP BY
+--     prdn,
+--     assg_seq;
+-- CREATE UNIQUE INDEX tc_indx ON total_counts
+-- (prdn, assg_seq);
 
-.output f_models.csv
-SELECT
-    final_f_models.prdn,
-    final_f_models.assg_seq,
-    firmid,
-    app_yr,
-    grant_yr,
-    assg_type,
-    assg_st,
-    assg_ctry,
-    us_inventor_flag,
-    multiple_assignee_flag,
-    br_yr,
-    lehd_yr,
-    model_type,
-    unique_firm_id,
-    count
-FROM 
-    final_f_models,
-    total_counts
-WHERE
-    final_f_models.firmid != '' AND
-    final_f_models.prdn = total_counts.prdn AND
-    final_f_models.assg_seq = total_counts.assg_seq AND
-    ( 1.0 * standardized_name_count ) / total_sn_count > 0.7 AND
-    ( 1.0 * alias_name_count ) / total_an_count > 0.7
-ORDER BY
-    final_f_models.prdn,
-    final_f_models.assg_seq;
-.output stdout
+-- .output f_models.csv
+-- SELECT
+--     final_f_models.prdn,
+--     final_f_models.assg_seq,
+--     firmid,
+--     app_yr,
+--     grant_yr,
+--     assg_type,
+--     assg_st,
+--     assg_ctry,
+--     us_inventor_flag,
+--     multiple_assignee_flag,
+--     br_yr,
+--     lehd_yr,
+--     model_type,
+--     unique_firm_id,
+--     count
+-- FROM 
+--     final_f_models,
+--     total_counts
+-- WHERE
+--     final_f_models.firmid != '' AND
+--     final_f_models.prdn = total_counts.prdn AND
+--     final_f_models.assg_seq = total_counts.assg_seq AND
+--     ( 1.0 * standardized_name_count ) / total_sn_count > 0.7 AND
+--     ( 1.0 * alias_name_count ) / total_an_count > 0.7
+-- ORDER BY
+--     final_f_models.prdn,
+--     final_f_models.assg_seq;
+-- .output stdout
 

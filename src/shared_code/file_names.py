@@ -1,4 +1,4 @@
-
+f_model_cfg_TITLED_files = './triangulation/cfg_files/TITLED/'
 in_data_path = './triangulation/in_data/'
 out_data_path = './triangulation/out_data/'
 sql_script_path = './triangulation/src/tmp/'
@@ -28,6 +28,8 @@ d1_models = f'{out_data_path}d1_models.csv'
 d2_models = f'{out_data_path}d2_models.csv'
 e1_models = f'{out_data_path}e1_models.csv'
 e2_models = f'{out_data_path}e2_models.csv'
+f_models = f'{out_data_path}f_models.csv'
+f_model_standard_name_corrections_cfg_TITLED = f'{f_model_cfg_TITLED_files}f_model_standard_name_corrections.cfg_TITLED'
 standard_name_to_firmid = f'{out_data_path}standard_name_to_firmid.csv'
 
 # SQL script file names
