@@ -125,6 +125,8 @@ Some of the input data files need to be preprocessed due to changes in file form
 These are run 'by hand' since they have upstream input files, which may change their format.
 The user is required to preprocess those to make sure they match the formats given above.
 As an example, the following commands were used for the run that occured in 2019-2020.
+These commands will be run in the **in_data** directory.
+**assigneeOutData** contains the output files from the preprocessing carried out by the assignee_prep2 module.
 
  
     awk -F'|' -v OFS=',' '{print $1,$4}' iops.csv | sort -T ./ -u > iops_prdn_assg_seq.csv  
@@ -151,8 +153,8 @@ As an example, the following commands were used for the run that occured in 2019
     sort -T ./ -u prdn_metadata.csv > holder  
     mv holder prdn_metadata.csv  
     # For F models
-    awk -F'|' -v OFS='|' '{ if ($4 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv | sort -u -T ./ > prdn_seq_name.csv  
-    awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv |  
+    awk -F'|' -v OFS='|' '{ if ($4 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' assigneeOutData/*.csv | sort -u -T ./ > prdn_seq_name.csv  
+    awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' assigneeOutData/*.csv |  
         grep -v "INDIVIDUALLY OWNED PATENT" |  
         sort -u -T ./ > prdn_seq_name.csv  
     sed -i 's/|US|/||/g' prdn_seq_name.csv  
@@ -164,7 +166,7 @@ As an example, the following commands were used for the run that occured in 2019
     awk -F'|' -v OFS='|' '{ col6=$6;  gsub("[^A-Z0-9 ]","",col6); col7=$7; gsub("[^A-Z0-9 ]","",col7); col8=$8; gsub("[^A-Z0-9 ]","",col8); print $1,$2,$3,$4,$5,col6,col7,col8,$9;}' prdn_seq_name.csv > prdn_seq_stand_name.csv  
     sed -i 's/|/,/g' prdn_seq_stand_name.csv  
     rm prdn_seq_name.csv  
-    # To map D2 assignee name to USPTO and XML names  
+    <!-- # To map D2 assignee name to USPTO and XML names  
     awk -F',' -v OFS=',' '{print $1$2,$4}' ../inData/assignee_76_14.csv | sed '1d' | sort -T ./ -f -t',' -k1,1 > prdnseq_D2name.csv  
     awk -F',' -v OFS=',' '{print $1$2,$3,$6,$7,$8}' prdn_seq_stand_name.csv | sort -T ./ -f -t',' -k1,1 > uspto_xml_names.csv  
     #-- the most common name  
@@ -184,7 +186,7 @@ As an example, the following commands were used for the run that occured in 2019
         awk -F',' -v OFS=',' '{ if ($3 > 5){print $1,$2,$4}}' >> D2_USPTO_XML_names_year.csv  
     sort -T ./ -u D2_USPTO_XML_names_year.csv > holder.csv  
     mv holder.csv D2_USPTO_XML_names_year.csv  
-    rm prdnseq_D2name.csv uspto_xml_names.csv  
+    rm prdnseq_D2name.csv uspto_xml_names.csv   -->
 
 
 ## Setting up the Python environment
