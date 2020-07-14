@@ -150,6 +150,41 @@ As an example, the following commands were used for the run that occured in 2019
     # Cut last column off prdn_metadata.csv then do  
     sort -T ./ -u prdn_metadata.csv > holder  
     mv holder prdn_metadata.csv  
+    # For F models
+    awk -F'|' -v OFS='|' '{ if ($4 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv | sort -u -T ./ > prdn_seq_name.csv  
+    awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv |  
+        grep -v "INDIVIDUALLY OWNED PATENT" |  
+        sort -u -T ./ > prdn_seq_name.csv  
+    sed -i 's/|US|/||/g' prdn_seq_name.csv  
+    sed -i 's/|USX|/||/g' prdn_seq_name.csv  
+    sed -i 's/&/AND/g' prdn_seq_name.csv  
+    sed -i 's/+/AND/g' prdn_seq_name.csv  
+    sed -i 's/ \{1,\}/ /g' prdn_seq_name.csv  
+    # Remove non-alphanumeric characters and extra whitespace  
+    awk -F'|' -v OFS='|' '{ col6=$6;  gsub("[^A-Z0-9 ]","",col6); col7=$7; gsub("[^A-Z0-9 ]","",col7); col8=$8; gsub("[^A-Z0-9 ]","",col8); print $1,$2,$3,$4,$5,col6,col7,col8,$9;}' prdn_seq_name.csv > prdn_seq_stand_name.csv  
+    sed -i 's/|/,/g' prdn_seq_stand_name.csv  
+    rm prdn_seq_name.csv  
+    # To map D2 assignee name to USPTO and XML names  
+    awk -F',' -v OFS=',' '{print $1$2,$4}' ../inData/assignee_76_14.csv | sed '1d' | sort -T ./ -f -t',' -k1,1 > prdnseq_D2name.csv  
+    awk -F',' -v OFS=',' '{print $1$2,$3,$6,$7,$8}' prdn_seq_stand_name.csv | sort -T ./ -f -t',' -k1,1 > uspto_xml_names.csv  
+    #-- the most common name  
+    join -i -t',' -j1 -o1.2,2.2,2.3,2.4,2.5 prdnseq_D2name.csv uspto_xml_names.csv |  
+        awk -F',' -v OFS=',' '{{print $1,$3,$2}; {print $1,$4,$2}; {print $1,$5,$2};}' |  
+        sort -T ./ | uniq -c | sed -e 's/^ *//;s/ /,/' |  
+        awk -F',' -v OFS=',' '{if ($2 != "" && $3 != "" && $4 != "") {print $2,$4,$1,$3}}' |  
+        sort -T ./ -t',' -k1,1 -k2,2n -k3,3nr |  
+        sort -T ./ -t',' -k1,1 -k2,2n -u |  
+        awk -F',' -v OFS=',' '{print $1,$2,$4}' > D2_USPTO_XML_names_year.csv  
+    #-- other common names  
+    join -i -t',' -j1 -o1.2,2.2,2.3,2.4,2.5 prdnseq_D2name.csv uspto_xml_names.csv |  
+        awk -F',' -v OFS=',' '{{print $1,$3,$2}; {print $1,$4,$2}; {print $1,$5,$2};}' |  
+        sort -T ./ | uniq -c | sed -e 's/^ *//;s/ /,/' |  
+        awk -F',' -v OFS=',' '{if ($2 != "" && $3 != "" && $4 != "") {print $2,$4,$1,$3}}' |  
+        sort -T ./ -t',' -k1,1 -k2,2n -k3,3nr |  
+        awk -F',' -v OFS=',' '{ if ($3 > 5){print $1,$2,$4}}' >> D2_USPTO_XML_names_year.csv  
+    sort -T ./ -u D2_USPTO_XML_names_year.csv > holder.csv  
+    mv holder.csv D2_USPTO_XML_names_year.csv  
+    rm prdnseq_D2name.csv uspto_xml_names.csv  
 
 
 ## Setting up the Python environment

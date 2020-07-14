@@ -269,7 +269,7 @@ ON {table_names.a1_models} (
     {columns.assg_seq.name},
     {columns.assg_firmid.name});
 
-CREATE INDEX UNIQUE d2_models_indx
+CREATE UNIQUE INDEX d2_models_indx
 ON {table_names.d2_models} (
     {columns.prdn.name},
     {columns.assg_seq.name},
