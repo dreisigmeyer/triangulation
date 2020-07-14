@@ -206,8 +206,8 @@ awk -F'|' -v OFS=',' '{print $1,$4}' iops.csv | sort -T ./ -u > iops_prdn_assg_s
 
 # #<<'COMMENTS'
 # F models
-# awk -F'|' -v OFS='|' '{ if ($4 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv | sort -u -T ./ > prdn_seq_name.csv
-# awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' ../inData/assigneeOutData/*.csv | 
+# awk -F'|' -v OFS='|' '{ if ($4 != "") {print $1,$6,$3,$9,$10,$5,$11,$12,$7}}' ../inData/assigneeOutData/*.csv | sort -u -T ./ > prdn_seq_name.csv
+# awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1,$6,$3,$9,$10,$5,$11,$12,$7}}' ../inData/assigneeOutData/*.csv | 
 #     grep -v "INDIVIDUALLY OWNED PATENT" |
 #     sort -u -T ./ > prdn_seq_name.csv
 # sed -i 's/|US|/||/g' prdn_seq_name.csv

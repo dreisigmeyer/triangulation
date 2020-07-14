@@ -126,7 +126,7 @@ These are run 'by hand' since they have upstream input files, which may change t
 The user is required to preprocess those to make sure they match the formats given above.
 As an example, the following commands were used for the run that occured in 2019-2020.
 These commands will be run in the **in_data** directory.
-**assigneeOutData** contains the output files from the preprocessing carried out by the assignee_prep2 module.
+**assignee_out_data** contains the output files from the preprocessing carried out by the assignee_prep2 module.
 
  
     awk -F'|' -v OFS=',' '{print $1,$4}' iops.csv | sort -T ./ -u > iops_prdn_assg_seq.csv  
@@ -153,8 +153,7 @@ These commands will be run in the **in_data** directory.
     sort -T ./ -u prdn_metadata.csv > holder  
     mv holder prdn_metadata.csv  
     # For F models
-    awk -F'|' -v OFS='|' '{ if ($4 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' assigneeOutData/*.csv | sort -u -T ./ > prdn_seq_name.csv  
-    awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1,$5,$3,$8,$9,$4,$10,$11,$6}}' assigneeOutData/*.csv |  
+    awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") $1,$6,$3,$9,$10,$5,$11,$12,$7}}' assignee_out_data/*.csv |  
         grep -v "INDIVIDUALLY OWNED PATENT" |  
         sort -u -T ./ > prdn_seq_name.csv  
     sed -i 's/|US|/||/g' prdn_seq_name.csv  
@@ -210,3 +209,6 @@ The generated SQLite3 code is placed into **src/tmp** as **create\_[abcdef]\_mod
 
 The directory **src/shared\_code** contains code that is called by multiple SQLite3 code generating Python files.
 This includes files to collect together shared column names (**column\_names.py**), input and output file names (**file\_names.py**), and shared table names (**table\_names.py**).
+
+
+If there are errors, it's best to find them in the generated SQLite3 scipt files, and find the corresponding place in the Python code that generates the SQL commands.
