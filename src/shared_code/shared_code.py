@@ -273,7 +273,7 @@ CREATE UNIQUE INDEX d2_models_indx
 ON {table_names.d2_models} (
     {columns.prdn.name},
     {columns.assg_seq.name},
-    {columns.assg_firmid.name});
+    {columns.firmid.name});
 
 CREATE UNIQUE INDEX prdn_metadata_indx
 ON {table_names.prdn_metadata} (

@@ -65,7 +65,7 @@ CREATE TABLE {table_names.expanded_d2_names} (
     {columns.country.cmd},
     {columns.model_origin.cmd},
     {columns.sn_on_prdn_count.cmd},
-    {columns.alias_on_prdn_count.cmd}
+    {columns.alias_on_prdn_count.cmd},
     UNIQUE (
         {columns.standard_name.name},
         {columns.valid_yr.name},
@@ -159,7 +159,7 @@ FROM {table_names.expanded_d2_names};
         ''')
 
 
-def create_name_information(fh, in_table, in_model_firmid, br_yr):
+def create_name_information(fh, in_table, in_model_firmid, emp_yr):
     """
 
     """
@@ -174,7 +174,7 @@ SELECT DISTINCT
     {table_names.prdn_assg_names}.{columns.name_match_name.name} AS {columns.name_match_name.name},
     {table_names.prdn_assg_names}.{columns.assg_st.name} AS {columns.assg_st.name},
     {table_names.prdn_assg_names}.{columns.assg_ctry.name} AS {columns.assg_ctry.name},
-    {in_table}.{br_yr} AS {columns.br_yr.name},
+    {in_table}.{emp_yr} AS {columns.emp_yr.name},
     {in_table}.{columns.firmid.name} AS {in_model_firmid}
 FROM
     {table_names.prdn_assg_names},
@@ -354,7 +354,7 @@ def create_standard_name_to_firmid(fh):
     """
     fh.write(
         f'''
-CREATE TABLE {table_names.standard_name_to_firmid} ()
+CREATE TABLE {table_names.standard_name_to_firmid} (
     {columns.standard_name.cmd},
     {columns.alias_name.cmd},
     {columns.valid_yr.cmd},
@@ -533,14 +533,14 @@ SELECT
     {table_names.prdn_assg_names}.{columns.uspto_name.name} AS {columns.uspto_name.name},
     {table_names.prdn_assg_names}.{columns.xml_name.name} AS {columns.xml_name.name},
     {table_names.prdn_assg_names}.{columns.name_match_name.name} AS {columns.name_match_name.name},
-    {table_names.a1_information}.{columns.br_yr.name} AS {columns.br_yr.name},
-    {table_names.a1_information}.{columns.firmid.name} AS {columns.firmid.name}
+    {table_names.a1_models}.{columns.emp_yr.name} AS {columns.emp_yr.name},
+    {table_names.a1_models}.{columns.firmid.name} AS {columns.firmid.name}
 FROM
     {table_names.prdn_assg_names},
-    {table_names.a1_information}
+    {table_names.a1_models}
 WHERE
-    {table_names.prdn_assg_names}.{columns.prdn.name} = {table_names.a1_information}.{columns.prdn.name} AND
-    {table_names.prdn_assg_names}.{columns.assg_seq.name} = {table_names.a1_information}.{columns.assg_seq.name} AND
+    {table_names.prdn_assg_names}.{columns.prdn.name} = {table_names.a1_models}.{columns.prdn.name} AND
+    {table_names.prdn_assg_names}.{columns.assg_seq.name} = {table_names.a1_models}.{columns.assg_seq.name} AND
     {table_names.prdn_assg_names}.{columns.corrected_name.name} != "" AND
     {table_names.prdn_assg_names}.{columns.uspto_name.name} != "" AND
     {table_names.prdn_assg_names}.{columns.xml_name.name} != ""
@@ -549,17 +549,17 @@ GROUP BY
     {table_names.prdn_assg_names}.{columns.uspto_name.name},
     {table_names.prdn_assg_names}.{columns.xml_name.name},
     {table_names.prdn_assg_names}.{columns.name_match_name.name},
-    {table_names.a1_information}.{columns.br_yr.name},
-    {table_names.a1_information}.{columns.firmid.name};
+    {table_names.a1_models}.{columns.emp_yr.name},
+    {table_names.a1_models}.{columns.firmid.name};
 
 CREATE INDEX sn_name_counts_indx ON {table_names.name_counts}
-({columns.br_yr.name}, {columns.firmid.name}, {columns.standard_name.name});
+({columns.emp_yr.name}, {columns.firmid.name}, {columns.standard_name.name});
 CREATE INDEX un_name_counts_indx ON {table_names.name_counts}
-({columns.br_yr.name}, {columns.firmid.name}, {columns.uspto_name.name});
+({columns.emp_yr.name}, {columns.firmid.name}, {columns.uspto_name.name});
 CREATE INDEX xn_name_counts_indx ON {table_names.name_counts}
-({columns.br_yr.name}, {columns.firmid.name}, {columns.xml_name.name});
+({columns.emp_yr.name}, {columns.firmid.name}, {columns.xml_name.name});
 CREATE INDEX nm_name_counts_indx ON {table_names.name_counts}
-({columns.br_yr.name}, {columns.firmid.name}, {columns.name_match_name.name});
+({columns.emp_yr.name}, {columns.firmid.name}, {columns.name_match_name.name});
 
 UPDATE {table_names.standard_name_to_firmid}
 SET
@@ -568,7 +568,7 @@ SET
         FROM {table_names.name_counts}
         WHERE
             {table_names.standard_name_to_firmid}.{columns.standard_name.name} = {table_names.name_counts}.{columns.standard_name.name} AND
-            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.br_yr.name} AND
+            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.emp_yr.name} AND
             {table_names.standard_name_to_firmid}.{columns.firmid.name} = {table_names.name_counts}.{columns.firmid.name}
     );
 
@@ -585,7 +585,7 @@ SET
                 OR
                 {table_names.standard_name_to_firmid}.{columns.alias_name.name} = {table_names.name_counts}.{columns.name_match_name.name}
             ) AND
-            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.br_yr.name} AND
+            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.emp_yr.name} AND
             {table_names.standard_name_to_firmid}.{columns.firmid.name} = {table_names.name_counts}.{columns.firmid.name}
     );
 
@@ -684,7 +684,7 @@ INSERT OR REPLACE INTO {table_names.standard_name_to_firmid}
 SELECT
     {columns.corrected_name.name},
     {alt_name},
-    {columns.br_yr.name},
+    {columns.emp_yr.name},
     {firmid},
     {columns.assg_st.name},
     {columns.assg_ctry.name},
@@ -715,7 +715,7 @@ def generate_f_model_sql_script(sql_script_fn, assignee_years):
         shared_code.model_header(f)
         shared_code.in_data_tables(f, 'F', assignee_years)
         create_standard_name_to_firmid(f)
-        create_name_information(f, table_names.a1_models, columns.a1_model_firmid.name, columns.br_yr.name)
+        create_name_information(f, table_names.a1_models, columns.a1_model_firmid.name, columns.emp_yr.name)
         update_standard_name_to_firmid(f, 'A1', columns.a1_model_firmid.name)
         create_name_information(f, table_names.d2_models, columns.d2_model_firmid.name, columns.grant_yr.name)
         update_standard_name_to_firmid(f, 'D2', columns.d2_model_firmid.name)
