@@ -276,7 +276,7 @@ CREATE TABLE {table_names.closed_loops} AS
 SELECT
     {columns.assg_prdn.name} AS {columns.prdn.name},
     {columns.assg_seq.name},
-    {columns.assg_firmid.name},
+    {columns.assg_firmid.name} AS {columns.firmid.name},
     {columns.app_yr.name},
     {columns.grant_yr.name},
     {columns.assg_type.name},
@@ -285,7 +285,7 @@ SELECT
     0 AS {columns.us_assg_flag.name},
     0 AS {columns.foreign_assg_flag.name},
     {columns.us_inv_flag.name},
-    {columns.mult_assg_flag.name},
+    {columns.mult_assg_flag.name} AS {columns.num_assg.name},
     {columns.cw_yr.name},
     {columns.emp_yr.name},
     "{model}" AS {columns.model.name},
@@ -335,7 +335,7 @@ ON
         {columns.assg_seq.name},
         {columns.cw_yr.name},
         {columns.emp_yr.name},
-        {columns.assg_firmid.name}
+        {columns.firmid.name}
     );
 
 DROP TABLE inv_counts;
@@ -403,7 +403,7 @@ def update_b_model_info(fh):
         f'''
 INSERT OR IGNORE INTO {table_names.b_model_info}
 SELECT DISTINCT
-    {columns.assg_firmid.name},
+    {columns.firmid.name},
     {columns.cw_yr.name}
 FROM
     {table_names.closed_loops};
@@ -429,7 +429,7 @@ WHERE
     {tbl_name}.{columns.assg_seq.name} = {table_names.closed_loops}.{columns.assg_seq.name} AND
     {tbl_name}.{columns.cw_yr.name} = {table_names.closed_loops}.{columns.cw_yr.name} AND
     {tbl_name}.{columns.emp_yr.name} = {table_names.closed_loops}.{columns.emp_yr.name} AND
-    {tbl_name}.{columns.assg_firmid.name} = {table_names.closed_loops}.{columns.assg_firmid.name};
+    {tbl_name}.{columns.assg_firmid.name} = {table_names.closed_loops}.{columns.firmid.name};
     ''')
 
 
