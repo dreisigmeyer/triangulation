@@ -606,13 +606,13 @@ def put_d2_standard_name_to_firmid(fh):
         f'''
 INSERT OR REPLACE INTO {table_names.standard_name_to_firmid}
     (
-        {columns.standard_name.cmd},
-        {columns.alias_name.cmd},
-        {columns.valid_yr.cmd},
-        {columns.firmid.cmd},
-        {columns.state.cmd},
-        {columns.country.cmd},
-        {columns.model_origin.cmd}
+        {columns.standard_name.name},
+        {columns.alias_name.name},
+        {columns.valid_yr.name},
+        {columns.firmid.name},
+        {columns.state.name},
+        {columns.country.name},
+        {columns.model_origin.name}
     )
 SELECT
     {columns.assg_name.name},
@@ -688,7 +688,7 @@ SELECT
     {firmid},
     {columns.assg_st.name},
     {columns.assg_ctry.name},
-    {model}
+    "{model}"
 FROM
     {table_names.name_information}
 WHERE
