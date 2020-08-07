@@ -174,7 +174,7 @@ SELECT DISTINCT
     {table_names.prdn_assg_names}.{columns.name_match_name.name} AS {columns.name_match_name.name},
     {table_names.prdn_assg_names}.{columns.assg_st.name} AS {columns.assg_st.name},
     {table_names.prdn_assg_names}.{columns.assg_ctry.name} AS {columns.assg_ctry.name},
-    {in_table}.{emp_yr} AS {columns.emp_yr.name},
+    {in_table}.{emp_yr} AS {columns.cw_yr.name},
     {in_table}.{columns.firmid.name} AS {in_model_firmid}
 FROM
     {table_names.prdn_assg_names},
@@ -684,7 +684,7 @@ INSERT OR REPLACE INTO {table_names.standard_name_to_firmid}
 SELECT
     {columns.corrected_name.name},
     {alt_name},
-    {columns.emp_yr.name},
+    {columns.cw_yr.name},
     {firmid},
     {columns.assg_st.name},
     {columns.assg_ctry.name},

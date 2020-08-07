@@ -6,14 +6,14 @@
 ---- If you need to modify the standard name based on a different alias name:
 UPDATE OR REPLACE standard_name_to_firmid
 SET standard_name = "A FAKE NAME"
-WHERE alias_name == "A DIFFERENT FAKE NAME" AND valid_yr == 1776;
+WHERE alias_name == "A DIFFERENT FAKE NAME" AND valid_year == 1776;
 
 ---- If you need to modify the standard name based on the same alias name:
 UPDATE OR REPLACE standard_name_to_firmid
 SET standard_name = "A FAKE NAME"
-WHERE alias_name == "A FAKE NAME" AND valid_yr == 1776;
+WHERE alias_name == "A FAKE NAME" AND valid_year == 1776;
 
 ---- If you need to modify the standard name based on a different standard name:
 UPDATE OR REPLACE standard_name_to_firmid
 SET standard_name = "A FAKE NAME"
-WHERE standard_name == "A DIFFERENT FAKE NAME" AND valid_yr == 1776;
+WHERE standard_name == "A DIFFERENT FAKE NAME" AND valid_year == 1776;
