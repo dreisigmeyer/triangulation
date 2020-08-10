@@ -265,6 +265,7 @@ CREATE TABLE {table_names.final_f_models} (
         {columns.prdn.name},
         {columns.assg_seq.name},
         {columns.firmid.name}
+    )
 );
         ''')
 
@@ -310,7 +311,7 @@ SELECT
     {columns.model.name},
     {columns.uniq_firmid.name},
     0 AS {columns.uniq_firmid.name},
-    {columns.num_inv.cmd},
+    {columns.num_inv.cmd}
 FROM
     {table_names.final_f_models},
     {table_names.total_counts}
