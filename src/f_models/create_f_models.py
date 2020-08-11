@@ -159,7 +159,7 @@ FROM {table_names.expanded_d2_names};
         ''')
 
 
-def create_name_information(fh, in_table, in_model_firmid, emp_yr):
+def create_name_information(fh, in_table, in_model_firmid, cw_yr):
     """
 
     """
@@ -174,7 +174,7 @@ SELECT DISTINCT
     {table_names.prdn_assg_names}.{columns.name_match_name.name} AS {columns.name_match_name.name},
     {table_names.prdn_assg_names}.{columns.assg_st.name} AS {columns.assg_st.name},
     {table_names.prdn_assg_names}.{columns.assg_ctry.name} AS {columns.assg_ctry.name},
-    {in_table}.{emp_yr} AS {columns.cw_yr.name},
+    {in_table}.{cw_yr} AS {columns.cw_yr.name},
     {in_table}.{columns.firmid.name} AS {in_model_firmid}
 FROM
     {table_names.prdn_assg_names},
@@ -591,7 +591,7 @@ SET
     );
 
 DROP INDEX {table_names.sn_idx};
-CREATE UNIQUE INDEX {table_names.sn_idx} ON {table_names.standard_name_to_firmid}
+CREATE INDEX {table_names.sn_idx} ON {table_names.standard_name_to_firmid}
 (
     {columns.valid_yr.name},
     {columns.alias_name.name}
@@ -716,7 +716,7 @@ def generate_f_model_sql_script(sql_script_fn, assignee_years):
         shared_code.model_header(f)
         shared_code.in_data_tables(f, 'F', assignee_years)
         create_standard_name_to_firmid(f)
-        create_name_information(f, table_names.a1_models, columns.a1_model_firmid.name, columns.emp_yr.name)
+        create_name_information(f, table_names.a1_models, columns.a1_model_firmid.name, columns.cw_yr.name)
         update_standard_name_to_firmid(f, 'A1', columns.a1_model_firmid.name)
         create_name_information(f, table_names.d2_models, columns.d2_model_firmid.name, columns.grant_yr.name)
         update_standard_name_to_firmid(f, 'D2', columns.d2_model_firmid.name)
