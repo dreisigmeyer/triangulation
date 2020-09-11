@@ -316,8 +316,8 @@ SELECT
     {columns.emp_yr.name},
     {columns.model.name},
     {columns.uniq_firmid.name},
-    0 AS {columns.uniq_firmid.name},
-    {columns.num_inv.cmd}
+    {columns.uniq_firmid.name},
+    {columns.num_inv.name}
 FROM
     {table_names.final_f_models},
     {table_names.total_counts}
