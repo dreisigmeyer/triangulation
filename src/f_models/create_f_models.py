@@ -341,17 +341,6 @@ SET {columns.foreign_assg_flag.name} = 1
 WHERE
     {columns.us_assg_flag.name} != 1 AND
     {columns.assg_ctry.name} != "";
-
-UPDATE {table_names.output_f_models} AS outer_tbl
-SET {columns.uniq_firmid.name} = 1
-WHERE
-    (
-        SELECT COUNT(*)
-        FROM {table_names.output_f_models} AS inner_tbl
-        WHERE
-            outer_tbl.{columns.prdn.name} = inner_tbl.{columns.prdn.name} AND
-            outer_tbl.{columns.assg_seq.name} = inner_tbl.{columns.assg_seq.name}
-    ) > 1;
         ''')
 
 
