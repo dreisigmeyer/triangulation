@@ -193,9 +193,17 @@ def create_output_file(fh):
         """
 
         """
+        if model_type == 'A1':
+            fh.write(
+                f'''
+INSERT INTO {table_names.final_f_models}''')
+        elif model_type == 'D2':
+            fh.write(
+                f'''
+INSERT OR REPLACE INTO {table_names.final_f_models}''')
+
         fh.write(
             f'''
-INSERT INTO {table_names.final_f_models}
 SELECT DISTINCT
     {columns.prdn.name},
     {columns.num_inv.name},
@@ -217,14 +225,12 @@ SELECT DISTINCT
             fh.write(
                 f'''
     SUM({columns.a1_prdns_with_standardized_name.name}),
-    SUM({columns.a1_prdns_with_alias_name.name})
-                ''')
+    SUM({columns.a1_prdns_with_alias_name.name})''')
         elif model_type == 'D2':
             fh.write(
                 f'''
     {shared_code.D2_dummy_number},
-    {shared_code.D2_dummy_number}
-                ''')
+    {shared_code.D2_dummy_number}''')
 
         fh.write(
             f'''
@@ -534,7 +540,7 @@ SELECT
     {table_names.prdn_assg_names}.{columns.uspto_name.name} AS {columns.uspto_name.name},
     {table_names.prdn_assg_names}.{columns.xml_name.name} AS {columns.xml_name.name},
     {table_names.prdn_assg_names}.{columns.name_match_name.name} AS {columns.name_match_name.name},
-    {table_names.a1_models}.{columns.emp_yr.name} AS {columns.emp_yr.name},
+    {table_names.a1_models}.{columns.cw_yr.name} AS {columns.cw_yr.name},
     {table_names.a1_models}.{columns.firmid.name} AS {columns.firmid.name}
 FROM
     {table_names.prdn_assg_names},
@@ -550,17 +556,17 @@ GROUP BY
     {table_names.prdn_assg_names}.{columns.uspto_name.name},
     {table_names.prdn_assg_names}.{columns.xml_name.name},
     {table_names.prdn_assg_names}.{columns.name_match_name.name},
-    {table_names.a1_models}.{columns.emp_yr.name},
+    {table_names.a1_models}.{columns.cw_yr.name},
     {table_names.a1_models}.{columns.firmid.name};
 
 CREATE INDEX sn_name_counts_indx ON {table_names.name_counts}
-({columns.emp_yr.name}, {columns.firmid.name}, {columns.standard_name.name});
+({columns.cw_yr.name}, {columns.firmid.name}, {columns.standard_name.name});
 CREATE INDEX un_name_counts_indx ON {table_names.name_counts}
-({columns.emp_yr.name}, {columns.firmid.name}, {columns.uspto_name.name});
+({columns.cw_yr.name}, {columns.firmid.name}, {columns.uspto_name.name});
 CREATE INDEX xn_name_counts_indx ON {table_names.name_counts}
-({columns.emp_yr.name}, {columns.firmid.name}, {columns.xml_name.name});
+({columns.cw_yr.name}, {columns.firmid.name}, {columns.xml_name.name});
 CREATE INDEX nm_name_counts_indx ON {table_names.name_counts}
-({columns.emp_yr.name}, {columns.firmid.name}, {columns.name_match_name.name});
+({columns.cw_yr.name}, {columns.firmid.name}, {columns.name_match_name.name});
 
 UPDATE {table_names.standard_name_to_firmid}
 SET
@@ -569,7 +575,7 @@ SET
         FROM {table_names.name_counts}
         WHERE
             {table_names.standard_name_to_firmid}.{columns.standard_name.name} = {table_names.name_counts}.{columns.standard_name.name} AND
-            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.emp_yr.name} AND
+            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.cw_yr.name} AND
             {table_names.standard_name_to_firmid}.{columns.firmid.name} = {table_names.name_counts}.{columns.firmid.name}
     );
 
@@ -586,7 +592,7 @@ SET
                 OR
                 {table_names.standard_name_to_firmid}.{columns.alias_name.name} = {table_names.name_counts}.{columns.name_match_name.name}
             ) AND
-            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.emp_yr.name} AND
+            {table_names.standard_name_to_firmid}.{columns.valid_yr.name} = {table_names.name_counts}.{columns.cw_yr.name} AND
             {table_names.standard_name_to_firmid}.{columns.firmid.name} = {table_names.name_counts}.{columns.firmid.name}
     );
 
