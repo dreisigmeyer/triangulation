@@ -185,7 +185,22 @@ These commands will be run in the **in_data** directory.
         awk -F',' -v OFS=',' '{ if ($3 > 5){print $1,$2,$4}}' >> D2_USPTO_XML_names_year.csv  
     sort -T ./ -u D2_USPTO_XML_names_year.csv > holder.csv  
     mv holder.csv D2_USPTO_XML_names_year.csv  
-    rm prdnseq_D2name.csv uspto_xml_names.csv   -->
+    rm prdnseq_D2name.csv uspto_xml_names.csv
+    awk -F'|' -v OFS=',' '{
+    if ($10 ~ /US/) {
+        print $1,$6,"",$4,$3,$7,$9,$10,1,0,"","","","","","",""
+    }
+    else if ($9 != "") {
+        print $1,$6,"",$4,$3,$7,$9,$10,1,0,"","","","","","",""
+    }
+    else if ($10 != "") {
+        print $1,$6,"",$4,$3,$7,$9,$10,0,1,"","","","","","",""
+    }
+    else {
+        print $1,$6,"",$4,$3,$7,$9,$10,0,0,"","","","","","",""
+    }
+    }' ../inData/assigneeOutData/*.csv | sort -T ./ -u > full_frame.csv
+    sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' full_frame.csv
 
 
 ## Setting up the Python environment
