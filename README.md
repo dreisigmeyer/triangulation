@@ -125,7 +125,7 @@ Some of the input data files need to be preprocessed due to changes in file form
 These are run 'by hand' since they have upstream input files, which may change their format.
 The user is required to preprocess those to make sure they match the formats given above.
 As an example, the following commands were used for the run that occured in 2019-2020.
-These commands will be run in the **in_data** directory.
+These commands will be run in the **in_data** directory, where all raw input files are also located there.
 **assignee_out_data** contains the output files from the preprocessing carried out by the assignee_prep2 module.
 
  
@@ -134,15 +134,12 @@ These commands will be run in the **in_data** directory.
     tail -n +2 carra_for_triangulation.csv > holder.csv  
     awk -F',' -v OFS=',' '{print $10,$6,$5,$8,$3,$4,$7,$1}' holder.csv > prdn_piks.csv
     rm holder.csv  
-    # Put prdn_piks.csv into in_data directory  
     # Need to create firmid in name_match file and remove last two columns:  
     awk -F, -v OFS=, '{ print $1,$2,$3,$4,$5,$6,$12,$8,$9}' name_match.csv > name_match_HOLD.csv  
     mv name_match.csv name_match.csv_SAVED  
     tail -n +2 name_match_HOLD.csv > name_match.csv  
     awk -F',' -v OFS=',' '{print $1,$4,$3,$6,$7,$9,$8}' name_match.csv > prdn_eins.csv  
     rm name_match_HOLD.csv  
-    # Put prdn_eins.csv into in_data directory  
-    # Put name_match.csv into in_data directory  
     # Extend assg_yr_firmid.csv to new year  
     awk -F',' -v OFS=',' '{ if ($2==2015) {print $1,2016,$3"\n"$1,2017,$3}}' assg_yr_firmid.csv > holder.csv  
     cat holder.csv >> assg_yr_firmid.csv  
@@ -165,27 +162,7 @@ These commands will be run in the **in_data** directory.
     awk -F'|' -v OFS='|' '{ col6=$6;  gsub("[^A-Z0-9 ]","",col6); col7=$7; gsub("[^A-Z0-9 ]","",col7); col8=$8; gsub("[^A-Z0-9 ]","",col8); print $1,$2,$3,$4,$5,col6,col7,col8,$9;}' prdn_seq_name.csv > prdn_seq_stand_name.csv  
     sed -i 's/|/,/g' prdn_seq_stand_name.csv  
     rm prdn_seq_name.csv  
-    <!-- # To map D2 assignee name to USPTO and XML names  
-    awk -F',' -v OFS=',' '{print $1$2,$4}' ../inData/assignee_76_14.csv | sed '1d' | sort -T ./ -f -t',' -k1,1 > prdnseq_D2name.csv  
-    awk -F',' -v OFS=',' '{print $1$2,$3,$6,$7,$8}' prdn_seq_stand_name.csv | sort -T ./ -f -t',' -k1,1 > uspto_xml_names.csv  
-    #-- the most common name  
-    join -i -t',' -j1 -o1.2,2.2,2.3,2.4,2.5 prdnseq_D2name.csv uspto_xml_names.csv |  
-        awk -F',' -v OFS=',' '{{print $1,$3,$2}; {print $1,$4,$2}; {print $1,$5,$2};}' |  
-        sort -T ./ | uniq -c | sed -e 's/^ *//;s/ /,/' |  
-        awk -F',' -v OFS=',' '{if ($2 != "" && $3 != "" && $4 != "") {print $2,$4,$1,$3}}' |  
-        sort -T ./ -t',' -k1,1 -k2,2n -k3,3nr |  
-        sort -T ./ -t',' -k1,1 -k2,2n -u |  
-        awk -F',' -v OFS=',' '{print $1,$2,$4}' > D2_USPTO_XML_names_year.csv  
-    #-- other common names  
-    join -i -t',' -j1 -o1.2,2.2,2.3,2.4,2.5 prdnseq_D2name.csv uspto_xml_names.csv |  
-        awk -F',' -v OFS=',' '{{print $1,$3,$2}; {print $1,$4,$2}; {print $1,$5,$2};}' |  
-        sort -T ./ | uniq -c | sed -e 's/^ *//;s/ /,/' |  
-        awk -F',' -v OFS=',' '{if ($2 != "" && $3 != "" && $4 != "") {print $2,$4,$1,$3}}' |  
-        sort -T ./ -t',' -k1,1 -k2,2n -k3,3nr |  
-        awk -F',' -v OFS=',' '{ if ($3 > 5){print $1,$2,$4}}' >> D2_USPTO_XML_names_year.csv  
-    sort -T ./ -u D2_USPTO_XML_names_year.csv > holder.csv  
-    mv holder.csv D2_USPTO_XML_names_year.csv  
-    rm prdnseq_D2name.csv uspto_xml_names.csv
+    # For the final crosswalk construction
     awk -F'|' -v OFS=',' '{
         if ($10 ~ /US/) {
             print $1,$6,"",$4,$3,$7,$9,$10,1,0,"","","","","","",""
