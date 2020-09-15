@@ -263,25 +263,25 @@ awk -F'|' -v OFS=',' '{print $1,$4}' iops.csv | sort -T ./ -u > iops_prdn_assg_s
 # mv f_models.csv ../outData
 
 
-# Final crosswalk and cleanup
-awk -F'|' -v OFS=',' '{
-    if ($10 ~ /US/) {
-        print $1,$6,"",$4,$3,$7,$9,$10,1,0,"","","","","","",""
-    }
-    else if ($9 != "") {
-        print $1,$6,"",$4,$3,$7,$9,$10,1,0,"","","","","","",""
-    }
-    else if ($10 != "") {
-        print $1,$6,"",$4,$3,$7,$9,$10,0,1,"","","","","","",""
-    }
-    else {
-        print $1,$6,"",$4,$3,$7,$9,$10,0,0,"","","","","","",""
-    }
-}' ../inData/assigneeOutData/*.csv | sort -T ./ -u > full_frame.csv
-sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' full_frame.csv
+# # Final crosswalk and cleanup
+# awk -F'|' -v OFS=',' '{
+#     if ($10 ~ /US/) {
+#         print $1,$6,"",$4,$3,$7,$9,$10,1,0,"","","","","","",""
+#     }
+#     else if ($9 != "") {
+#         print $1,$6,"",$4,$3,$7,$9,$10,1,0,"","","","","","",""
+#     }
+#     else if ($10 != "") {
+#         print $1,$6,"",$4,$3,$7,$9,$10,0,1,"","","","","","",""
+#     }
+#     else {
+#         print $1,$6,"",$4,$3,$7,$9,$10,0,0,"","","","","","",""
+#     }
+# }' ../inData/assigneeOutData/*.csv | sort -T ./ -u > full_frame.csv
+# sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' full_frame.csv
 
-sqlite3 cw_db.db < create_crosswalk.sql
-sed 's/"//g' crosswalk.csv > crosswalk.csv_sed
+# sqlite3 cw_db.db < create_crosswalk.sql
+# sed 's/"//g' crosswalk.csv > crosswalk.csv_sed
 # mv crosswalk.csv_sed crosswalk.csv
 # mv crosswalk.csv ../outData
 # sed 's/"//g' crosswalk_F.csv > crosswalk_F.csv_sed

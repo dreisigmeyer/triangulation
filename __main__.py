@@ -8,8 +8,8 @@ import triangulation.src.c_models.create_c_models as c_models
 import triangulation.src.d_models.create_d_models as d_models
 import triangulation.src.e_models.create_e_models as e_models
 import triangulation.src.f_models.create_f_models as f_models
+import triangulation.src.crosswalk.create_crosswalk as crosswalk
 import triangulation.src.shared_code.file_names as file_names
-# import triangulation.src.shared_code.shared_code as shared_code
 
 
 def randomString(stringLength=20):
@@ -39,3 +39,4 @@ c_models.generate_c_model_sql_script(file_names.c_models_sql_script)
 e_models.generate_e_model_sql_script(file_names.e_models_sql_script)
 d_models.generate_d_model_sql_script(file_names.d_models_sql_script, assignee_years)
 f_models.generate_f_model_sql_script(file_names.f_models_sql_script, assignee_years)
+crosswalk.generate_crosswalk_sql_script(file_names.crosswalk_sql_script)

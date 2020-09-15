@@ -34,6 +34,7 @@ standard_name_to_firmid = f'{out_data_path}standard_name_to_firmid.csv'
 
 # SQL script file names
 create_loops_sql_script = f'{sql_script_path}create_loops.sql'
+crosswalk_sql_script = f'{sql_script_path}create_crosswalk.sql'
 a_models_sql_script = f'{sql_script_path}create_a_models.sql'
 b_models_sql_script = f'{sql_script_path}create_b_models.sql'
 c_models_sql_script = f'{sql_script_path}create_c_models.sql'
