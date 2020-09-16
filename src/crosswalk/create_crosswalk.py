@@ -21,15 +21,78 @@ models_and_tables = {
 }
 
 
+def create_indexes(fh):
+    """
+
+    """
+    for model, table in models_and_tables.items():
+        fh.write(
+            f'''
+CREATE INDEX {table}_indx
+ON {table}(
+    {columns.prdn.name},
+    {columns.assg_seq.name},
+    {columns.firmid.name}
+);
+            ''')
+    fh.write(
+        f'''
+CREATE INDEX {table_names.full_frame}_indx
+ON {table_names.full_frame}(
+    {columns.prdn.name},
+    {columns.assg_seq.name}
+);
+        ''')
+
+
 def import_other_models(fh):
     """
 
     """
-    for model, table in models_and_tables:
+    fh.write(
+        f'''
+.headers on''')
+    for model, table in models_and_tables.items():
         fh.write(
             f'''
-.import model table
-            ''')
+DROP TABLE IF EXISTS {table}
+.import {model} {table}
+ALTER TABLE {table} ADD COLUMN {columns.f_model.cmd}''')
+    fh.write(
+        f'''
+.import {file_names.full_frame} {table_names.full_frame}
+.headers off''')
+
+
+def import_other_tables(fh):
+    """
+
+    """
+    fh.write(
+        f'''
+.headers on
+CREATE TABLE {table_names.iops} (
+    {columns.prdn.cmd},
+    {columns.assg_seq.cmd},
+    UNIQUE(
+        {columns.prdn.name},
+        {columns.assg_seq.name}
+    )
+);
+.import {file_names.iops_unique} {table_names.iops}
+
+CREATE TABLE patent_metadata (
+    {columns.prdn.cmd},
+    {columns.grant_yr.cmd},
+    {columns.app_yr.cmd},
+    {columns.num_assg.cmd},
+    {columns.us_inv_flag.cmd},
+    UNIQUE (
+        {columns.prdn.name}
+    )
+);
+.import {file_names.prdn_metadata_csvfile} {table_names.prdn_metadata}
+.headers on''')
 
 
 def generate_crosswalk_sql_script(sql_script_fn):
@@ -39,3 +102,5 @@ def generate_crosswalk_sql_script(sql_script_fn):
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
         import_other_models(f)
+        import_other_tables(f)
+        create_indexes(f)

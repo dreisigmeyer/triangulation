@@ -1,111 +1,111 @@
-.mode csv
-.headers on
-pragma temp_store = MEMORY;
+-- .mode csv
+-- .headers on
+-- pragma temp_store = MEMORY;
 
-.import ../outData/a1_models.csv a1_models
-.import ../outData/a2_models.csv a2_models
-.import ../outData/a3_models.csv a3_models
-.import ../outData/b1_models.csv b1_models
-.import ../outData/b2_models.csv b2_models
-.import ../outData/c1_models.csv c1_models
-.import ../outData/c2_models.csv c2_models
-.import ../outData/c3_models.csv c3_models
-.import ../outData/e1_models.csv e1_models
-.import ../outData/e2_models.csv e2_models
-.import ../outData/d1_models.csv d1_models
-.import ../outData/d2_models.csv d2_models
-.import ../outData/f_models.csv f_models
-.import full_frame.csv full_frame
+-- .import ../outData/a1_models.csv a1_models
+-- .import ../outData/a2_models.csv a2_models
+-- .import ../outData/a3_models.csv a3_models
+-- .import ../outData/b1_models.csv b1_models
+-- .import ../outData/b2_models.csv b2_models
+-- .import ../outData/c1_models.csv c1_models
+-- .import ../outData/c2_models.csv c2_models
+-- .import ../outData/c3_models.csv c3_models
+-- .import ../outData/e1_models.csv e1_models
+-- .import ../outData/e2_models.csv e2_models
+-- .import ../outData/d1_models.csv d1_models
+-- .import ../outData/d2_models.csv d2_models
+-- .import ../outData/f_models.csv f_models
+-- .import full_frame.csv full_frame
 
-ALTER TABLE a1_models ADD COLUMN f_model TEXT;
-ALTER TABLE a2_models ADD COLUMN f_model TEXT;
-ALTER TABLE a3_models ADD COLUMN f_model TEXT;
-ALTER TABLE b1_models ADD COLUMN f_model TEXT;
-ALTER TABLE b2_models ADD COLUMN f_model TEXT;
-ALTER TABLE c1_models ADD COLUMN f_model TEXT;
-ALTER TABLE c2_models ADD COLUMN f_model TEXT;
-ALTER TABLE c3_models ADD COLUMN f_model TEXT;
-ALTER TABLE d1_models ADD COLUMN f_model TEXT;
-ALTER TABLE d2_models ADD COLUMN f_model TEXT;
-ALTER TABLE e1_models ADD COLUMN f_model TEXT;
-ALTER TABLE e2_models ADD COLUMN f_model TEXT;
-ALTER TABLE f_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE a1_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE a2_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE a3_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE b1_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE b2_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE c1_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE c2_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE c3_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE d1_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE d2_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE e1_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE e2_models ADD COLUMN f_model TEXT;
+-- ALTER TABLE f_models ADD COLUMN f_model TEXT;
 
-.headers off
-CREATE TABLE iops (
-    prdn TEXT NOT NULL,
-    assg_seq INTEGER NOT NULL,
-    UNIQUE(prdn, assg_seq)
-);
-.import ../inData/iops_prdn_assg_seq.csv iops
+-- .headers off
+-- CREATE TABLE iops (
+--     prdn TEXT NOT NULL,
+--     assg_seq INTEGER NOT NULL,
+--     UNIQUE(prdn, assg_seq)
+-- );
+-- .import ../inData/iops_prdn_assg_seq.csv iops
 
-CREATE TABLE patent_metadata (
-    prdn TEXT NOT NULL,
-    grant_yr INT NOT NULL,
-    app_yr INT NOT NULL,
-    num_assigs INT NOT NULL,
-    us_inventor_flag INT NOT NULL,
-    UNIQUE (prdn) -- for index on grant_yr
-);
-.import ../inData/prdn_metadata.csv patent_metadata
-.headers on
+-- CREATE TABLE patent_metadata (
+--     prdn TEXT NOT NULL,
+--     grant_yr INT NOT NULL,
+--     app_yr INT NOT NULL,
+--     num_assigs INT NOT NULL,
+--     us_inventor_flag INT NOT NULL,
+--     UNIQUE (prdn) -- for index on grant_yr
+-- );
+-- .import ../inData/prdn_metadata.csv patent_metadata
+-- .headers on
 
-CREATE INDEX
-    a1_indx
-ON
-    a1_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    a2_indx
-ON
-    a2_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    a3_indx
-ON
-    a3_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    b1_indx
-ON
-    b1_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    b2_indx
-ON
-    b2_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    c1_indx
-ON
-    c1_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    c2_indx
-ON
-    c2_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    c3_indx
-ON
-    c3_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    e1_indx
-ON
-    e1_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    e2_indx
-ON
-    e2_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    d1_indx
-ON
-    d1_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    d2_indx
-ON
-    d2_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    f_indx
-ON
-    f_models(prdn, assg_seq, firmid);
-CREATE INDEX
-    frame_indx
-ON
-    full_frame(prdn, assg_seq);
+-- CREATE INDEX
+--     a1_indx
+-- ON
+--     a1_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     a2_indx
+-- ON
+--     a2_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     a3_indx
+-- ON
+--     a3_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     b1_indx
+-- ON
+--     b1_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     b2_indx
+-- ON
+--     b2_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     c1_indx
+-- ON
+--     c1_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     c2_indx
+-- ON
+--     c2_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     c3_indx
+-- ON
+--     c3_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     e1_indx
+-- ON
+--     e1_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     e2_indx
+-- ON
+--     e2_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     d1_indx
+-- ON
+--     d1_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     d2_indx
+-- ON
+--     d2_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     f_indx
+-- ON
+--     f_models(prdn, assg_seq, firmid);
+-- CREATE INDEX
+--     frame_indx
+-- ON
+--     full_frame(prdn, assg_seq);
     
     
 -- The final crosswalk without the F models
