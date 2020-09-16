@@ -31,6 +31,8 @@ e1_models = f'{out_data_path}e1_models.csv'
 e2_models = f'{out_data_path}e2_models.csv'
 f_models = f'{out_data_path}f_models.csv'
 f_model_standard_name_corrections_cfg_TITLED = f'{f_model_cfg_TITLED_files}f_model_standard_name_corrections.cfg_TITLED'
+crosswalk = f'{out_data_path}crosswalk.csv'
+crosswalk_F = f'{out_data_path}crosswalk_F.csv'
 standard_name_to_firmid = f'{out_data_path}standard_name_to_firmid.csv'
 
 # SQL script file names
