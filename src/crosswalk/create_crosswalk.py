@@ -159,6 +159,7 @@ def import_other_tables(fh):
     fh.write(
         f'''
 .headers off
+DROP TABLE IF EXISTS {table_names.iops};
 CREATE TABLE {table_names.iops} (
     {columns.prdn.cmd},
     {columns.assg_seq.cmd},
