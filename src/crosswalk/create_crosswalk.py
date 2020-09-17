@@ -37,12 +37,14 @@ ON {table}(
             ''')
 
 
-def create_crosswalk_table(fh):
+def create_crosswalk_table(fh, table_type=''):
     '''
 
     '''
     tables = [*models_and_tables.values()]  # Want array of values
-    del tables[-1]  # Don't want f_models
+    f_table = tables.pop()  # May not want f_models
+    if table_type is 'F':
+        tables.insert(0, f_table)  # Create with F models
     fh.write(
         f'''
 DROP TABLE IF EXISTS {table_names.crosswalk};
@@ -236,7 +238,7 @@ WHERE EXISTS (
     WHERE
         {table}.{columns.prdn.name} = {f_model}.{columns.prdn.name} AND
         {table}.{columns.assg_seq.name} = {f_model}.{columns.assg_seq.name} AND
-        {table}.{columns.firmid.name} = {f_model}.{columns.firmid.name}
+        {table}.{columns.firmid.name} != {f_model}.{columns.firmid.name}
 );
 DELETE FROM {f_model}
 WHERE EXISTS (
@@ -268,5 +270,5 @@ def generate_crosswalk_sql_script(sql_script_fn):
         output_crosswalk(f, file_names.crosswalk)
         import_full_frame(f)
         prep_crosswalk_F(f)
-        create_crosswalk_table(f)
+        create_crosswalk_table(f, 'F')
         output_crosswalk(f, file_names.crosswalk_F)
