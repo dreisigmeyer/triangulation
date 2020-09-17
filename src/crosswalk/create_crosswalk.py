@@ -107,7 +107,7 @@ SET
             FROM {table_names.prdn_metadata}
             WHERE {table_names.full_frame}.{columns.prdn.name} = {table_names.prdn_metadata}.{columns.prdn.name}
         ),
-    {columns.mult_assg_flag.name} =
+    {columns.num_assg.name} =
         (
             SELECT {table_names.prdn_metadata}.{columns.num_assg.name}
             FROM {table_names.prdn_metadata}
@@ -169,6 +169,7 @@ CREATE TABLE {table_names.iops} (
 );
 .import {file_names.iops_unique} {table_names.iops}
 
+DROP TABLE IF EXISTS {table_names.prdn_metadata};
 CREATE TABLE {table_names.prdn_metadata} (
     {columns.prdn.cmd},
     {columns.grant_yr.cmd},
