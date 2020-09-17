@@ -176,8 +176,8 @@ These commands will be run in the **in_data** directory, where all raw input fil
         else {
             print $1,$6,"",$4,$3,$7,$9,$10,0,0,"","","","","","",""
         }
-    }' ../inData/assigneeOutData/*.csv | sort -T ./ -u > full_frame.csv
-    sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assignee_flag,foreign_assignee_flag,us_inventor_flag,multiple_assignee_flag,br_yr,lehd_yr,model_type,unique_firm_id,count\n/' full_frame.csv
+    }' assignee_out_data/*.csv | sort -T ./ -u > full_frame.csv
+    sed -i '1s/^/prdn,assg_seq,firmid,app_yr,grant_yr,assg_type,assg_st,assg_ctry,us_assg_flag,foreign_assg_flag,us_inv_flag,num_assg,cw_yr,emp_yr,model,uniq_firmid,num_inv\n/' full_frame.csv
 
 
 ## Setting up the Python environment
