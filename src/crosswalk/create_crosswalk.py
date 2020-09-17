@@ -147,7 +147,7 @@ def import_other_models(fh):
     for model, table in models_and_tables.items():
         fh.write(
             f'''
-DROP TABLE IF EXISTS {table}
+DROP TABLE IF EXISTS {table};
 .import {model} {table}
 ALTER TABLE {table} ADD COLUMN {columns.f_model.name};''')
 
