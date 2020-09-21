@@ -28,7 +28,6 @@ args = parser.parse_args()
 assignee_years = f'{file_names.in_data_path}{args.assignee_years}'
 
 # Local dummy variables - can feely change as needed
-db_name = randomString()
 a_models.generate_a_model_sql_script(file_names.a_models_sql_script)
 b_models.generate_b_model_sql_script(file_names.b_models_sql_script)
 c_models.generate_c_model_sql_script(file_names.c_models_sql_script)
