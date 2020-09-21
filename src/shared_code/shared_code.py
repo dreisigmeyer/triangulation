@@ -15,7 +15,9 @@ D2_dummy_number = '1000000'
 
 def idx_a_model(fh):
     """
+    Helper function to create tables indiexes for the A models
 
+    fh = file handle
     """
     fh.write(
         f'''
@@ -58,7 +60,9 @@ ON
 
 def idx_c_model(fh):
     """
+    Helper function to create tables indiexes for the C models
 
+    fh = file handle
     """
     fh.write(
         f'''
@@ -82,7 +86,9 @@ ON
 
 def idx_d_model(fh):
     """
+    Helper function to create tables indiexes for the D models
 
+    fh = file handle
     """
     fh.write(
         f'''
@@ -156,7 +162,9 @@ ON
 
 def idx_e_model(fh):
     """
+    Helper function to create tables indiexes for the E models
 
+    fh = file handle
     """
     fh.write(
         f'''
@@ -194,7 +202,9 @@ ON
 
 def idx_f_model(fh):
     """
+    Helper function to create tables indiexes for the F models
 
+    fh = file handle
     """
     fh.write(
         f'''
@@ -246,6 +256,10 @@ def import_data(fh, tbl_name, csv_file):
 
 def import_other_models_for_f(fh, assignee_years):
     """
+    Helper function to import previous models when creating the F models
+
+    fh = file handle
+    assignee_years = name of the assignee data file, e.g., assignee_76_16.csv
     """
     fh.write(
         f'''
@@ -293,6 +307,10 @@ DROP TABLE holder;
 
 def import_other_models(fh, assignee_years):
     """
+    Helper function to import previous models
+
+    fh = file handle
+    assignee_years = name of the assignee data file, e.g., assignee_76_16.csv
     """
     fh.write(
         f'''
@@ -321,7 +339,11 @@ TO {columns.assg_name.name};
 
 def in_data_tables(fh, model, assignee_years=None):
     """
+    Helper function to create tables and load input files
 
+    fh = file handle
+    model = model type for the triangulation
+    assignee_years = name of the assignee data file, e.g., assignee_76_16.csv
     """
     if model == 'C':
         preprocess_for_c_model(fh)
@@ -441,7 +463,9 @@ CREATE TABLE {table_names.assg_name_firmid} (
 
 def model_header(fh):
     """
+    Helper function to put common preliminary commands in the SQL files.
 
+    fh -- file handle
     """
     fh.write(
         f'''
@@ -452,7 +476,7 @@ pragma temp_store = MEMORY;
 
 def output_data(fh, tbl_name, csv_file):
     """
-    Helper function to outport data to a CSV file from a SQLite3 database.
+    Helper function to output data to a CSV file from a SQLite3 database.
 
     fh -- file handle
     tbl_name -- table in database to select data from
@@ -470,7 +494,7 @@ SELECT * FROM {tbl_name};
 
 def output_distinct_data(fh, tbl_name, csv_file):
     """
-    Helper function to outport data to a CSV file from a SQLite3 database.
+    Helper function to output data to a CSV file from a SQLite3 database.
 
     fh -- file handle
     tbl_name -- table in database to select data from
@@ -486,6 +510,7 @@ SELECT DISTINCT * FROM {tbl_name};
     ''')
 
 
+# All the preprocess_for_X_model functions take a file handle and return anything that needs to be changed in an existing database file
 def preprocess_for_c_model(fh):
     """
 

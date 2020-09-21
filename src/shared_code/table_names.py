@@ -1,3 +1,5 @@
+# Names of tabes and indexes used repeatedly in the SQL scripts
+
 # Table name
 assignee_info = 'assignee_info'
 assignee_name_data = 'assignee_name_data'

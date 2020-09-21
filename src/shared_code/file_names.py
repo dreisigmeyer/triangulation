@@ -1,3 +1,5 @@
+# Input and output file names
+
 f_model_cfg_TITLED_files = './triangulation/cfg_files/TITLED/'
 in_data_path = './triangulation/in_data/'
 out_data_path = './triangulation/out_data/'

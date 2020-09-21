@@ -1,3 +1,5 @@
+# Gives the names and SQL commands for the database table columns
+
 class DatabaseColumn():
     '''Column to be used in a database.
 
