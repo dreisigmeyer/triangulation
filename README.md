@@ -190,7 +190,8 @@ This can be run by issuing the following command outside of this directory
 where **assignee_76_16.csv** is the assignee file.
 The years may change on the file name.
 The flag `-a` (or `--assignee_years`) is used on the command line to specify the assignee file.
-This file name will likely change each year.
+This file name will likely change each year.  
+To generate the SQL scripts and run them to create the models and crosswalk, the BASH script **run_it.sh** can be run from the directory above this one.
 
 
 ## The individual pieces of the code
