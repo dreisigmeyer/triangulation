@@ -194,6 +194,7 @@ This file name will likely change each year.
 
 
 To generate the SQL scripts and run them to create the models and crosswalk, the BASH script **run_it.sh** can be run from the directory above this one.
+You'll likely need to change the name of the assignee file.
 
 
 ## The individual pieces of the code
