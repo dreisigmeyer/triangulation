@@ -23,7 +23,9 @@ models_and_tables = {
 
 def create_indexes(fh):
     """
+    Does what it says it does
 
+    fh: output file handle
     """
     for model, table in models_and_tables.items():
         fh.write(
@@ -39,7 +41,10 @@ ON {table}(
 
 def create_crosswalk_table(fh, table_type=''):
     '''
+    Main part of the code that actually creates the crosswalk
 
+    fh: output file handle
+    table_type: 'F' if the crosswalk is created from the F models
     '''
     tables = [*models_and_tables.values()]  # Want array of values
     f_table = tables.pop()  # May not want f_models
@@ -126,7 +131,9 @@ INSERT INTO {table_names.crosswalk} SELECT * FROM {table_names.full_frame};''')
 
 def import_full_frame(fh):
     """
+    Bring in the Full Frame file
 
+    fh: output file handle
     """
     fh.write(
         f'''
@@ -141,7 +148,9 @@ ON {table_names.full_frame}(
 
 def import_other_models(fh):
     """
+    Bring in the results of the other models
 
+    fh: output file handle
     """
     fh.write(
         f'''
@@ -156,7 +165,9 @@ ALTER TABLE {table} ADD COLUMN {columns.f_model.name};''')
 
 def import_other_tables(fh):
     """
+    Bring in some additional tables we need
 
+    fh: output file handle
     """
     fh.write(
         f'''
@@ -192,7 +203,6 @@ def output_crosswalk(fh, csv_file):
     Helper function to outport data to a CSV file from a SQLite3 database.
 
     fh -- file handle
-    tbl_name -- table in database to select data from
     csv_file -- CSV file to print to
     """
     fh.write(
@@ -207,7 +217,9 @@ WHERE {columns.grant_yr.name} >= {shared_code.earliest_grant_yr} ;
 
 def prep_crosswalk_F(fh):
     """
+    Gets some things ready for the F model crosswalk
 
+    fh: output file handle
     """
     tables = [*models_and_tables.values()]  # Want array of values
     f_model = tables.pop()  # Don't want f_models
@@ -258,7 +270,8 @@ UPDATE {f_model} SET {columns.f_model.name} = {f_model}.{columns.model.name};
 
 def generate_crosswalk_sql_script(sql_script_fn):
     """
-
+    Master script
+    sql_script_fn: File to ourput generated SQL script to
     """
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
