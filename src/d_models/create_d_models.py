@@ -6,6 +6,10 @@ import triangulation.src.shared_code.table_names as table_names
 
 def delete_previous_models(fh, model):
     """
+    Take out from possible D models prdns assigned in earlier models
+
+    model: If 'D2' do some extra processing
+    fh: fie handle to write SQL script to
     """
     previous_models = [
         table_names.a1_models,
@@ -68,7 +72,9 @@ WHERE EXISTS (
 
 def make_aux_tables(fh):
     """
+    Creates some tables needed to process the D models
 
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -159,7 +165,9 @@ WHERE {columns.firm_name.name} IN (
 
 def make_possible_d_models(fh, model):
     """
+    Finds candidates for D models
 
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -223,7 +231,9 @@ WHERE
 
 def make_possible_d1_models(fh):
     """
+    Processing for candidates for D1 model
 
+    fh: fie handle to write SQL script to
     """
     make_possible_d_models(fh, 'D1')
 
@@ -258,7 +268,9 @@ WHERE NOT EXISTS (
 
 def make_possible_d2_models(fh):
     """
+    Processing for candidates for D2 model
 
+    fh: fie handle to write SQL script to
     """
     make_possible_d_models(fh, 'D2')
 
@@ -277,7 +289,9 @@ ON {table_names.d1_models} (
 
 def make_output_d1_models(fh):
     """
+    Create output table for D1 model
 
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -321,7 +335,9 @@ WHERE
 
 def make_output_d2_models(fh):
     """
+    Create output table for D2 model
 
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -369,7 +385,10 @@ WHERE
 
 def generate_d_model_sql_script(sql_script_fn, assignee_years):
     """
+    Main driver function
 
+    sql_script_fn:  name of file to write SQL script to
+    assignee_years = name of the assignee data file, e.g., assignee_76_16.csv
     """
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
