@@ -7,7 +7,9 @@ import triangulation.src.shared_code.table_names as table_names
 
 def create_expanded_d2_name(fh):
     """
+    Use hand corrected D2 names
 
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -116,7 +118,12 @@ FROM {table_names.expanded_d2_names};
 
 def create_name_information(fh, in_table, in_model_firmid, cw_yr):
     """
+    Gather basic information and all name spellings together
 
+    fh: fie handle to write SQL script to
+    in_table: table to gather additional information from
+    in_model_firmid: name to rename firmid column to
+    cw_yr: crosswalk year
     """
     fh.write(
         f'''
@@ -142,7 +149,9 @@ WHERE
 
 def create_output_file(fh):
     """
+    Construct table to output the results
 
+    fh: fie handle to write SQL script to
     """
     def insert_into_f_models(fh, f_model_type, model_type):
         """
@@ -300,7 +309,9 @@ WHERE
 
 def create_standard_name_to_firmid(fh):
     """
+    Tabe that maps standardized names to a firmid
 
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -328,7 +339,11 @@ CREATE UNIQUE INDEX {table_names.sn_idx} ON {table_names.standard_name_to_firmid
 
 def f_models(fh, earliest_grant_yr, shift_yrs):
     """
+    Construct F models
 
+    fh: fie handle to write SQL script to
+    earliest_grant_yr: first year for crosswalk
+    shift_yrs: shift to use for window
     """
     def inserts(f, first_grant_yr, name_column, shift_yr):
         fh.write(
@@ -420,7 +435,9 @@ WHERE EXISTS
 
 def final_standard_name_to_firmid(fh):
     """
+    Create a corrected mapping of standardized names to firmids for output
 
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -550,7 +567,9 @@ CREATE INDEX {table_names.sn_idx} ON {table_names.standard_name_to_firmid}
 
 def put_d2_standard_name_to_firmid(fh):
     """
+    Use D2 hand created information to create standard name to firmid mapping
 
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -579,7 +598,9 @@ FROM
 
 def remove_trash_standard_name_to_firmid(fh):
     """
+    Clean up our standard anme to firmid mappings
 
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -601,7 +622,9 @@ WHERE
 
 def update_standard_name_to_firmid(fh, model_name, model_firmid):
     """
+    Update our standard anme to firmid mappings
 
+    fh: fie handle to write SQL script to
     """
     def helper_fun(fh, alt_name, model, firmid):
         """
@@ -659,7 +682,10 @@ WHERE
 
 def generate_f_model_sql_script(sql_script_fn, assignee_years):
     """
+    Main driver function
 
+    sql_script_fn:  name of file to write SQL script to
+    assignee_years = name of the assignee data file, e.g., assignee_76_16.csv
     """
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
