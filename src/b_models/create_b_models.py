@@ -6,7 +6,7 @@ import triangulation.src.shared_code.table_names as table_names
 
 def clean_b_models_table(fh):
     """
-
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -38,6 +38,7 @@ WHERE EXISTS (
 
 def create_b_models_table(fh):
     """
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -92,6 +93,8 @@ def create_bK_models_table(fh, model):
     """
     model is 'B1' or 'B2'
     Uses a window function and requires SQLite >=v3.25.0
+
+    fh: fie handle to write SQL script to
     """
     if model == 'B1':
         tbl_name = table_names.b1_models
@@ -200,7 +203,9 @@ WHERE
 
 def generate_b_model_sql_script(sql_script_fn):
     """
+    Main driver function
 
+    sql_script_fn:  name of file to write SQL script to
     """
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
