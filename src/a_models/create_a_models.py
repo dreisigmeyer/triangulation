@@ -6,7 +6,7 @@ import triangulation.src.shared_code.table_names as table_names
 
 def alter_closed_loop_table(fh, tbl_name):
     """
-
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -87,8 +87,9 @@ SET
 
 
 def a_model_postprocess(fh):
-    '''
-    '''
+    """
+    fh: fie handle to write SQL script to
+    """
     fh.write(
         f'''
         ''')
@@ -96,7 +97,7 @@ def a_model_postprocess(fh):
 
 def create_aux_table(fh):
     """
-
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -135,7 +136,9 @@ CREATE TABLE {table_names.e_model_info}
 
 def create_closed_loop_table(fh, tbl_name, join_cols):
     """
-
+    fh: fie handle to write SQL script to
+    tbl_name: the closed paths table name
+    join_cols: columns we do the INNER JOIN on
     """
 
     # Create the table
@@ -178,7 +181,9 @@ ON
 
 def generate_a_model_sql_script(sql_script_fn):
     """
+    Main driver function
 
+    sql_script_fn:  name of file to write SQL script to
     """
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
@@ -225,6 +230,11 @@ def output_a_models(fh, tbl_name, csv_file, model):
     Extract the final closed loops.
     This replaces the extract_A_paths.pl and extract_A_paths.sh scripts.
     Uses a window function and requires SQLite >=v3.25.0
+
+    fh: fie handle to write SQL script to
+    tbl_name: the closed paths table name
+    csv_file: output file name for each model
+    model: A1, A2 or A3
     """
     fh.write(
         f'''
@@ -367,7 +377,9 @@ WHERE
 
 def postprocess_database(fh, tbl_name):
     """
+    fh: fie handle to write SQL script to
 
+    tbl_name: the closed paths table name
     """
     fh.write(
         f'''
@@ -397,7 +409,7 @@ DROP TABLE {tbl_name};
 
 def update_b_model_info(fh):
     """
-
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -413,6 +425,9 @@ FROM
 def update_c_model_info(fh, tbl_name):
     """
     This replaces Amodel_pik_year_firmid.pl
+
+    fh: fie handle to write SQL script to
+    tbl_name: the closed paths table name
     """
     fh.write(
         f'''
@@ -436,6 +451,8 @@ WHERE
 def update_e_model_info(fh):
     """
     This replaces Amodel_pik_year_firmid.pl
+
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
