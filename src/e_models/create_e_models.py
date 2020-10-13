@@ -6,6 +6,7 @@ import triangulation.src.shared_code.table_names as table_names
 
 def create_e_models_prdns_table(fh):
     """
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -35,6 +36,7 @@ WHERE {columns.prdn.name} IN (
 
 def create_e1_models_table(fh):
     """
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -164,6 +166,7 @@ WHERE
 
 def create_e2_models_table(fh):
     """
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -284,7 +287,7 @@ WHERE
 
 def generate_e_model_sql_script(sql_script_fn):
     """
-
+    Main driver function
     """
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
@@ -300,6 +303,7 @@ def generate_e_model_sql_script(sql_script_fn):
 
 def prep_for_e1_models(fh):
     """
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -313,6 +317,7 @@ WHERE {columns.prdn.name} NOT IN (
 
 def prep_for_e2_models(fh):
     """
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
