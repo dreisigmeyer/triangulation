@@ -6,7 +6,7 @@ import triangulation.src.shared_code.table_names as table_names
 
 def clean_c_models_table(fh):
     """
-
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -28,6 +28,7 @@ WHERE EXISTS (
 
 def create_c_models_table(fh):
     """
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -79,6 +80,8 @@ def create_c1_model_table(fh):
     """
     model is 'C1'
     Uses a window function and requires SQLite >=v3.25.0
+
+    fh: fie handle to write SQL script to
     """
     tbl_name = table_names.c1_models
     fh.write(
@@ -173,7 +176,7 @@ WHERE
 
 def create_c2_model_table(fh):
     """
-
+    fh: fie handle to write SQL script to
     """
     tbl_name = table_names.c2_models
     fh.write(
@@ -372,7 +375,7 @@ WHERE
 
 def create_c3_model_table(fh):
     """
-
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''
@@ -463,7 +466,9 @@ WHERE
 
 def generate_c_model_sql_script(sql_script_fn):
     """
+    Main driver function
 
+    sql_script_fn:  name of file to write SQL script to
     """
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
@@ -481,7 +486,7 @@ def generate_c_model_sql_script(sql_script_fn):
 
 def remake_c_model_table(fh):
     """
-
+    fh: fie handle to write SQL script to
     """
     fh.write(
         f'''

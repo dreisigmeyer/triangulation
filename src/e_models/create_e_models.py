@@ -288,6 +288,8 @@ WHERE
 def generate_e_model_sql_script(sql_script_fn):
     """
     Main driver function
+
+    sql_script_fn:  name of file to write SQL script to
     """
     with open(sql_script_fn, 'w') as f:
         shared_code.model_header(f)
