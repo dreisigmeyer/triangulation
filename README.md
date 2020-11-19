@@ -150,7 +150,7 @@ These commands will be run in the **in_data** directory, where all raw input fil
     sort -T ./ -u prdn_metadata.csv > holder  
     mv holder prdn_metadata.csv  
     # For F models
-    awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") $1,$6,$3,$9,$10,$5,$11,$12,$7}}' assignee_out_data/*.csv |  
+    awk -F'|' -v OFS='|' '{ if ($4 != "" || $10 != "" || $11 != "") {print $1,$6,$3,$9,$10,$5,$11,$12,$7}}' assignee_out_data/*.csv |  
         grep -v "INDIVIDUALLY OWNED PATENT" |  
         sort -u -T ./ > prdn_seq_name.csv  
     sed -i 's/|US|/||/g' prdn_seq_name.csv  
