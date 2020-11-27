@@ -20,8 +20,11 @@ prdn_seq_stand_name = f'{in_data_path}prdn_seq_stand_name.csv'
 
 # out data file names
 a1_models = f'{out_data_path}a1_models.csv'
+a1_inv_info = f'{out_data_path}a1_inv_info.csv'
 a2_models = f'{out_data_path}a2_models.csv'
+a2_inv_info = f'{out_data_path}a2_inv_info.csv'
 a3_models = f'{out_data_path}a3_models.csv'
+a3_inv_info = f'{out_data_path}a3_inv_info.csv'
 b1_models = f'{out_data_path}b1_models.csv'
 b2_models = f'{out_data_path}b2_models.csv'
 c1_models = f'{out_data_path}c1_models.csv'

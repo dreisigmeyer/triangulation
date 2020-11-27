@@ -196,6 +196,7 @@ def generate_a_model_sql_script(sql_script_fn):
         create_closed_loop_table(f, tbl_name, join_cols)
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a1_models, 'A1')
+        output_inv_info(f, tbl_name, table_names.closed_loops, file_names.a1_inv_info, 'A1')
         update_b_model_info(f)
         update_c_model_info(f, tbl_name)
         update_e_model_info(f)
@@ -206,6 +207,7 @@ def generate_a_model_sql_script(sql_script_fn):
         create_closed_loop_table(f, tbl_name, join_cols)
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a2_models, 'A2')
+        output_inv_info(f, tbl_name, table_names.closed_loops, file_names.a2_inv_info, 'A2')
         update_b_model_info(f)
         update_c_model_info(f, tbl_name)
         update_e_model_info(f)
@@ -216,6 +218,7 @@ def generate_a_model_sql_script(sql_script_fn):
         create_closed_loop_table(f, tbl_name, join_cols)
         alter_closed_loop_table(f, tbl_name)
         output_a_models(f, tbl_name, file_names.a3_models, 'A3')
+        output_inv_info(f, tbl_name, table_names.closed_loops, file_names.a3_inv_info, 'A3')
         update_b_model_info(f)
         update_c_model_info(f, tbl_name)
         update_e_model_info(f)
@@ -373,6 +376,42 @@ WHERE
     ) > 1;
     ''')
     shared_code.output_data(fh, f'{table_names.closed_loops}', csv_file)
+
+
+def output_inv_info(fh, cp_tbl_name, cl_tbl_name, csv_file, model):
+    """
+    Extract the inventor informtion for each A model.
+    
+    fh: fie handle to write SQL script to
+    cp_tbl_name: the closed paths table name
+    cl_tbl_name: the closed loops table name
+    csv_file: output file name for each model
+    model: A1, A2 or A3
+    """
+    fh.write(
+        f'''
+CREATE TABLE inv_info AS
+SELECT DISTINCT
+    {cp_tbl_name}.{columns.assg_prdn.name},
+    {cp_tbl_name}.{columns.grant_yr.name},
+    {cp_tbl_name}.{columns.app_yr.name},
+    {cp_tbl_name}.{columns.cw_yr.name},
+    {cp_tbl_name}.{columns.assg_seq.name},
+    {cp_tbl_name}.{columns.assg_firmid.name},
+    {cp_tbl_name}.{columns.emp_yr.name},
+    {cp_tbl_name}.{columns.inv_seq.name},
+    {cp_tbl_name}.{columns.pik.name},
+    {cp_tbl_name}.{columns.pik_ein.name}
+FROM 
+    {cp_tbl_name},
+    {cl_tbl_name}
+WHERE
+    {cp_tbl_name}.{columns.assg_prdn.name} = {cl_tbl_name}.{columns.assg_prdn.name},
+    {cp_tbl_name}.{columns.cw_yr.name} = {cl_tbl_name}.{columns.cw_yr.name},
+    {cp_tbl_name}.{columns.assg_seq.name} = {cl_tbl_name}.{columns.assg_seq.name},
+    {cp_tbl_name}.{columns.assg_firmid.name} = {cl_tbl_name}.{columns.assg_firmid.name};
+    ''')
+    shared_code.output_data(fh, f'inv_info', csv_file)
 
 
 def postprocess_database(fh, tbl_name):
