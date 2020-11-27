@@ -390,6 +390,7 @@ def output_inv_info(fh, cp_tbl_name, cl_tbl_name, csv_file, model):
     """
     fh.write(
         f'''
+DROP TABLE IF EXISTS inv_info;
 CREATE TABLE inv_info AS
 SELECT DISTINCT
     {cp_tbl_name}.{columns.assg_prdn.name},
